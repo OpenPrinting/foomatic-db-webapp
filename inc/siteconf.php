@@ -7,10 +7,10 @@ class SiteConfig {
 		
 	public $baseURL = '/'; // with tailing slash, from document root
 
-	public $dbUser = false;
-	public $dbPass = false;
-	public $dbServer = false;
-	public $db = false;
+	public $dbUser = 'opuser';
+	public $dbPass = 'Goose5ai';
+	public $db = 'openprinting';
+	public $dbServer = 'db.linuxfoundation.org';
 	
 	/*public $ldapServer = '140.211.169.120';
 	public $ldapServer2 = false;
@@ -24,8 +24,7 @@ class SiteConfig {
 	public $ldapBaseDN = 'dc=freestandards,dc=org';
 	public $ldapUserBaseDN = 'ou=Users,dc=freestandards,dc=org';
 	public $ldapUsernameField = 'uid';
-	public $ldapMailField = 'mail';
-	
+	public $ldapMailField = 'mail';	
 }
 
 ?>

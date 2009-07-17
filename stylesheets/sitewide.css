@@ -51,7 +51,7 @@ a:visited { color:#7F9FB4; }
 a:hover, a:focus { color:#003F69; text-decoration: underline; }
 
 
-.halfwidth { width: 50%; }
+.halfwidth { width: 48%; }
 .left { float: left; }
 .right { float: right; }
 

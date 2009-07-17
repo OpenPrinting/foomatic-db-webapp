@@ -35,7 +35,9 @@
 						<ul id="user-nav">
 							{if $SESSION->isLoggedIn() }
 								<li><a class="list-link login" href="#" >{$USER->getUserName()}</a></li>
-								<li><a class="list-link flag" href="{$BASEURL}admin/" >Site Admin</a></li>
+								{if $SHOW_ADMIN_UI }
+									<li><a class="list-link flag" href="{$BASEURL}admin/" >Site Admin</a></li>
+								{/if}
 								<li><a class="list-link logout" href="{$BASEURL}logout" >Logout</a></li>
 							{else}
 								<li><a class="list-link login" href="{$BASEURL}login" >Login</a></li>

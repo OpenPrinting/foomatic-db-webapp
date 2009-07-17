@@ -73,6 +73,26 @@ class Session {
 		}
 		return false;
 	}
+
+	// If not allowed to access this page, redirect to home page.
+	// Ought to be called before page headers are sent.
+	// If you wanted to make it say "access denied" in a nicer way, you could.
+	public function pageLock($permission) {
+		if(!$this->requireLogin() || !$this->user->checkPermission($permission)) {
+			global $CONF;
+			header('Location: '.$CONF->baseURL);
+			exit;
+		}
+	}	
+	
+	public function requireLogin() {
+		if(!$this->isLoggedIn() || empty($this->user)) {
+			global $CONF;
+			header('Location: '.$CONF->baseURL.'login.php');
+			exit;
+		}
+		return true;
+	}	
 	
 	public function getUser() {
 		$a = &$this->user;
