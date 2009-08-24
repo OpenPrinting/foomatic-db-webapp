@@ -74,14 +74,17 @@ class Session {
 		return false;
 	}
 
-	// If not allowed to access this page, redirect to home page.
+	// If not allowed to access this page, let the user know.
 	// Ought to be called before page headers are sent.
-	// If you wanted to make it say "access denied" in a nicer way, you could.
 	public function pageLock($permission) {
-		if(!$this->requireLogin() || !$this->user->checkPermission($permission)) {
+		if(!$this->checkPermission($permission)) {
 			global $CONF;
-			header('Location: '.$CONF->baseURL);
-			exit;
+			$PAGE = Page::getInstance();
+			$SMARTY = $PAGE->getSmarty();
+			$PAGE->setPageTitle('Access Denied');
+			$PAGE->setActiveID('');
+			$PAGE->addBreadCrumb('Access Denied');
+			$SMARTY->display('restricted_page.tpl');
 		}
 	}	
 	
@@ -93,6 +96,11 @@ class Session {
 		}
 		return true;
 	}	
+	
+	public function checkPermission($permission) {
+		if(!$this->isLoggedIn() || empty($this->user) || !$this->user->checkPermission($permission)) return false;
+		else return true;
+	}
 	
 	public function getUser() {
 		$a = &$this->user;

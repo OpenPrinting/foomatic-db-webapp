@@ -1,7 +1,7 @@
 <?php
 
 // REMOVE BEFORE GOING LIVE
- exec('rm /srv/www/lptest/templates_c/*');
+exec('rm /srv/www/lptest/templates_c/*');
 
 include('inc/siteconf.php');
 include('inc/db.php');
@@ -11,6 +11,7 @@ include('inc/session.php');
 include('inc/ldap.php');
 include('inc/user.php');
 include('inc/userrole.php');
+include('inc/uploadmgr.php');
 include('inc/rss/rss_fetch.inc');
 
 session_start();
