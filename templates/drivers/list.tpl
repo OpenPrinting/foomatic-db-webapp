@@ -27,48 +27,17 @@
 	
 	<table class="data">
 		<tr>
-			<th /><th /><th>Driver</th><th>Description</th><th>Type</th><th># Printers</th>
+			<th /><th>Driver</th><th>Description</th><th>Type</th><th># Printers</th>
 		</tr>
-		<tr>
-			<td><a href="#">View</a></td>
-			<td></td>
-			<td>eplaser</td>
-			<td></td>
-			<td>Ghostscript built-in</td>
-			<td>28</td>
-		</tr>
-		<tr class="alt">
-			<td><a href="#">View</a></td>
-			<td></td>
-			<td>epson</td>
-			<td></td>
-			<td>Ghostscript built-in</td>
-			<td>17</td>
-		</tr>
-		<tr>
-			<td><a href="#">View</a></td>
-			<td></td>
-			<td>foo2hp</td>
-			<td></td>
-			<td>Filter</td>
-			<td>5</td>
-		</tr>
-		<tr class="alt">
-			<td><a href="#">View</a></td>
-			<td><img src="images/icons/download.png" alt="Downloads" title="Downloads" /></td>
-			<td>min12xxw</td>
-			<td></td>
-			<td>Filter</td>
-			<td>5</td>
-		</tr>
-		<tr>
-			<td><a href="#">View</a></td>
-			<td><img src="images/icons/download.png" alt="Downloads" title="Downloads" /></td>
-			<td>Postscript-HP</td>
-			<td style="font-size: 10px; width: 225px;">PPD files for HP's PostScript printers, supplied by HP</td>
-			<td>PostScript</td>
-			<td>121</td>
-		</tr>
+		{foreach from=$drivers item=d}
+			<tr class="{cycle values="alt,0"}">
+				<td><img src="{$BASEURL}images/icons/download.png" alt="Download" title="Download" /></td>
+				<td><a href="{$BASEURL}drivers/{$d.id}/">{$d.name|escape}</a></td>
+				<td>{$d.shortdescription|escape}</td>
+				<td>{$d.execution|escape}</td>
+				<td>{$d.printerCount}</td>
+			</tr>
+		{/foreach}
 	</table>
 	
 </div>
