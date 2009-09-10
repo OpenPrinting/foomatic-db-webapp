@@ -27,15 +27,21 @@
 	
 	<table class="data">
 		<tr>
-			<th /><th>Driver</th><th>Description</th><th>Type</th><th># Printers</th>
+			<th /><th>Driver</th><th></th><th>Type</th><th>Description</th>
 		</tr>
 		{foreach from=$drivers item=d}
 			<tr class="{cycle values="alt,0"}">
 				<td><img src="{$BASEURL}images/icons/download.png" alt="Download" title="Download" /></td>
 				<td><a href="{$BASEURL}drivers/{$d.id}/">{$d.name|escape}</a></td>
-				<td>{$d.shortdescription|escape}</td>
 				<td>{$d.execution|escape}</td>
-				<td>{$d.printerCount}</td>
+				<td>{$d.printerCount|default:0}</td>
+				<td><small>
+					{if $d.shortdescription}
+						{$d.shortdescription|escape}
+					{else}
+						<em style="color: #CCCCCC">No description available.</em>
+					{/if}
+					</small></td>
 			</tr>
 		{/foreach}
 	</table>
