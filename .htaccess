@@ -1,16 +1,20 @@
 RewriteEngine On
 
-RewriteRule ^home/?$ index.php
-RewriteRule ^login/?$ login.php
-RewriteRule ^logout/?$ login.php?doLogout
+ErrorDocument 404 /404.php
 
-RewriteRule ^admin/?$ admin_home.php
-RewriteRule ^admin/([^/]+)$ admin_$1
+RewriteRule ^home/?$ index.php		[L]
+RewriteRule ^login/?$ login.php		[L]
+RewriteRule ^logout/?$ login.php?doLogout		[L]
+
+RewriteRule ^admin/?$ admin_home.php		[L]
+RewriteRule ^admin/([^/]+)$ admin_$1		[L]
 
 
-RewriteRule ^printers/?$ printer_list.php
+RewriteRule ^printers/?$ printer_list.php		[L]
 
-RewriteRule ^drivers/?$ driver_list.php
-RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php
-RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1
-RewriteRule ^drivers/([^/]*)/?$ driver_display.php?driver=$1
+RewriteRule ^drivers/?$ driver_list.php		[L]
+RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php		[L]
+RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
+RewriteRule ^drivers/([^/]*)/?$ driver_display.php?driver=$1		[L]
+
+#RewriteRule   ^404/([A-Za-z0-9]+)(.*)?$  404.php?id=$1		[L]
