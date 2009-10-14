@@ -38,6 +38,7 @@ class Page {
 		global $CONF; 
 		$b = $CONF->baseURL;		
 		
+		//Create subnavigation
 		$this->addGNavItem('OpenPrinting',$b,'home');
 		$this->addGNavItem('Database',$b.'database','db');
 		$this->addGNavItem('Printers',$b.'printers','printer');
@@ -46,7 +47,7 @@ class Page {
 		$this->addGNavItem('Foomatic',$b.'foomatic','foo');
 		$this->addGNavItem('Articles',$b.'articles','articles');
 		$this->addGNavItem('Documentation',$b.'docs','doc');
-		$this->addGNavItem('Developers',$b.'developers','developers');
+		$this->addGNavItem('Developers',$b.'developers','dev');
 	}
 }
 
