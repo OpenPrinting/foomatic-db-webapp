@@ -1,0 +1,16 @@
+RewriteEngine On
+
+RewriteRule ^home/?$ index.php
+RewriteRule ^login/?$ login.php
+RewriteRule ^logout/?$ login.php?doLogout
+
+RewriteRule ^admin/?$ admin_home.php
+RewriteRule ^admin/([^/]+)$ admin_$1
+
+
+RewriteRule ^printers/?$ printer_list.php
+
+RewriteRule ^drivers/?$ driver_list.php
+RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php
+RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1
+RewriteRule ^drivers/([^/]*)/?$ driver_display.php?driver=$1
