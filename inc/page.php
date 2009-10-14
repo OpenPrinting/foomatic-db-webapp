@@ -35,16 +35,18 @@ class Page {
 	private function addGNavItem($n,$l,$i) 	{ array_push($this->gNavItems,new GNavItem($n,$l,$i)); }
 	public function getGNavItems() 			{ return $this->gNavItems; }
 	public function addGNavItems() {
-		global $CONF; $b = $CONF->baseURL;		
+		global $CONF; 
+		$b = $CONF->baseURL;		
+		
 		$this->addGNavItem('OpenPrinting',$b,'home');
-		$this->addGNavItem('Database',$b.'404.php?id=db','db');
-		$this->addGNavItem('Printers',$b.'printers/','printer');
-		$this->addGNavItem('Drivers',$b.'drivers/','driver');
-		$this->addGNavItem('FAQ',$b.'404.php?id=faq','faq');
-		$this->addGNavItem('Foomatic',$b.'404.php?id=foo','foo');
-		$this->addGNavItem('Articles',$b.'404.php?id=articles','articles');
-		$this->addGNavItem('Documentation',$b.'404.php?id=doc','doc');
-		$this->addGNavItem('Developers',$b.'404.php?id=dev','dev');
+		$this->addGNavItem('Database',$b.'database','db');
+		$this->addGNavItem('Printers',$b.'printers','printer');
+		$this->addGNavItem('Drivers',$b.'drivers','driver');
+		$this->addGNavItem('FAQ',$b.'faq','faq');
+		$this->addGNavItem('Foomatic',$b.'foomatic','foo');
+		$this->addGNavItem('Articles',$b.'articles','articles');
+		$this->addGNavItem('Documentation',$b.'docs','doc');
+		$this->addGNavItem('Developers',$b.'developers','developers');
 	}
 }
 
