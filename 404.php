@@ -1,7 +1,7 @@
 <?php
 include('inc/common.php');
-$PAGE->setPageTitle('404!');
-$PAGE->addBreadCrumb('This is not the file you are looking for.');
+$PAGE->setPageTitle('404');
+$PAGE->addBreadCrumb('Page not found');
 
 if(isset($_GET['id'])) $PAGE->setActiveID($_GET['id']);
 
