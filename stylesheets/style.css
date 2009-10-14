@@ -730,3 +730,12 @@ a:active{
 .breadcrumb a:hover{
 	text-decoration: underline;
 }
+
+/* Messages */
+div.error{
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding: 8px;
+	background: #f7bcbc;
+	border: 1px solid #ff3300;
+}
