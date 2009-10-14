@@ -12,12 +12,12 @@
 	
 
 	{if $loginMessage}
-		<div>
+		<div class="error">
 			<strong>{$loginMessage}</strong>
 		</div>
 	{/if}
 		
-	<p>Reminder to developer: this form is not using SSL yet!</p>
+
 	<form id="login-form" method="post" action="?doLogin">
 		<fieldset>
 			<legend>User authentication</legend>
