@@ -17,4 +17,4 @@ RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php		[L]
 RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
 RewriteRule ^drivers/([^/]*)/?$ driver_display.php?driver=$1		[L]
 
-#RewriteRule   ^404/([A-Za-z0-9]+)(.*)?$  404.php?id=$1		[L]
+RewriteRule ^database/?$ database.php		[L]
