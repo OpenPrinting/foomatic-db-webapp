@@ -18,11 +18,12 @@
 			<div id="showmodel" style="display: none;">
 				<div class="section left">
 					<label for="manufacturer">Printer manufactuerer:</label>
-					<select size="10" id="manufacturer" name="manufacturer">
+					<select id="manufacturer" name="manufacturer">
+							<option value="">--select printer--</option>
 						{foreach from=$makes item=make}
 							<option value="{$make|escape}">{$make|escape}</option>
 						{foreachelse}
-							<option value="0">None</option>
+							<option value="0">None Avail</option>
 						{/foreach}
 					</select>
 				</div>
