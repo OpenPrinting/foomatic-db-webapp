@@ -10,6 +10,7 @@ RewriteRule ^admin/?$ admin_home.php		[L]
 RewriteRule ^admin/([^/]+)$ admin_$1		[L]
 
 RewriteRule ^query.cgi/?$ query.php               [L]
+RewriteRule ^ppd-o-matic.cgi/?$ ppd-o-matic.php               [L]
 
 RewriteRule ^printers/?$ printer_list.php		[L]
 RewriteRule ^printers/upload/?(\?[^/]*)?$ printer_upload.php$1		[L]
