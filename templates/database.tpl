@@ -20,13 +20,13 @@
 	
 	<p>Printers are categorized according to how well they work under Linux and Unix. The ratings do not pertain to whether or not the printer will be auto-recognized or auto-configured, but merely to the highest level of functionality achieved.</p>
 	
-	<p>Perfectly YESYESYES</p>
+	<p><font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png" title="yes"> <img src="/images/icons/Linuxyes.png" title="yes"> <img src="/images/icons/Linuxyes.png" title="yes"></p>
 	    <p>Perfect printers work perfectly; everything the printer can do is working also under Linux and Unix. For multifunction devices, this must include scanning/faxing/etc. </p>
-	<p>Mostly Image:linuxyes.pngImage:linuxyes.png</p>
+	<p><font color="green">Mostly</font> <img src="/images/icons/Linuxyes.png" title="yes"> <img src="/images/icons/Linuxyes.png" title="yes"></p>
 	    <p>These printers work almost perfectly - funny enhanced resolution modes may be missing, or the color is a bit off, but nothing that would make the printouts not useful.</p> 
-	<p>Partially Image:linuxyes.png</p>
+	<p><font color="#ff9900">Partially</font> <img src="/images/icons/Linuxyes.png" title="yes"></p>
 	    <p>These printers mostly don't work; you may be able to print only in black and white on a color printer, or the printouts look horrible.</p> 
-	<p>Paperweight NO</p>
+	<p><font color="red">Paperweight</font> <img src="/images/icons/Linuxno.png" title="no"></p>
 	    <p>These printers don't work at all. They may work in the future, but don't count on it.</p> 
 	
 	
