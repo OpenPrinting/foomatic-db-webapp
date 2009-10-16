@@ -11,6 +11,7 @@ RewriteRule ^admin/([^/]+)$ admin_$1		[L]
 
 
 RewriteRule ^printers/?$ printer_list.php		[L]
+RewriteRule ^printers/upload/?(\?[^/]*)?$ printer_upload.php$1		[L]
 
 RewriteRule ^drivers/?$ driver_list.php		[L]
 RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php		[L]
