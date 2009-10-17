@@ -14,12 +14,10 @@
 	<form class="small-form" method="post" action="?search">
 		<fieldset class="wide-label clearfix">
 			<legend>Query printer database</legend>
-			<div id="loading">Loading ...</div>
-			
 			
 				<!-- manufacturer combobox -->
 			<p>
-				<label for="manufacturer">Printer Manufacturer:</label>
+				<label for="manufacturer">Manufacturer:</label>
 				<select id="manufacturer" name="manufacturer">
 					<option value="">--select manufacturer--</option>
 					{foreach from=$makes item=make}
@@ -30,7 +28,7 @@
 				</select>
 			</p>
 			<p>
-				<label for="manufacturer">Printer Manufacturer:</label>
+				<label for="manufacturer">Model:</label>
 				<!-- model combobox is chained by manufacturer combobox-->
 				<select name="model" id="model" style="display:none"></select>
 			</p>
