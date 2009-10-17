@@ -22,7 +22,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 		$SMARTY->assign('makes',$makes);
 		
 		// Load array of models, keyed by makes
-		$res = $DB->query("SELECT make, model FROM printer ORDER BY make, model");
+		//$res = $DB->query("SELECT model FROM printer WHERE ORDER BY make, model");
 		//while($r = $res->getRow()) array_push($makes,$r['make']);
 		//$SMARTY->assign('makes',$makes);
 		

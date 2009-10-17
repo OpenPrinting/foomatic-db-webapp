@@ -14,45 +14,30 @@
 	<form class="small-form" method="post" action="?search">
 		<fieldset class="wide-label clearfix">
 			<legend>Query printer database</legend>
-
-			<div id="showmodel" style="display: none;">
-				<div class="section left">
-					<label for="manufacturer">Printer manufactuerer:</label>
-					<select id="manufacturer" name="manufacturer">
-							<option value="">--select printer--</option>
-						{foreach from=$makes item=make}
-							<option value="{$make|escape}">{$make|escape}</option>
-						{foreachelse}
-							<option value="0">None Avail</option>
-						{/foreach}
-					</select>
-				</div>
-				<div class="section left">
-					<label for="model">Printer model:</label>
-					<select size="10" id="model" name="model">
-						
-					</select>
-				</div>
-				<div class="section left">
-					<label>Submit query</label>
-					<input type="submit" value="Show this printer" />
-				</div>
-			</div>
+			<div id="loading">Loading ...</div>
 			
-		
-			<!-- unhide the form if javascript is allowed -->
-			<script type="text/javascript">
-				document.getElementById('showmodel').style.display="block";
-			</script>
-			<noscript>
-				<p><strong>JavaScript is currently disabled or not supported by your web browser.</strong> We cannot display the list of printer models for each manufacturer on this page without JavaScript. However, you can still show all printers by manufacturer using the option below.</p>
-			</noscript>
 			
-			<!-- Onchange script -->
-			<script type="text/javascript">
-				
-			</script>
-		
+				<!-- manufacturer combobox -->
+			<p>
+				<label for="manufacturer">Printer Manufacturer:</label>
+				<select id="manufacturer" name="manufacturer">
+					<option value="">--select manufacturer--</option>
+					{foreach from=$makes item=make}
+						<option value="{$make|escape}">{$make|escape}</option>
+					{foreachelse}
+						<option value="0">None Avail</option>
+					{/foreach}
+				</select>
+			</p>
+			<p>
+				<label for="manufacturer">Printer Manufacturer:</label>
+				<!-- model combobox is chained by manufacturer combobox-->
+				<select name="model" id="model" style="display:none"></select>
+			</p>
+			<p>
+				<label>Submit query</label>
+				<input type="submit" value="Show this printer" />
+			</p>
 		</fieldset>
 	</form>
 	

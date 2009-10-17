@@ -6,13 +6,20 @@
 		<meta name="keywords" content="" />
 		<title>{$PAGE->getPageTitle()}</title>
 		<link rel="shortcut icon" href="{$BASEURL}images/layout/favicon.png" type="image/x-icon" />
+		
 		<link href="{$BASEURL}stylesheets/style.css" rel="stylesheet" type="text/css" />
+		<link href="{$BASEURL}stylesheets/ajax.css" rel="stylesheet" type="text/css" />
+		
 		<script src="{$BASEURL}javascript/jquery-1.2.6.js" type="text/javascript" charset="utf-8"></script>
+		<script src="{$BASEURL}javascript/jquery.chainedSelects.js" type="text/javascript" charset="utf-8"></script>
+		<script src="{$BASEURL}javascript/ajax.js" type="text/javascript" charset="utf-8"></script>
+		
 		<script src="{$BASEURL}javascript/swfobject.js" type="text/javascript" charset="utf-8"></script>
 		<script src="{$BASEURL}javascript/menu.js" type="text/javascript"></script>
 	</head>
 
 	<body>
+
 		<div id="page">
 			<div id="page-inner">
 				<div id="page-header" class="clearfix">
