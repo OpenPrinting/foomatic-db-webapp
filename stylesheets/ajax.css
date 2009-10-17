@@ -1,0 +1,13 @@
+#loading
+{
+	position:relative;
+	float: right;
+	top:0px;
+	right:0px;
+	background:#ff0000;
+	color:#fff;
+	font-size:14px;
+	font-family:Tahoma,Verdana,Arial,Helvetica,"Bitstream Vera Sans",sans-serif;
+	padding:2px;
+	display:none;
+}
