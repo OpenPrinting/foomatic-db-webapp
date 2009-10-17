@@ -19,7 +19,8 @@
 	</head>
 
 	<body>
-
+		<div id="loading">Loading ...</div>
+		
 		<div id="page">
 			<div id="page-inner">
 				<div id="page-header" class="clearfix">
