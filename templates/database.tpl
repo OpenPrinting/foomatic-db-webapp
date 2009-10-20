@@ -3,14 +3,14 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h3>Printer Compatibility Database</h3>
+	<h1>Printer Compatibility Database</h1>
 	<p>The OpenPrinting database contains a wealth of information about specific printers, along with extensive driver information, the drivers themselves, basic specifications, and an associated set of configuration tools.</p>
 	<ul>
     <li>You can find all the printer information from the printer listing page.</li>
     <li>You can find all the driver information and the drivers from the driver listing page.</li> 
 	</ul>
 	
-	<h3>About the data</h3>
+	<h2>About the data</h2>
 	
 	<p>This database includes basic specifications for printers and details of how to make them go under normal unices that can run Ghostscript and/or filters like pnm2ppa. GNU/Linux, the BSDs and Mac OS X typify this category; users of other commercial unices can usually benefit from this information as well. The information here is not (very) useful for Windows users.</p>
 	
