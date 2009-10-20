@@ -6,7 +6,7 @@ $PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 
 
-	if($_GET['action']=='search') {
+	if(isset($_GET['action']) && $_GET['action']=='search') {
 		
 
 		if( isset($_POST['manufacturer']) && isset($_POST['model']) ){
