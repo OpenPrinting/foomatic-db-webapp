@@ -11,7 +11,12 @@
 		select the model number from the list as well. Otherwise, choose the "show all" option and all printers made by the 
 		selected manufacturer will be listed on your screen.</p>
 	
-	<form class="small-form" method="get" action="/printers/search">
+	{if $errorMessage}
+		<div class="error">
+			<strong>{$errorMessage}</strong>
+		</div>
+	{/if}
+	<form class="small-form" method="post" action="/printers?action=search">
 		<fieldset class="wide-label clearfix">
 			<legend>Query printer database</legend>
 			

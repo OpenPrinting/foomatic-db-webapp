@@ -6,15 +6,30 @@ $PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 
 
-	if(isset($_GET['make'])) {
-	
-		if(isset($_GET['model'])) {
+	if($_GET['action']=='search') {
 		
-		} else {
-		
+
+		if( isset($_POST['manufacturer']) && isset($_POST['model']) ){
+			header( 'location: /printer/'.$_POST['manufacturer'].'/'.urlencode($_POST['model']));
 		}
 	
-	} else {
+		else{
+			
+			
+			// Load manufacturers
+			$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+			$makes = array();
+			while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
+			
+			$SMARTY->assign('makes',$makes);
+			$SMARTY->assign('errorMessage',"Please select a manufacturer and model to continue.");
+			
+			$SMARTY->display('printers/searchform.tpl');
+		}
+	
+	} 
+	
+	else {
 		// Load manufacturers
 		$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
 		$makes = array();
