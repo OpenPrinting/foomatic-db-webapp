@@ -16,7 +16,8 @@ RewriteRule ^printers/?$ printer_list.php		[L]
 RewriteRule ^printers/upload/?(\?[^/]*)?$ printer_upload.php$1		[L]
 
 RewriteCond %{QUERY_STRING} ^(.*)$
-RewriteRule ^printer/([A-Za-z0-9\-_+.,()%]+)/([A-Za-z0-9\-_+.,()%]+) printer_detail.php?manufacturer=$1&model=$2&%1 [L]
+#RewriteRule ^printer/([A-Za-z0-9\-_+.,()%]+)/([A-Za-z0-9\-_+.,()%]+) printer_detail.php?manufacturer=$1&model=$2&%1 [L]
+RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*) /printer_detail.php?manufacturer=$1&model=$2&%1	[L]
 
 RewriteRule ^drivers/?$ driver_list.php		[L]
 RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php		[L]

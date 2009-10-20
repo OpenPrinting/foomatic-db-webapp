@@ -10,17 +10,13 @@ $SMARTY->assign('model',urldecode($_GET['model']) );
 
 
 		// Load manufacturers
-		/*$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+		$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND model='".$_GET['model']."' ");
 		$makes = array();
-		while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
-		$SMARTY->assign('makes',$makes);*/
+		while($row = $res->getRow()){
+			 $data[] = $row;
+		}
 		
-		// Load array of models, keyed by makes
-		//$res = $DB->query("SELECT model FROM printer WHERE ORDER BY make, model");
-		//while($r = $res->getRow()) array_push($makes,$r['make']);
-		//$SMARTY->assign('makes',$makes);
-		
-		
+		$SMARTY->assign('data',$data);
 		$SMARTY->display('printers/detail.tpl');
 
 	
