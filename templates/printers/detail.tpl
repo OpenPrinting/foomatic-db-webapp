@@ -6,7 +6,7 @@
 	<h1>Result for {$manufacturer} {$model}</h1>
 	
 	{section name=printer loop=$data}
-		
+
 	<p style="border: 1px solid #ccc; background: #eee; padding: 6px;">
 		Recommended Driver: {$data[printer].default_driver}
 	</p>
