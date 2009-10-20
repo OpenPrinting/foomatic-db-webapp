@@ -10,7 +10,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 		
 
 		if( isset($_POST['manufacturer']) && isset($_POST['model']) ){
-			header( 'location: /printer/'.$_POST['manufacturer'].'/'.$_POST['model']);
+			header( 'location: /printer/'.$_POST['manufacturer'].'/'.urlencode($_POST['model']));
 		}
 	
 		else{
