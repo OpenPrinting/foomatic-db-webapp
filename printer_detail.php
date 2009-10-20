@@ -6,7 +6,7 @@ $PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 
 $SMARTY->assign('manufacturer',$_GET['manufacturer']);
-$SMARTY->assign('model',urldecode($_GET['model']) );
+$SMARTY->assign('model',$_GET['model'] );
 
 
 		// Load manufacturers
