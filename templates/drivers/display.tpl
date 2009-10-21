@@ -13,7 +13,8 @@
 		<h2>Printer list</h2>
 		<ul>
 			{foreach from=$printers item=p}
-				<li><a href="{$BASEURL}printers/{$p.id}/">{$p.make|escape} {$p.model|escape}</a></li>
+			{assign var='printerUrl' value="`$BASEURL`printer/`$p.make`/`$p.model`"}	
+				<li><a href="{$printerUrl|replace:" ":"+"}">{$p.make|escape} {$p.model|escape}</a></li>
 			{foreachelse}
 				<li>No known printers.</li>
 			{/foreach}
