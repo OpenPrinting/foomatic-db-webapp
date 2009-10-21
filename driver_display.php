@@ -28,6 +28,6 @@ $res = $DB->query("
 $printers = $res->toArray('id');
 $SMARTY->assign('printers',$printers);
 
-$SMARTY->display('drivers/display.tpl');
+$SMARTY->display('drivers/detail.tpl');
 
 ?>
