@@ -22,6 +22,6 @@ RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*) /printer_detail.php
 RewriteRule ^drivers/?$ driver_list.php		[L]
 RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php		[L]
 RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
-RewriteRule ^drivers/([^/]*)/?$ driver_display.php?driver=$1		[L]
+RewriteRule ^driver/([^/]*)/?$ driver_display.php?driver=$1		[L]
 
 RewriteRule ^database/?$ database.php		[L]
