@@ -1,0 +1,383 @@
+
+package driverpackages;
+
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT_OK = qw(listpackagefiles listpackagefilesformask
+		numpackagesformask packagesformask
+		downloadlinkline drivermask %driver_types
+		%archs);
+
+use CGI qw/ :standard :html3 /;
+use CGI dd, dt, dl, ul, li, escape, unescape, font, center;
+
+use lib "@LIBDIR@";
+use Foomatic::DB qw/normalizename/;
+
+my $driverdir="@DRIVERDIR@";
+my $driverdirurl="@DRIVERDIRURL@";
+
+our %archs = ('noarch' => 'All architectures',
+	      'any' => 'All architectures',
+	      'all' => 'All architectures',
+	      'i386' => 'x86 32 bit',
+	      'i486' => 'x86 32 bit',
+	      'i586' => 'x86 32 bit',
+	      'i686' => 'x86 32 bit',
+	      'x86_32' => 'x86 32 bit',
+	      'ia32' => 'x86 32 bit',
+	      'amd64' => 'x86 64 bit',
+	      'x86_64' => 'x86 64 bit',
+	      'ia64' => 'Itanium 64 bit',
+	      'powerpc' => 'Power PC 32 bit',
+	      'ppc' => 'Power PC 32 bit',
+	      'ppc32' => 'Power PC 32 bit',
+	      'ppc64' => 'Power PC 64 bit',
+	      's390' => 'S390',
+	      's390x' => 'S390x',
+	      'src' => 'Source',
+	      'source' => 'Source');
+
+our @archorder = ('noarch', 'any', 'all', 'i386', 'i486', 'i586', 'i686', 'x86_32', 'ia32', 'amd64', 'x86_64', 'ia64', 'powerpc', 'ppc', 'ppc32', 'ppc64', 's390', 's390x', 'src', 'source');
+
+our @pkgsysorder = ('rpm', 'deb');
+
+our %driver_types = ('F' => 'Filter',
+		     'V' => 'OpenPrinting Vector',
+		     'I' => 'IJS',
+		     'C' => 'CUPS Raster',
+		     'P' => 'PostScript',
+		     'U' => 'Ghostscript Uniprint',
+		     'G' => 'Ghostscript built-in');
+
+our $debsection="main";
+
+our @scopeorder = ('general', 'printer', 'scanner', 'fax', 'gui');
+
+sub isarchitecture {
+    # Check whether $file is for one of the architectures $archlist
+    my ($archlist, $file) = @_;
+    my $filearch;
+    if ($file =~
+	     m!^(|.*?/)([^/]+)-([^/-]+)-([^/-]+)lsb([^/-]+)\.([^\./-]+)\.rpm$!) {
+	$filearch = $archs{lc($6)};
+    } elsif ($file =~ m!RPMS/([^/]+)/!i) {
+	$filearch = $archs{lc($1)};
+    } elsif ($file =~ m!SRPMS/!i) {
+        $filearch = $archs{'src'};
+    } elsif ($file =~ m!_([^_]+)\.deb$!) {
+	$filearch = $archs{lc($1)};
+    } elsif ($file =~ m!debian/dists/[^/]+/[^/]+/binary-([^/]+)/!i) {
+	$filearch = $archs{lc($1)};
+    } elsif ($file =~ m!debian/dists/[^/]+/[^/]+/source[^/]*/!i) {
+        $filearch = $archs{'src'};
+    } else {
+	return 0;
+    }
+    for my $arch (split(/\W+/, $archlist)) {
+	return 1 if ($archs{lc($arch)} eq $filearch) ||
+	    ($arch =~ /^(all)$/i) ||
+	    (($arch =~ /^(bin)$/i) &&
+	     ($filearch ne $archs{'src'})) ||
+	    (($archs{lc($arch)} ne $archs{'src'}) &&
+	     ($filearch eq $archs{'noarch'}));
+    }
+    return 0;
+}
+
+sub ispkgsys {
+    # Check whether $file is for one of the package systems in $pkgsys
+    my ($pkgsys, $file) = @_;
+    my $filepkgsys;
+    if ($file =~ m!\.rpm$!i) {
+	$filepkgsys = "rpm";
+    } elsif ($file =~ m!\.deb$!i) {
+        $filepkgsys = "deb";
+    } else {
+	return 0;
+    }
+    for my $ps (split(/\W+/, $pkgsys)) {
+	return 1 if ($ps eq $filepkgsys) ||
+	    ($ps =~ /^(all)$/i);
+    }
+    return 0;
+}
+
+sub islsbversion {
+    # Check whether $file is for one of the LSB versions in $lsbversion
+    my ($lsbversion, $file) = @_;
+    my $filelsbver;
+    if ($file =~ m!lsb(\d+(\.\d+)*)!i) {
+	$filelsbver = $1;
+    } else {
+	return 0;
+    }
+    for my $lsbver (split(/[^\d\.a-z]+/i, $lsbversion)) {
+	return 1 if ($lsbver eq $filelsbver) ||
+	    ($lsbver =~ /^(all)$/i);
+    }
+    return 0;
+}
+
+sub listpackagefiles {
+    # Get info about downloadable driver packages (only locally hosted files)
+    my ($pkgtype, $pkgsys, $lsbversion) = @a;
+    $pkgtype = "bin" if !defined($pkgtype);
+    $pkgsys = "all" if !defined($pkgsys);
+    $lsbversion = "all" if !defined($lsbversion);
+    return grep {
+	islsbversion($lsbversion, $_);
+    } grep {
+	ispkgsys($pkgsys, $_);
+    } grep {
+        isarchitecture($pkgtype, $_);
+    } split(/\s+/,
+	    `cd $driverdir; ls -1 RPMS/*/*.rpm SRPMS/*.rpm debian/dists/*/$debsection/*/*.deb 2>/dev/null`);
+}
+
+sub listpackagefilesformask {
+    # Get info about downloadable driver packages for a given driver name/
+    # URL/file mask
+    my ($mask, $pkgtype, $pkgsys, $lsbversion) = @_; 
+    $pkgtype = "bin" if !defined($pkgtype);
+    $pkgsys = "all" if !defined($pkgsys);
+    $lsbversion = "all" if !defined($lsbversion);
+    my @res;
+    foreach my $m (split(/;/, $mask)) {
+	my ($p, $scope, $path, $files);
+	$m =~ m!^(\(([^\)]*)\)|)(.*)$! || next;
+	$scope = $2;
+	$p = $3;
+	if ($p =~ m!^(.*/)([^/]*)$!) {
+	    $path = $1;
+	    $files = $2;
+	    $path = $driverdir . '/' . $path
+		if $path !~ m!^((https?|ftp)\:/|)/!;
+	} else {
+            $path = $driverdir . '/';
+            if ($p =~ /\.deb$/) {
+		        $files = "debian/dists/*/$debsection/*/$p";
+            } elsif ($p =~ /\.rpm$/) {
+                $files = "RPMS/*/$p SRPMS/$p";
+            } else {
+                $files = "RPMS/*/${p}-[0-9]*.rpm SRPMS/${p}-[0-9]*.rpm " .
+                    "debian/dists/*/$debsection/*/${p}[_-][0-9]*.deb";
+            }
+	}
+	if ($path =~ m!^(https?|ftp)\://!) {
+	    my $dirhtml = Foomatic::DB::getpage(undef, $path, 1);
+	    if ($dirhtml) {
+		$files =~ s/\?/[^\\\">]/sg;
+		$files =~ s/\*/[^\\\">]*?/sg;
+		$files =~ s/(\.rpm) +/$1\|/sg;
+		$files =~ s/(\.deb) +/$1\|/sg;
+		push(@res, map {
+		    $_ = ($scope ? "($scope)" : "") . $path . $_;
+		} grep {
+		    islsbversion($lsbversion, $_);
+		} grep {
+		    ispkgsys($pkgsys, $_);
+		} grep {
+		    isarchitecture($pkgtype, $_);
+		} ($dirhtml =~ /href=\"?(?![\?\&\/])($files)\"?/g));
+	    }
+	} else {
+	    push(@res, map {
+		my $e = $path . $_;
+		$e =~ s/^$driverdir/$driverdirurl/;
+		$e = "($scope)$e" if $scope;
+		$e
+	    } grep {
+		islsbversion($lsbversion, $_);
+	    } grep {
+		ispkgsys($pkgsys, $_);
+	    } grep {
+		isarchitecture($pkgtype, $_);
+	    } split(/\s+/,
+		    `cd $driverdir; ls -1 $files 2>/dev/null`));
+	}
+    }
+    return @res;
+}
+
+sub numpackagesformask {
+    # How many downloadable packages are available for this driver/file mask?
+    my ($mask, $pkgtype, $pkgsys, $lsbversion) = @_; 
+    $pkgtype = "bin" if !defined($pkgtype);
+    $pkgsys = "all" if !defined($pkgsys);
+    $lsbversion = "all" if !defined($lsbversion);
+    return
+	scalar(listpackagefilesformask($mask, $pkgtype, $pkgsys, $lsbversion));
+}
+
+sub packagesformask {
+    # Make a list of available packages for a given driver/file mask
+    my ($mask, $pkgtype, $pkgsys, $lsbversion) = @_; 
+    $pkgtype = "bin" if !defined($pkgtype);
+    $pkgsys = "all" if !defined($pkgsys);
+    $lsbversion = "all" if !defined($lsbversion);
+    my @packages =
+	listpackagefilesformask($mask, $pkgtype, $pkgsys, $lsbversion);
+    my @packageinfo = ();
+    my %filesalreadythere;
+    foreach my $package (@packages) {
+	my ($scope, $url, $file, $basename, $version, $release, $lsbver,
+	    $arch, $pkgsys);
+	if ($package =~ m!^(\(([^\(\)]*)\)|)(([^\(\)]*?/|)(([^/]+?)-([^/-]+)-([^/-]+)lsb([^/-]+)\.([^\./-]+)\.(rpm)))$!) {
+	    $scope = $2;
+	    $url = $3;
+	    $file = $5;
+	    $basename = $6;
+	    $version = $7;
+	    $release = $8;
+	    $lsbver = $9;
+	    $arch = $10;
+	    $pkgsys = $11;
+	} elsif ($package =~ m!^(\(([^\(\)]*)\)|)(([^\(\)]*?/|)(([^/]+?)_([^_/-]+)-([^_/-]+)lsb([^_/-]+)_([^_/-]+)\.(deb)))$!) {
+	    $scope = $2;
+	    $url = $3;
+	    $file = $5;
+	    $basename = $6;
+	    $version = $7;
+	    $release = $8;
+	    $lsbver = $9;
+	    $arch = $10;
+	    $pkgsys = $11;
+	} else {
+	    next;
+	}
+	next if $filesalreadythere{$file};
+	$filesalreadythere{$file} = 1;
+	my $packagedata = {};
+	$scope ||= "general";
+	my $realversion = $version;
+	if ($release =~ /^0\.([^\.]+)\.\d+$/) {
+	    my $extraversion = $1;
+	    $extraversion =~ s/^(\d)/-$1/;
+	    $realversion .= $extraversion;
+	}
+	$packagedata->{scope} = $scope;
+	$packagedata->{basename} = $basename;
+	$packagedata->{url} = $url;
+	$packagedata->{file} = $file;
+	$packagedata->{realversion} = $realversion;
+	$packagedata->{version} = $version;
+	$packagedata->{release} = $release;
+	$packagedata->{lsbver} = $lsbver;
+	$packagedata->{sortindex} = "${version}_${release}_${lsbver}";
+	$packagedata->{arch} = $arch;
+	$packagedata->{pkgsys} = lc($pkgsys);
+	$packagedata->{text} = "$realversion (" . uc($pkgsys) .
+	    " for LSB $lsbver)";
+	push(@packageinfo, $packagedata);
+    }
+    return sort {
+	foreach my $ar (@archorder) {
+	    return -1 if (($archs{$a->{arch}} eq $archs{$ar}) &&
+			  ($archs{$b->{arch}} ne $archs{$ar}));
+	    return  1 if (($archs{$b->{arch}} eq $archs{$ar}) &&
+			  ($archs{$a->{arch}} ne $archs{$ar}));
+	}
+	my $x = ($a->{basename} cmp $b->{basename});
+	return $x if $x != 0;
+	$x = ($a->{scope} cmp $b->{scope});
+	return $x if $x != 0;
+	$x = $b->{sortindex} cmp $a->{sortindex};
+	return $x if $x != 0;
+	foreach my $psys (@pkgsysorder) {
+	    return -1 if ((lc($a->{pkgsys}) eq lc($psys)) &&
+			  (lc($b->{pkgsys}) ne lc($psys)));
+	    return  1 if ((lc($b->{pkgsys}) eq lc($psys)) &&
+			  (lc($a->{pkgsys}) ne lc($psys)));
+	}
+	return 0;
+    } @packageinfo;
+}
+
+sub downloadlinkline {
+    # Generate a line of links to download the packages for a given driver
+    # file mask
+    # mode=0: All packages; mode=1: Newest package for each architecture
+    my ($mask, $text, $mode, $pkgtype) = @_; 
+    $pkgtype = "bin" if !defined($pkgtype);
+    my @downloadpackages = packagesformask($mask, $pkgtype);
+    my $driverdownload = "";
+    if ($#downloadpackages >= 0) {
+	$driverdownload = $text;
+	my $oldarch = "";
+	my $oldbasename = "";
+	my $oldpkgsys = "";
+	my $notfirst = 0;
+	my %basenames;
+	my %cmpbasenames;
+	foreach $download (@downloadpackages) {
+	    $basenames{$download->{basename}} = 1;
+	    my $cmpbasename = $download->{basename};
+	    $cmpbasename =~ s/^openprinting-(ppds-|)//;
+	    $cmpbasenames{$cmpbasename} = 1;
+	}
+	my $numbasenames = scalar(keys %basenames);
+	my $numcmpbasenames = scalar(keys %cmpbasenames);
+	foreach $download (@downloadpackages) {
+	    my $arch = $download->{arch};
+	    my $basename = $download->{basename};
+	    my $pkgsys = $download->{pkgsys};
+	    my $lsbver = $download->{lsbver};
+	    next if ($mode == 1) && ($archs{$arch} eq $archs{$oldarch}) &&
+		($basename eq $oldbasename) && ($pkgsys eq $oldpkgsys); 
+	    $driverdownload .= ", " if $notfirst;
+	    $notfirst = 1;
+	    if (($archs{$arch} ne $archs{$oldarch}) &&
+		(($mode == 0) || ($numcmpbasenames > 1))) {
+		if ($mode == 0) {
+		    $driverdownload .= "<b>$archs{$arch}:</b> ";
+		} else {
+		    $driverdownload .= "$archs{$arch}: ";
+		}
+	    }
+	    $driverdownload .= "$basename " if (($basename ne $oldbasename) &&
+						($numcmpbasenames > 1) &&
+						($mode == 0));
+	    $driverdownload .= "<a href=\"$download->{url}\" type=\"" .
+		(lc($pkgsys) eq "rpm" ? 
+		 "application/x-redhat-package-manager" :
+		 (lc($pkgsys) eq "deb" ?
+		  "application/x-debian-package" : 
+		  "application/octet-stream")) . "\">" .
+		($mode == 0 ? $download->{text} :
+		 ($numcmpbasenames > 1 ? $basename : $archs{$arch}) .
+		 " (" . uc($pkgsys) . " for LSB $lsbver)") . "</a>";
+	    $oldarch = $arch;
+	    $oldbasename = $basename;
+	    $oldpkgsys = $pkgsys;
+	}
+    }
+    return $driverdownload;
+}
+
+sub drivermask {
+
+    # Get file mask for downloadable packages
+
+    my ($drvdata, $driver) = @_;
+    $driver ||= $drvdata->{'name'};
+    $driver ||= $drvdata->{'id'};
+    $driver =~ s!^driver/!!;
+    my $driverfilemask;
+    if (defined($drvdata->{'packages'})) {
+	for my $package (@{$drvdata->{'packages'}}) {
+	    $driverfilemask .= ";" if $driverfilemask;
+	    if ($package->{'scope'}) {
+		my $u = $package->{'url'};
+		$u =~ s/;/;($package->{'scope'})/g;
+		$driverfilemask .= "($package->{'scope'})$u";
+	    } else {
+		$driverfilemask .= $package->{'url'};
+	    }
+	}
+    }
+    $driverfilemask =
+	"$driver;openprinting-$driver;openprinting-ppds-$driver" if
+	!$driverfilemask;
+    return $driverfilemask;
+}

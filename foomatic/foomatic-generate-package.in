@@ -1,0 +1,823 @@
+#!/usr/bin/perl
+use lib '@LIBDIR@';
+# -*- perl -*-
+
+# Foomatic RPM/Debian package and Foomatic data generator for repositories of 
+# ready-made PPD files or directories/tarballs with binary driver files
+#
+# Needs to run on an x86_64/amd64 system with the following packages installed:
+#
+# rpmbuild, fakeroot, alien, linux32, ia32-libs, html2text
+
+
+use Foomatic::Defaults;
+use Foomatic::DB;
+use Getopt::Std;
+use Data::Dumper;
+#use strict;
+
+my $debug = 0;
+
+# Program name
+$0 =~ m!/([^/]+)\s*$!;
+my $progname = ($1 || $0);
+
+my $tmp = $ENV{'TMPDIR'};
+$tmp ||= "/tmp";
+
+help() if !@ARGV;
+getopts("p:d:r:x:l:v:fkFh");
+help() if $opt_h;
+my $packagedir = $opt_p;
+my $driver = $opt_d;
+my $repo = $opt_r;
+my $driverxml = $opt_x;
+my $lsbver = $opt_l;
+my $version = $opt_v;
+my $force = $opt_f;
+my $keepsource = $opt_k;
+my $foomatic = $opt_F;
+
+my $pwd = `pwd`;
+chomp $pwd;
+$packagedir = $pwd . "/" . $packagedir if $packagedir && $packagedir !~ m:^/:;
+$repo = $pwd . "/" . $repo if $repo && $repo !~ m:^/:;
+$driverxml = $pwd . "/" . $driverxml if $driverxml && $driverxml !~ m:^/:;
+
+my $db = Foomatic::DB->new();
+
+my $origtarball = "";
+my $architecture;
+my $tmpdir;
+my $tmpdir2;
+my $tmpfile;
+if (!$keepsource) {
+    if ($repo =~ /\.(tar\.gz|tgz)$/) {
+        # Input file is a tarball
+	$origtarball = $repo;
+        $tmpdir = `mktemp -d $tmp/foomatic.XXXXXX` or
+            _die("Cannot create temporary directory!\n");
+        chomp $tmpdir;
+        mkdir("$tmpdir"); #or _die("Cannot create $tmpdir!\n");
+	sysrun("cd $tmpdir && tar -xzf $origtarball") or
+	    _die("Cannot uncompress package tarball $origtarball!\n");
+	$repo = "$tmpdir/.";
+	$origtarball =~ /([^\/]+)(\-(\d[^\-\/]*)|)\.(tar\.gz|tgz)$/;
+	$driver ||= $1;
+	$version ||= $3;
+	if (!$driver && !$driverxml) {
+	    _die("Please use the \"-d\" option to specify the driver name to be used in the OpenPrinting database or supply a new driver XML file with the \"-x\" option!\n");
+	}
+    } elsif (!$repo && !$packagedir && $driver) {
+	# We get everything from the Foomatic database in this mode, so
+	# there will be no new Foomatic data to extract
+	$foomatic = 0;
+
+	$tmpdir = `mktemp -d $tmp/foomatic.XXXXXX` or
+	    _die("Cannot create temporary directory!\n");
+	chomp $tmpdir;
+	mkdir("$tmpdir/ppds"); #or _die("Cannot create $tmpdir/ppds!\n");
+	my $ppdfound = 0;
+	my @printers = $db->get_printers_for_driver($driver);
+	for $pn (@printers) {
+	    my $ppdfile = "";
+	    my $p = $db->get_printer($pn);
+	    if (defined($p->{'drivers'})) {
+		for my $d (@{$p->{'drivers'}}) {
+		    next if ($d->{'id'} ne $driver) ||
+			!defined($d->{'ppd'});
+		    $ppdfile = $d->{'ppd'};
+		    $ppdfound = 1;
+		    last;
+		}
+	    }
+	    if (!$ppdfile && ($driver =~ /^Postscript$/i) &&
+		defined($p->{'ppdurl'})) {
+		$ppdfile = $p->{'ppdurl'};
+		$ppdfound = 1;
+	    }
+	    if ($ppdfile) {
+		next if ( ! -r "$libdir/db/source/$ppdfile" );
+		$ppdfile =~ s,^http://.*/(PPD/.*)$,$1,;
+		$ppdfile =~ m!^(.*)/([^/]+)\s*$!;
+		my $ppdpath = $1;
+		my $ppdname = $2;
+		sysrun("mkdir -p $tmpdir/ppds/$ppdpath") or
+		    _die("Cannot create directory path for PPD link!\n");
+		next if ( -r "$tmpdir/ppds/$ppdpath/$ppdname" );
+		symlink("$libdir/db/source/$ppdfile",
+			"$tmpdir/ppds/$ppdpath/$ppdname") or
+			    _die("Cannot link the PPD file $ppdname!\n");
+	    }
+	}
+	_die("No PPDs for this driver found, cannot create package!\n") if
+	    !$ppdfound;
+	$repo = "$tmpdir/ppds";
+    } elsif ($packagedir) {
+	if ($packagedir =~ /\.(tar\.gz|tgz)$/) {
+	    # Input file is a tarball
+	    $origtarball = $packagedir;
+	    $tmpdir = `mktemp -d $tmp/foomatic.XXXXXX` or
+		_die("Cannot create temporary directory!\n");
+	    chomp $tmpdir;
+	    mkdir("$tmpdir") or _die("Cannot create $tmpdir!\n");
+	    sysrun("cd $tmpdir && tar -xzf $origtarball") or
+		_die("Cannot uncompress package tarball $origtarball!\n");
+	    $repo = `ls -d1 $tmpdir/*`;
+	    chomp $repo;
+	    if (!$repo || (! -d $repo)) {
+		_die("$origtarball does not have one root directory!\n");
+	    }
+	    $origtarball =~ /([^\/]+)\-(\d[^\-\/]*)(\-([^\-\/]+)|)\.(tar\.gz|tgz)$/;
+	    $driver ||= $1;
+	    $version ||= $2;
+	    $architecture ||= $4;
+	} else {
+	    $repo = $packagedir;
+	}
+	if (!$driver && !$driverxml) {
+	    _die("Please use the \"-d\" option to specify the driver name to be used in the OpenPrinting database or supply a new driver XML file with the \"-x\" option!\n");
+	}
+	if (!$version) {
+	    _die("Please use the \"-v\" option to specify the upstream version number of the driver!\n");
+	}
+    }
+}
+
+my $drvdata;
+if ($driverxml) {
+    my $VAR1;
+    if (-r "$driverxml") {
+	eval (`$bindir/foomatic-perl-data -D -l en '$driverxml'`) ||
+	    _die ("Could not run \"foomatic-perl-data\"!\n");
+    } else {
+	_die("Could not read driver XML file $driverxml!\n");
+    }
+    $drvdata = $VAR1;
+    $driver ||= $drvdata->{'name'};
+} else {
+    $drvdata = $db->get_driver($driver);
+}
+
+$lsbver = "3.2" if !$lsbver;
+
+my $rpmdir = `rpmbuild --showrc | egrep '^\\-[0-9]+:\\s*_topdir'`;
+$rpmdir =~ s/^.*\s+(\S+)\s*$/$1/;
+
+my $pkgname = "";
+if ($packagedir) {
+    $pkgname = "openprinting-" . lc($driver);
+} else {
+    $pkgname = "openprinting-ppds-" . lc($driver);
+}
+$pkgname =~ s/_/-/g;
+
+my $specfilename = $rpmdir . "/SPECS/" . $pkgname . 
+    ($architecture ? "-$architecture" : "") . ".spec";
+my ($formerversion, $formerrelease, $formerchangelog);
+my $formerspecfile = `cat $specfilename 2>/dev/null`;
+if ($formerspecfile) {
+    $formerspecfile =~ /^\s*Version:\s*(\S+)\s*$/m;
+    $formerversion = $1;
+    $formerspecfile =~ /^\s*Release:\s*(\S+)\s*$/m;
+    $formerrelease = $1;
+    $formerspecfile =~ /\n\s*\%changelog\s*\n(.*)$/s;
+    $formerchangelog = $1;
+    $formerchangelog =~ s/[\s\r\n]+$//s;
+    $formerchangelog =~ s/^[\s\r\n]+//s;
+}
+
+my $release;
+if ($keepsource ||
+    ($formerversion && $version && ($version == $formerversion))) {
+    if (!$formerversion) {
+	_die("Cannot keep old source files on first build!\n");
+    }
+    $version = $formerversion;
+    $release = $formerrelease;
+    $release =~ s/^\s*(\d+).*?$/$1/;
+    $release ++;
+} elsif (!$version) {
+    $version = `date +%Y%m%d`;
+    chomp($version);
+    if ($formerversion && ($formerversion =~ /^$version([a-z])?$/)) {
+	my $letter = $1;
+	if ($letter) {
+	    $version .= chr(ord($letter) + 1);
+	} else {
+	    $version .= 'a';
+	}
+    }
+    $release = "1";
+} else {
+    $release = "1";
+}
+$release .= "lsb" . $lsbver;
+
+my $changelogdate = `LC_ALL=C date +'%a %b %e %Y'`;
+chomp($changelogdate);
+my $changelogid = 'OpenPrinting Database Server <webmaster@openprinting.org>';
+
+my $summary = html2text($drvdata->{'shortdescription'});
+$summary =~ s/\n/ /gs;
+$summary =~ s/\s+/ /g;
+$summary =~ s/^\s+//g;
+$summary =~ s/\s+$//g;
+if (!$summary) {
+    if ($packagedir) {
+	$summary = "\"$driver\" Printer Driver";
+    } elsif ($driver =~ /^([^\-]+)-(.+)$/) {
+	my $drv = $1;
+	my $mfg = $2;
+	my $lang = ($drv =~ /postscript/i ? "PostScript" :
+		    ($drv =~ /pxlcolor/i ? "color PCL-XL" :
+		     ($drv =~ /pxlmono/i ? "monchrome PCL-XL" :
+		      ($drv =~ /hpijs/i ? "PCL" :
+		       ($drv =~ /(ljet4|lj4)/i ? "PCL-5e" :
+			($drv =~ /cljet/i ? "PCL-5c" :
+			 ($drv =~ /(ljet3|lj3)/i ? "PCL-5" :
+			  ($drv =~ /(laserjet|ljet|lj)/i ? "PCL-4" : 
+			   ""))))))));
+	if ($lang) {
+	    $summary = "PPD files from $mfg for their $lang printers";
+	} else {
+	    $summary = "PPD files from $mfg based on the \"$drv\" driver";
+	}
+    } else {
+	$summary = "PPD files for the \"$driver\" printer driver";
+    }
+} else {
+    $summary =~ s/\s*\n\s*/ /s;
+    $summary =~ s/^\s*//s;
+    $summary =~ s/\s*$//s;
+}
+my $license = $drvdata->{'license'};
+$license = "Unknown" if !$license;
+my $licensetext = $drvdata->{'licensetext'};
+my $url = $drvdata->{'url'};
+my $supplier;
+if ($packagedir) {
+    my $path = `ls -1d $repo/opt/*/ppds/`;
+    chomp $path;
+    if (($path !~ /\n/s) && ($path =~ m:/opt/([^/]+)/ppds/$:)) {
+	$supplier = $1;
+    }
+}
+if (!$supplier) {
+    $supplier = $drvdata->{'supplier'};
+    if (!$supplier) {
+	if ($driver =~ /^([^\-]+)-(.+)$/) {
+	    $supplier = $2;
+	} else {
+	    $supplier = $driver;
+	}
+    }
+    $supplier =~ s/[^A-Za-z0-9_]+/_/g;
+    $supplier =~ s/^_+//;
+    $supplier =~ s/_+$//;
+    $supplier = "OpenPrinting-" . $supplier;
+}
+
+my $platform = "noarch";
+if ($packagedir) {
+    if (`find $repo 2>/dev/null | xargs file -b | sort | uniq | grep ELF | grep 32-bit`) {
+	$platform = "i486";
+    }
+    if (`find $repo 2>/dev/null | xargs file -b | sort | uniq | grep ELF | grep 64-bit`) {
+	$platform = "x86_64";
+    }
+}
+
+my $tarballname = $origtarball ||
+    "$pkgname-$version" . ($platform ne "noarch" ? "-$platform" : "") . ".tar.gz";
+my $readmename = "$pkgname-$version-README";
+my $copyingname = "$pkgname-$version-COPYING";
+my ($formertarball, $formerreadme, $formercopying);
+if ($formerversion) {
+    #$formertarball = "$pkgname-$formerversion.tar.gz";
+    $formertarball = $tarballname;
+    $formertarball =~ s/-$version\./-$formerversion./;
+    $formertarball =~ s:^(.*?/|)([^/]+)$:$2:;
+    $formerreadme = "$pkgname-$formerversion-README";
+    $formercopying = "$pkgname-$formerversion-COPYING";
+}
+
+my $description;
+if ($packagedir) {
+    $description = $summary . "\n\n" . html2text($drvdata->{'comment'});
+} else {
+    $description = $summary . "
+
+This package is automatically created from the PPD files which are
+assigned to the \"$driver\" driver entry in the OpenPrinting
+database. The PPDs can also be downloaded as single files, but with
+the packaged file all advantages of the package managers of the
+distros can be made use of: Clean uninstallation, automatic updates,
+...
+";
+}
+
+my ($target, $filternames, $rpmheader, $initscriptlet, $preinstall, $postinstall, $preuninstall, $postuninstall, $postuninstall2, $readmeneeded, $copyingneeded, $needpaths, $hasexecutables);
+if ($packagedir) {
+    $target = "${platform}-pc-linux";
+    my $rootbackends = `find $repo/opt/$supplier/cups/lib/backend/ -type f -perm -u+x \\! -perm -o+x 2>/dev/null`;
+    if ($rootbackends) {
+	warn("WARNING: The following CUPS backends will get executed as root:\n$rootbackends\n\n");
+    }
+    my $suids = `find $repo -type f -perm -4000 -perm /111 2>/dev/null`;
+    if ($suids) {
+	warn("WARNING: The following executables will get installed SUID root:\n$suids\n\n");
+    }
+    my $sgids = `find $repo -type f -perm -2000 -perm /111 2>/dev/null`;
+    if ($sgids) {
+	warn("WARNING: The following executables will get installed SGID root:\n$sgids\n\n");
+    }
+    $filternames = `( ls -1 $repo/opt/$supplier/bin/ 2>/dev/null; ls -1 $repo/opt/$supplier/cups/lib/filter/ 2>/dev/null ) | tr '\n' ','`;
+    $filternames =~ s/\s+//g;
+    $filternames =~ s/,$//;
+    if (`find $repo/opt/$supplier/cups/lib/backend/ -type f -perm -u+x 2>/dev/null` ||
+	`find $repo/opt/$supplier/cups/etc/ -type f \\( -name '*.types' -o -name '*.convs' \\) 2>/dev/null`) {
+	$postinstall .= "\%set_cups_links\n";
+	$postuninstall .= "\%remove_cups_links\n";
+    }
+    if (`find $repo/opt/$supplier/bin/ -type f -perm -o+x 2>/dev/null`) {
+	$needpaths = 1;
+	$hasexecutables = 1;
+	$rpmheader .= "\%has_bin_executables\n";
+    }
+    if (`find $repo/opt/$supplier/sbin/ -type f -perm -u+x 2>/dev/null`) {
+	$needpaths = 1;
+	$hasexecutables = 1;
+	$rpmheader .= "\%has_sbin_executables\n";
+    }
+    if (`find $repo/opt/$supplier/man/ -type f 2>/dev/null`) {
+	$needpaths = 1;
+	$rpmheader .= "\%has_man_pages\n";
+    }
+    if ($hasexecutables) {
+	$initscriptlet .= "\%init_scriptlet\n";
+    }
+    if ($needpaths) {
+	$postinstall .= "\%set_opt_paths\n";
+	$preuninstall .= "\%remove_opt_paths\n";
+    }
+    my $services;
+    open OUT, "find $repo -path \"*/init.d/*\" 2>/dev/null |";
+    foreach $entry (<OUT>) {
+	chomp $entry;
+	$entry =~ s/^.*?\/([^\/]+)$/\1/;
+	if ($entry) {
+	    $services .= "," if $services;
+	    $services .= $entry;
+	}
+    }
+    if ($services) {
+	$rpmheader .= "\%define services $services\n";
+	$postinstall .= "\%setup_services\n\%update_only\n\%restart_services\n\%end_update_only\n";
+	$preuninstall .= "\%remove_services\n";
+	$postuninstall2 .= "\%update_only\n\%restart_services\n\%end_update_only\n";
+    }
+    if (`find $repo -path '*/pam.d/*' 2>/dev/null`) {
+	$postinstall .= "\%setup_pam\n";
+	$postuninstall .= "\%remove_pam\n";
+    }
+}
+    
+if ((! -r "$repo/opt/$supplier/doc/$pkgname/README") &&
+    (! -r "$repo/opt/$supplier/doc/README")) {
+    $readmeneeded = 1;
+}
+if ((! -r "$repo/opt/$supplier/doc/$pkgname/COPYING") &&
+    (! -r "$repo/opt/$supplier/doc/COPYING") &&
+    (! -r "$repo/opt/$supplier/doc/LICENSE")) {
+    $copyingneeded = 1;
+}
+
+$repo =~ s:/+$::;
+$repo =~ m:^(.*)/+([^/]+)$:;
+my $repopath = $1;
+my $repodir = $2;
+$repodir = '.' if !$repodir;
+
+my $srcchanged = 0;
+
+if (!$keepsource) {
+    if ($origtarball) {
+	$tarballname = $origtarball;
+	$tarballname =~ s:^(.*?/|)([^/]+)$:$2:;
+	sysrun("cp $origtarball $rpmdir/SOURCES/") or
+	    _die("Cannot copy original tarball to $rpmdir/SOURCES/$tarballname!\n");
+    } else {
+	sysrun("cd $repopath && tar -czhf $rpmdir/SOURCES/$tarballname $repodir") or
+	    _die("Cannot create PPD/Package tarball $rpmdir/SOURCES/$tarballname!\n");
+    }
+    if ($formerversion && ($tarballname ne $formertarball)) {
+	$tmpdir2 = `mktemp -d $tmp/foomatic.XXXXXX` or
+	    _die("Cannot create temporary directory!\n");
+	chomp $tmpdir2;
+	sysrun("cd $tmpdir2 && mkdir 1 && cd 1 && tar -xf $rpmdir/SOURCES/$tarballname 2>/dev/null && cd .. && mkdir 2 && cd 2 && tar -xf $rpmdir/SOURCES/$formertarball 2>/dev/null && cd .. && diff -rq 1 2 > /dev/null 2>&1") || ($srcchanged = 1);
+	sysrun("rm -rf $tmpdir2") if ($tmpdir2);
+    }
+
+    if ($readmeneeded) {
+	if (open FILE, "> $rpmdir/SOURCES/$readmename") {
+	    print FILE $description;
+	    close FILE;
+	} else {
+	    _die("Cannot create README file $rpmdir/SOURCES/$readmename!\n");
+	}
+    }
+    if ($formerversion && ($readmename ne $formerreadme)) {
+	sysrun("diff -q $rpmdir/SOURCES/$readmename $rpmdir/SOURCES/$formerreadme > /dev/null 2>&1") ||
+	    ($srcchanged = 1);
+    }
+
+    if ($copyingneeded) {
+	if (open FILE, "> $rpmdir/SOURCES/$copyingname") {
+	    if ($licensetext) {
+		print FILE $licensetext;
+	    } else {
+		print FILE "
+This package is published under the $license license.
+
+See /usr/share/common-licenses/ or http://www.opensource.org/ for more
+information.
+";
+	    }
+	    close FILE;
+	} else {
+	    _die("Cannot create COPYING file $rpmdir/SOURCES/$copyingname!\n");
+	}
+    }
+    if ($formerversion && ($copyingname ne $formercopying)) {
+	sysrun("diff -q $rpmdir/SOURCES/$copyingname $rpmdir/SOURCES/$formercopying > /dev/null 2>&1") || 
+	    ($srcchanged = 1);
+    }
+
+    if ($formerversion && (!$srcchanged) && (!$force)) {
+	unlink("$rpmdir/SOURCES/$tarballname")
+	    if $tarballname ne $formertarball;
+	unlink("$rpmdir/SOURCES/$readmename")
+	    if $readmename ne $formerreadme;
+	unlink("$rpmdir/SOURCES/$copyingname")
+	    if $copyingname ne $formercopying;
+       _die("No change in the source files, not generating a new package!\n");
+    }
+}
+
+# Generate all files which need to be added to or changed in the OpenPrinting
+# database
+if ($foomatic) {
+    # Create directory structure and remove old files
+    mkdir("$rpmdir/FOOMATIC/") if (! -d "$rpmdir/FOOMATIC/");
+    my $foomaticdir = "$rpmdir/FOOMATIC/$pkgname-$version-$release";
+    sysrun("rm -rf $foomaticdir") or
+	_die("Cannot remove old directory $foomaticdir!\n");
+    mkdir("$foomaticdir");
+    mkdir("$foomaticdir/printer");
+    mkdir("$foomaticdir/driver");
+    #mkdir("$foomaticdir/opt");
+    mkdir("$foomaticdir/PPD");
+    my $ppddir;
+    my $ppdtoxmlopts;
+    # At first, let us find PPD files and extract them if the upload is a
+    # pure PPD upload (then we have to add also the unpackaged PPDs to the
+    # OpenPrinting database).
+    if (!$packagedir) {
+	open PPDS, "find $repo -name '*.ppd' -print |" or
+	    _die("Could not search for PPD files in $repo!\n");
+	while(my $p = <PPDS>) {
+	    chomp($p);
+	    my $make = `grep '\\*Manufacturer:' "$p" 2>/dev/null | cut -d '"' -f 2`;
+	    if (!$make) {
+		$make = `grep '\\*ModelName:' "$p" 2>/dev/null | cut -d '"' -f 2 | cut -d ' ' -f 1`;
+	    }
+	    chomp($make);
+	    $make =~ s/[\s_\/]+/_/g;
+	    $make =~ s/\+/plus/g;
+	    $make =~ s/_+$//;
+	    $make =~ s/^_+//;
+	    mkdir ("$foomaticdir/PPD/$make")
+		if (! -d "$foomaticdir/PPD/$make");
+	    $p =~ m:([^/]+)$:;
+	    my $ppdname = $1;
+	    if (-e "$foomaticdir/PPD/$make/$ppdname") {
+		warn("WARNING: There are two or more PPD files named $ppdname!\n");
+	    } else {
+		sysrun("cp $p $foomaticdir/PPD/$make") or
+		    _die("Cannot copy PPD file $p to $foomaticdir/PPD/$make/$ppdname!\n");
+	    }
+	}
+	close PPDS;
+	$ppddir = "$foomaticdir/PPD";
+	$ppdtoxmlopts = "-l -b $foomaticdir";
+    } else {
+	$ppddir = $repo;
+	$ppdtoxmlopts = "";
+    }
+    open PPDS, "find $ppddir -name '*.ppd' -print |" or
+	_die("Could not search for PPD files in $ppddir!\n");
+    while(my $p = <PPDS>) {
+	chomp($p);
+	sysrun("$bindir/foomatic-ppd-to-xml -d $driver $ppdtoxmlopts -f $foomaticdir/printer $p");
+    }
+    close PPDS;
+    # Foomatic XML files which come with the package (only printer and driver
+    # XML files, not options)
+    if ($packagedir) {
+	sysrun("find $repo -name '*.xml' -print0 | xargs -r -0 grep -l '<printer *id=' | xargs -r -I xmlfile123 cp -f 'xmlfile123' $foomaticdir/printer");
+	sysrun("find $repo -name '*.xml' -print0 | xargs -r -0 grep -l '<driver *id=' | xargs -r -I xmlfile123 cp -f 'xmlfile123' $foomaticdir/driver");
+	#sysrun("find $repo -name '*.xml' -print0 | xargs -r -0 grep -l '<option *type=' | xargs -r -I xmlfile123 cp -f 'xmlfile123' $foomaticdir/opt");
+    }
+    # Highest priority: Supplied driver XML file
+    if ($driverxml) {
+	sysrun("cp -f $driverxml $foomaticdir/driver") or
+	    _die("Cannot copy supplied driver XML file to $foomaticdir/driver/$driverxml!\n");
+    }
+    # Remove command line prototype from the driver XMLs, so that they do not
+    # generate Foomatic PPDs
+    sysrun("ls -1 $foomaticdir/driver/*.xml > /dev/null 2>&1 && perl -p -i -e 's:(<prototype>).*?(</prototype>):\\1\\2:sg' $foomaticdir/driver/*.xml");
+}
+
+if ($formerspecfile) {
+    rename($specfilename, "$specfilename.old") or 
+	_die("Cannot backup old spec file $specfilename!\n");
+}
+if (open FILE, "> $specfilename") {
+    print FILE "Summary:        $summary
+Name:           $pkgname
+Version:        $version
+Release:        $release
+License:        $license
+Group:          Applications/System
+";
+   print FILE "URL:            $url\n" if $url;
+   print FILE "
+\%define drivername $driver
+" .
+($filternames ?
+"\%define filternames $filternames\n" : "") .
+"\%define extraversion \%nil
+\%define driverstr $driver
+\%define supplierstr OpenPrinting
+\%define supplier $supplier
+\%define ppdnickname , \%\{driverstr\} \%\{version\}\%\{extraversion\} (\%\{supplierstr\} LSB $lsbver)
+
+BuildRequires:  lsb-build-cc, lsb-build-c++, lsb-appchk
+BuildRequires:  perl, gzip, cupsddk
+
+Requires:       lsb >= $lsbver
+
+Source0:        $tarballname
+" .
+($readmeneeded ?
+"Source1:        $readmename\n" : "") .
+($copyingneeded ?
+"Source2:        $copyingname\n" : "") .
+"
+BuildRoot:      \%_tmppath/\%name-\%version-\%release-root
+BuildArch:      $platform
+
+\%description
+
+$description
+
+\# Packaging settings
+\%install_into_opt
+$rpmheader
+
+\%prep
+\# remove old directory
+rm -rf \$RPM_BUILD_DIR/\%\{name\}-\%\{version\}\%\{extraversion\}
+
+mkdir \$RPM_BUILD_DIR/\%\{name\}-\%\{version\}\%\{extraversion\}
+\%setup -q -T -D -a 0 -n \%\{name\}-\%\{version\}\%\{extraversion\}
+
+
+\%build
+
+\# Nothing to build
+
+
+\%install
+
+rm -rf \%\{buildroot\}
+" .
+(!$packagedir ? "install -d \%\{buildroot\}\%\{_cupsppd\}\n" : "") .
+($readmeneeded || $copyingneeded ?
+"install -d \%\{buildroot\}\%\{_docdir\}/$pkgname\n" : "") .
+(!$packagedir ?
+"cp -r $repodir/. \%\{buildroot\}\%\{_cupsppd\}/
+chmod -R u+rwX,go+rX \%\{buildroot\}\%\{_cupsppd\}\n" :
+"cp -r $repodir/. \%\{buildroot\}\n") .
+"
+\# Rename PPDs appropriate to LSB agreements and compress the PPD files
+\%adjust_ppds
+
+" .
+($readmeneeded ?
+"cat \%\{SOURCE1\} > \%\{buildroot\}\%\{_docdir\}/$pkgname/README\n" : "") .
+($copyingneeded ?
+"cat \%\{SOURCE2\} > \%\{buildroot\}\%\{_docdir\}/$pkgname/COPYING\n" : "") .
+"
+
+\%pre
+$initscriptlet
+\%create_opt_dirs
+$preinstall
+
+\%post
+$initscriptlet
+\%set_ppd_links
+\%update_ppds_fast
+$postinstall
+\%restart_cups
+
+
+\%preun
+$initscriptlet
+\%not_on_rpm_update
+$preuninstall
+:
+\%end_not_on_rpm_update
+
+
+\%postun
+$initscriptlet
+$postuninstall2
+\%not_on_rpm_update
+\%remove_ppd_links
+$postuninstall
+\%restart_cups
+\%end_not_on_rpm_update
+
+
+\%clean
+rm -rf \%\{buildroot\}
+
+
+\%files
+\%defattr(-,root,root)
+\%\{_prefix\}
+\%docdir \%\{_docdir\}
+
+
+\%changelog
+
+* $changelogdate $changelogid $version-$release
+" .
+($packagedir ?
+"- Automatically generated from the printer driver upload for the driver
+  \"$driver\".\n" :
+"- Automatically generated to reflect the changes in the PPD repository for 
+  the driver \"$driver\".\n") .
+"
+$formerchangelog
+";
+
+    close FILE;
+} else {
+    _die('Cannot create spec file $specfilename!\n');
+}
+
+sysrun(($platform eq "i486" ? "linux32 " : "") .
+    "rpmbuild -bb --clean --nodeps --target $platform $specfilename") or 
+    _die("Cannot create RPM package from $specfilename!\n");
+
+sysrun("rm -rf $tmpdir") if ($tmpdir);
+
+$tmpdir = `mktemp -d $tmp/foomatic.XXXXXX` or
+    _die("Cannot create temporary directory!\n");
+chomp $tmpdir;
+my $binarypackage = "$rpmdir/RPMS/$platform/$pkgname-$version-$release.$platform.rpm";
+sysrun("cd $tmpdir; fakeroot alien -ckg $binarypackage") or
+    _die("Cannot convert $binarypackage to uncompressed Debian source package!\n");
+my $dir = $binarypackage;
+$dir =~ s/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/$1/i;
+my $debianplatform;
+if ($platform eq "noarch") {
+    $debianplatform = "";
+} elsif ($platform eq "i486") {
+    $debianplatform = "-ai386";
+} elsif ($platform eq "x86_64") {
+    $debianplatform = "-aamd64";
+}
+sysrun("cd $tmpdir/$dir && perl -p -i -e 's/^(\\s*Depends:\\s*).*\$/\\1lsb (>= $lsbver)/' debian/control && perl -p -i -e 's/(dh_shlibdeps)/\\#\\1/' debian/rules && dpkg-buildpackage $debianplatform -rfakeroot") or
+   _die("Cannot buid binary Debian package from $tmpdir/$dir/!\n");
+my $binarydebpackage = `cd $tmpdir && ls -1 *.deb`;
+sysrun("mkdir -p $rpmdir/DEBS/$platform/ && mv $tmpdir/*.deb $rpmdir/DEBS/$platform/") or
+   _die("Cannot move Debian package to $rpmdir/DEBS/$platform/!\n");
+
+sysrun("rm -rf $tmpdir") if ($tmpdir);
+
+print "\n\nPackages built:\n\n";
+print "RPM package: $binarypackage\n";
+print "Debian package: $rpmdir/DEBS/$platform/$binarydebpackage\n";
+
+exit 0;
+
+sub _die {
+    sysrun("rm -rf $tmpdir") if ($tmpdir);
+    sysrun("rm -rf $tmpdir2") if ($tmpdir2);
+    sysrun("rm -f $tmpfile") if ($tmpfile);
+    die("@_");
+}
+
+sub sysrun {
+    my $r = system @_;
+    return (0 == ($r / 256));
+}
+
+sub help {
+    print <<HELP;
+
+$progname [-d <driver>] [-r <directory>] [-p <directory>] [-p <tarball>] 
+	  [-x <driver XML file>] [-v <version>] [-l <LSB version>]
+$progname -h
+
+ -d <driver>      : The name of the driver for which a PPD package should be 
+		    generated.
+ -r <directory>   : A directory containing PPDs. If this option is supplied
+		    all PPDs in this directory and its subdirectories will
+		    be packaged, regardless whether they are linked to this
+		    driver or not. If the option is not supplied, the printer
+		    XML files in the database are searched for PPDs linked with
+		    this driver.
+ -r <tarball>     : Same as above but with the files supplied in a tarball and
+		    not in a directory. If the "-d" option is not supplied, the
+		    driver name will be derived from the tarball name (part of
+		    the name which is not the version number, which is
+		    separated with the last "-" of the file name. If "-v" is
+		    not supplied, the version number will be taken from the
+		    tarball name. If the tarball name has no version number
+		    the whole name is considered to be the driver name.
+ -p <directory>   : Generate a binary driver package based on the file system
+		    in the given directory. The file system is exactly what the
+		    package will install into the user's system. The file
+		    system will be searched for special file types, like
+		    executables, CUPS backends, PPDs, ... and additional action
+		    be performed, like setting symlinks via the post-install
+		    script, modifying PPDs to find the driver executable of
+		    this packages, ... and also warning the user about
+		    packaged SUID binaries or CUPS backends running as root
+		    (0700 permissions). The driver name and the upstream
+		    version number must be supplied with the "-d" and "-v"
+		    options.
+ -p <tarball>     : Same as above but with the files supplied in a tarball and
+		    not in a directory. If the "-d" option is not supplied, the
+		    driver name will be derived from the tarball name (part of
+		    the name which is not the version number, which is
+		    separated with the last "-" of the file name (or the
+		    second last if the file name contains also an architecture
+		    name). If "-v" is not supplied, the version number will be
+		    taken from the tarball name.
+ -x <driver XML file>: Supply a driver XML file if the package is for a
+		    driver which is not yet in the database. The metadata
+		    (summary, description, license, license text) is taken 
+		    from this XML file. 
+ -v <version>       Upstream version number of the driver.
+ -l <LSB version> : LSB version for which the packages should be generated.
+		    This affects the release number and the versioned
+		    "Requires:" for the "lsb" package.
+ -k		  : With this option set the source files of the previous
+		    build are used. The upstream version number does not
+		    change and the release number is incremented by 1. This
+		    option requires that there exists already a previous
+		    build. Use this for example when you build the package
+		    because the LSB DDK macro set was changed.
+ -f		  : With this option set a new package will also get created
+		    when the source files did not change compared to the
+		    previous version. The source files will get regenerated
+		    with a new upstream version number and the release
+		    number will get reset to 1. This is not recommended.
+		    Use "-k" if you want to rebuild the package due to
+		    a change which is not in the source files.
+ -F		  : Extract Foomatic data. With this switch set the input
+		    data is searched for Foomatic XML files and in case of
+		    pure PPD tarballs or directories being supplied also
+		    for PPDs. These are put into an output directory so that
+		    they can get easily added to the OpenPrinting database.
+		    Printer XML files will also get auto-generated from PPD
+		    files.
+ -h		  : Show this help information
+
+
+HELP
+    exit 1;
+
+}
+
+sub html2text {
+    my ($html) = (@_);
+    return "" if $html !~ /\S/;
+    $tmpfile = `mktemp $tmp/foomatic.XXXXXX` or
+	_die("Cannot create temporary file!\n");
+    chomp $tmpfile;
+    open FILE, "> $tmpfile" or _die("Cannot write to temporary file!\n");
+    print FILE $html;
+    close FILE;
+    my $text = `html2text -nobs -ascii $tmpfile` or
+	_die("Could not execute \"html2text\" utility!\n");
+    unlink $tmpfile;
+    return $text;
+}

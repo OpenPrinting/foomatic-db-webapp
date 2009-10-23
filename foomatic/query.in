@@ -1,0 +1,1331 @@
+#! /usr/bin/perl
+
+# This script allows queries of the OpenPrinting database in machine-readable
+# formats, for example for printer setup tools so that they can find and
+# download driver packages.
+
+use CGI qw/ :standard :html3 /;
+use Digest::MD5 qw(md5_hex);
+use strict;
+
+use lib "@LIBDIR@";
+use Foomatic::Defaults;
+use Foomatic::DB;
+use driverpackages qw/numpackagesformask packagesformask drivermask
+    %driver_types %archs/;
+
+my $siteurl = "@SITEURL@";
+my $ppddirurl = "@PPDDIRURL@";
+my $driverdirurl = "@DRIVERDIRURL@";
+
+my $output;
+my $query = new CGI;
+
+# Determine output format
+my $format = $query->param('format');
+if ($format && ($format !~ /^(text|xml)$/i)) {
+    die ("Invalid output format: $format\n");
+}
+$format = lc($format);
+if (!$format) {
+    $format = "text";
+}
+
+# Read out the other options
+my $querytype = $query->param('type');
+my $make = $query->param('make');
+my $model = $query->param('model');
+my $printer = $query->param('printer');
+my $driver = $query->param('driver');
+my $uilanguage = $query->param('uilanguage');
+my $moreinfo = ($query->param('moreinfo') ? 1 : 0);
+my $showprinterid = ($query->param('showprinterid') ? 1 : 0);
+my $onlydownload = ($query->param('onlydownload') ? 1 : 0);
+my $onlyppdfiles = ($query->param('onlyppdfiles') ? 1 : 0);
+my $onlydrvpkg = ($query->param('onlydriverpackages') ? 1 : 0);
+my $sourcedrvpkg = ($query->param('sourcedriverpackages') ? 1 : 0);
+my $nobinarydrvpkg = ($query->param('nobinarydriverpackages') ? 1 : 0);
+my $onlynewestdrvpkg = ($query->param('onlynewestdriverpackages') ? 1 : 0);
+my $architectures = $query->param('architectures');
+my $onlyscopes = $query->param('onlyscopes');
+my $notscopes = $query->param('notscopes');
+my $locale = $query->param('locale');
+my $noobsoletes = ($query->param('noobsoletes') ? 1 : 0);
+my $onlyfree = ($query->param('onlyfree') ? 1 : 0);
+my $onlynonfree = ($query->param('onlynonfree') ? 1 : 0);
+my $onlypatents = ($query->param('onlypatents') ? 1 : 0);
+my $nopatents = ($query->param('nopatents') ? 1 : 0);
+my $onlymanufacturer = ($query->param('onlymanufacturer') ? 1 : 0);
+my $nolicensetext = ($query->param('nolicensetext') ? 1 : 0);
+my $onlylicensetext = ($query->param('onlylicensetext') ? 1 : 0);
+my $origlicensetext = ($query->param('origlicensetext') ? 1 : 0);
+my $origlicenselink = ($query->param('origlicenselink') ? 1 : 0);
+my $packagesystem = $query->param('packagesystem');
+$packagesystem = "all" if !$packagesystem;
+my $lsbversion = $query->param('lsbversion');
+$lsbversion = "all" if !$lsbversion;
+
+# Check whether there is really given a manufacturer name with the "make"
+# argument. If make and model are given, pass it over to the "printer" argument
+# system-config-printer has a bug and supplies make and model with the "make"
+# argument.
+if (($make =~ /\d\d\d/) || ($make =~ /\S+\s+\S+\s+\S+/) ||
+    ($make =~ /(deskjet|laserjet|designjet|officejet|photosmart|stylus|aculaser|stylewriter|imagewriter|deskwriter|laserwriter|pixus|pixma|selphy|imagerunner|\bbjc\b|\bbj\b|\blbp\b|\bhl\b|\bdcp\b|\bmfc\b|docuprint|docupage|phaser|workcentre|homecentre|optra|jetprinter|magicolor|pageworks|pagepro|aficio|varioprint|okipage|microline)/i)) {
+    $printer = $make;
+    $make = undef;
+}
+
+# Initialize the database
+my $db = new Foomatic::DB;
+
+# Set the user interface language, so that queries get answered with text
+# in this language if appropriate text is available
+$db->set_language($uilanguage) if $uilanguage;
+
+my @printers;
+
+# Use the printer search function if a printer is specified by
+# other information than the Foomatic ID, as IEEE-1284 device ID
+# or make and model
+my $p;
+if ($printer) {
+    $p = $db->get_printer($printer);
+    if ($p->{noxmlentry}) {
+	@printers = $db->find_printer($printer,
+				      ($querytype =~ /^(drivers?)/i 
+				       ? 2 : 1),
+				      ($querytype =~ /^(drivers?)/i 
+				       ? 2 : 1));
+	if (scalar(@printers) > 0) {
+	    $printer = $printers[0];
+	    $p = $db->get_printer($printer);
+	}
+    } else {
+	@printers = ($printer);
+    }
+} elsif ($model) {
+    @printers = $db->find_printer(($make ? "$make|" : "") . $model,
+				  ($querytype =~ /^(drivers?)/i
+				   ? 2 : 1),
+				  ($querytype =~ /^(drivers?)/i
+				   ? 2 : 1));
+    if (scalar(@printers) > 0) {
+	$printer = $printers[0];
+	$p = $db->get_printer($printer);
+    }
+} elsif (($querytype =~ /^(drivers?)/i) || (!$make)) {
+    $printer = "all";
+}
+
+# Check for what should be listed
+
+# All manufacturers
+if ($querytype =~ /^(makes?|manufacturers?)/i) {
+
+    # Fetch list of all manufacturers
+    my @makes = $db->get_makes();
+
+    # Put them out as simple text or XML
+    if ($format eq "text") {
+	$output = join("\n", sort { lc($a) cmp lc($b) } @makes) . "\n";
+    } elsif ($format eq "xml") {
+	$output = "<makes>\n  <make>" . 
+	    join("</make>\n  <make>",
+		 sort { lc($a) cmp lc($b) } @makes) .
+		 "</make>\n</makes>\n";
+    }
+    
+# All printers from a given manufacturer, printers matching
+# a search term or device ID or all printers
+} elsif ($querytype =~ /^(printers?)/i) {
+
+    if (scalar(@printers) == 0) {
+	if (($printer eq "all") || (!$make && !$model && !$printer)) {
+	    # Fetch list of all printers
+	    @printers = $db->get_printerlist();
+	} else {
+	    # Fetch list of all printers from $make
+	    @printers = map {
+		$db->get_printer_from_make_model($make, $_);
+	    } $db->get_models_by_make($make);
+	    # If there is no exact match on the manufacturer name try the
+	    # search function
+	    if (scalar(@printers) <= 0) {
+		@printers = $db->find_printer("$make|", 1, 1);
+	    }
+	}
+    }
+
+    # XML header
+    if ($format eq "xml") {
+	$output .= "<printers>\n";
+    }
+
+    # List entries
+    for my $p (@printers) {
+	if (my $pr = $db->get_printer($p)) {
+	    my $id = $pr->{'id'};
+	    $make = $pr->{'make'};
+	    $model = $pr->{'model'};
+	    if ($format eq "xml") {
+		# XML output
+		if ($moreinfo) {
+		    $output .= "  <printer id=\"printer/" .
+			$id . "\">\n";
+		    $output .= "    <id>$id</id>\n";
+		    $output .= "    <make>$make</make>\n";
+		    $output .= "    <model>$model</model>\n";
+		    if (!$pr->{"noxmlentry"}) {
+			$output .= "    <functionality>" .
+			    $pr->{"functionality"} . "</functionality>\n";
+		    }
+		    $output .= "    <driver>" .
+			$pr->{"driver"} . "</driver>\n" if
+			defined($pr->{"driver"});
+		    if (defined($pr->{"drivers"})) {
+			$output .= "    <drivers>\n";
+			foreach my $dr (@{$pr->{"drivers"}}) {
+			    $output .= "      <driver>" .
+				$dr->{'id'} . "</driver>\n";
+			}
+			$output .= "    </drivers>\n";
+		    }
+		    if (defined($pr->{"general_ieee"}) ||
+			defined($pr->{"general_mfg"}) ||
+			defined($pr->{"general_mdl"}) ||
+			defined($pr->{"general_des"}) ||
+			defined($pr->{"general_cmd"}) ||
+			defined($pr->{"par_ieee"}) ||
+			defined($pr->{"par_mfg"}) ||
+			defined($pr->{"par_mdl"}) ||
+			defined($pr->{"par_des"}) ||
+			defined($pr->{"par_cmd"}) ||
+			defined($pr->{"usb_ieee"}) ||
+			defined($pr->{"usb_mfg"}) ||
+			defined($pr->{"usb_mdl"}) ||
+			defined($pr->{"usb_des"}) ||
+			defined($pr->{"usb_cmd"}) ||
+			defined($pr->{"snmp_ieee"}) ||
+			defined($pr->{"snmp_mfg"}) ||
+			defined($pr->{"snmp_mdl"}) ||
+			defined($pr->{"snmp_des"}) ||
+			defined($pr->{"snmp_cmd"})) {
+			$output .= "    <autodetect>\n";
+			if (defined($pr->{"general_ieee"}) ||
+			    defined($pr->{"general_mfg"}) ||
+			    defined($pr->{"general_mdl"}) ||
+			    defined($pr->{"general_des"}) ||
+			    defined($pr->{"general_cmd"})) {
+			    $output .= "      <general>\n";
+			    $output .= "        <ieee1284>" .
+				$pr->{"general_ieee"} . "</ieee1284>\n" if
+				defined($pr->{"general_ieee"});
+			    $output .= "        <manufacturer>" .
+				$pr->{"general_mfg"} .
+				"</manufacturer>\n" if
+				defined($pr->{"general_mfg"});
+			    $output .= "        <model>" .
+				$pr->{"general_mdl"} . "</model>\n" if
+				defined($pr->{"general_mdl"});
+			    $output .= "        <description>" .
+				$pr->{"general_des"} .
+				"</description>\n" if
+				defined($pr->{"general_des"});
+			    $output .= "        <commandset>" .
+				$pr->{"general_cmd"} . "</commandset>\n" if
+				defined($pr->{"general_cmd"});
+			    $output .= "      </general>\n";
+			}
+			if (defined($pr->{"par_ieee"}) ||
+			    defined($pr->{"par_mfg"}) ||
+			    defined($pr->{"par_mdl"}) ||
+			    defined($pr->{"par_des"}) ||
+			    defined($pr->{"par_cmd"})) {
+			    $output .= "      <parallel>\n";
+			    $output .= "        <ieee1284>" .
+				$pr->{"par_ieee"} . "</ieee1284>\n" if
+				defined($pr->{"par_ieee"});
+			    $output .= "        <manufacturer>" .
+				$pr->{"par_mfg"} .
+				"</manufacturer>\n" if
+				defined($pr->{"par_mfg"});
+			    $output .= "        <model>" .
+				$pr->{"par_mdl"} . "</model>\n" if
+				defined($pr->{"par_mdl"});
+			    $output .= "        <description>" .
+				$pr->{"par_des"} .
+				"</description>\n" if
+				defined($pr->{"par_des"});
+			    $output .= "        <commandset>" .
+				$pr->{"par_cmd"} . "</commandset>\n" if
+				defined($pr->{"par_cmd"});
+			    $output .= "      </parallel>\n";
+			}
+			if (defined($pr->{"usb_ieee"}) ||
+			    defined($pr->{"usb_mfg"}) ||
+			    defined($pr->{"usb_mdl"}) ||
+			    defined($pr->{"usb_des"}) ||
+			    defined($pr->{"usb_cmd"})) {
+			    $output .= "      <usb>\n";
+			    $output .= "        <ieee1284>" .
+				$pr->{"usb_ieee"} . "</ieee1284>\n" if
+				defined($pr->{"usb_ieee"});
+			    $output .= "        <manufacturer>" .
+				$pr->{"usb_mfg"} .
+				"</manufacturer>\n" if
+				defined($pr->{"usb_mfg"});
+			    $output .= "        <model>" .
+				$pr->{"usb_mdl"} . "</model>\n" if
+				defined($pr->{"usb_mdl"});
+			    $output .= "        <description>" .
+				$pr->{"usb_des"} .
+				"</description>\n" if
+				defined($pr->{"usb_des"});
+			    $output .= "        <commandset>" .
+				$pr->{"usb_cmd"} . "</commandset>\n" if
+				defined($pr->{"usb_cmd"});
+			    $output .= "      </usb>\n";
+			}
+			if (defined($pr->{"snmp_ieee"}) ||
+			    defined($pr->{"snmp_mfg"}) ||
+			    defined($pr->{"snmp_mdl"}) ||
+			    defined($pr->{"snmp_des"}) ||
+			    defined($pr->{"snmp_cmd"})) {
+			    $output .= "      <snmp>\n";
+			    $output .= "        <ieee1284>" .
+				$pr->{"snmp_ieee"} . "</ieee1284>\n" if
+				defined($pr->{"snmp_ieee"});
+			    $output .= "        <manufacturer>" .
+				$pr->{"snmp_mfg"} .
+				"</manufacturer>\n" if
+				defined($pr->{"snmp_mfg"});
+			    $output .= "        <model>" .
+				$pr->{"snmp_mdl"} . "</model>\n" if
+				defined($pr->{"snmp_mdl"});
+			    $output .= "        <description>" .
+				$pr->{"snmp_des"} .
+				"</description>\n" if
+				defined($pr->{"snmp_des"});
+			    $output .= "        <commandset>" .
+				$pr->{"snmp_cmd"} . "</commandset>\n" if
+				defined($pr->{"snmp_cmd"});
+			    $output .= "      </snmp>\n";
+			}
+			$output .= "    </autodetect>\n";
+		    }
+		    $output .= "  </printer>\n";
+		} else {
+		    $output .= "  <printer>\n" .
+			"    <id>$id</id>\n" .
+			"    <make>$make</make>\n" .
+			"    <model>$model</model>\n" .
+			"  </printer>\n";
+		}
+	    } else {
+		# Simple text output
+		if ($moreinfo) {
+		    $output .= $id . "\n";
+		    $output .= "  Manufacturer: $make\n";
+		    $output .= "  Model: $model\n";
+		    if (!$pr->{"noxmlentry"}) {
+			$output .= "  Works: " .
+			    ($pr->{"functionality"} eq "A"
+			     ? "Perfectly"
+			     : ($pr->{"functionality"} eq "B"
+				? "Mostly"
+				: ($pr->{"functionality"} eq "D"
+				   ? "Partially"
+				   : ($pr->{"functionality"} eq "F"
+				      ? "Paperweight"
+				      : "")))) . "\n";
+		    }
+		    $output .= "  Recommended driver: " .
+			$pr->{"driver"} . "\n" if
+			defined($pr->{"driver"});
+		    if (defined($pr->{"drivers"})) {
+			$output .= "  Drivers:\n";
+			foreach my $dr (@{$pr->{"drivers"}}) {
+			    $output .= "    " .
+				$dr->{'id'} . "\n";
+			}
+		    }
+		    if (defined($pr->{"general_ieee"}) ||
+			defined($pr->{"general_mfg"}) ||
+			defined($pr->{"general_mdl"}) ||
+			defined($pr->{"general_des"}) ||
+			defined($pr->{"general_cmd"}) ||
+			defined($pr->{"par_ieee"}) ||
+			defined($pr->{"par_mfg"}) ||
+			defined($pr->{"par_mdl"}) ||
+			defined($pr->{"par_des"}) ||
+			defined($pr->{"par_cmd"}) ||
+			defined($pr->{"usb_ieee"}) ||
+			defined($pr->{"usb_mfg"}) ||
+			defined($pr->{"usb_mdl"}) ||
+			defined($pr->{"usb_des"}) ||
+			defined($pr->{"usb_cmd"}) ||
+			defined($pr->{"snmp_ieee"}) ||
+			defined($pr->{"snmp_mfg"}) ||
+			defined($pr->{"snmp_mdl"}) ||
+			defined($pr->{"snmp_des"}) ||
+			defined($pr->{"snmp_cmd"})) {
+			$output .= "  Autodetection data\n";
+			if (defined($pr->{"general_ieee"}) ||
+			    defined($pr->{"general_mfg"}) ||
+			    defined($pr->{"general_mdl"}) ||
+			    defined($pr->{"general_des"}) ||
+			    defined($pr->{"general_cmd"})) {
+			    $output .= "    General\n";
+			    $output .= "      IEEE-1284 Device ID: " .
+				$pr->{"general_ieee"} . "\n" if
+				defined($pr->{"general_ieee"});
+			    $output .= "      Manufacturer: " .
+				$pr->{"general_mfg"} .
+				"\n" if
+				defined($pr->{"general_mfg"});
+			    $output .= "      Model: " .
+				$pr->{"general_mdl"} . "\n" if
+				defined($pr->{"general_mdl"});
+			    $output .= "      Description: " .
+				$pr->{"general_des"} .
+				"\n" if
+				defined($pr->{"general_des"});
+			    $output .= "      Command Set: " .
+				$pr->{"general_cmd"} . "\n" if
+				defined($pr->{"general_cmd"});
+			}
+			if (defined($pr->{"par_ieee"}) ||
+			    defined($pr->{"par_mfg"}) ||
+			    defined($pr->{"par_mdl"}) ||
+			    defined($pr->{"par_des"}) ||
+			    defined($pr->{"par_cmd"})) {
+			    $output .= "    Parallel port\n";
+			    $output .= "      IEEE-1284 Device ID: " .
+				$pr->{"par_ieee"} . "\n" if
+				defined($pr->{"par_ieee"});
+			    $output .= "      Manufacturer: " .
+				$pr->{"par_mfg"} .
+				"\n" if
+				defined($pr->{"par_mfg"});
+			    $output .= "      Model:" .
+				$pr->{"par_mdl"} . "\n" if
+				defined($pr->{"par_mdl"});
+			    $output .= "      Description: " .
+				$pr->{"par_des"} .
+				"\n" if
+				defined($pr->{"par_des"});
+			    $output .= "      Command Set:" .
+				    $pr->{"par_cmd"} . "\n" if
+				    defined($pr->{"par_cmd"});
+			}
+			if (defined($pr->{"usb_ieee"}) ||
+			    defined($pr->{"usb_mfg"}) ||
+			    defined($pr->{"usb_mdl"}) ||
+			    defined($pr->{"usb_des"}) ||
+			    defined($pr->{"usb_cmd"})) {
+			    $output .= "    USB\n";
+			    $output .= "      IEEE-1284 Device ID: " .
+				$pr->{"usb_ieee"} . "\n" if
+				defined($pr->{"usb_ieee"});
+			    $output .= "      Manufacturer: " .
+				$pr->{"usb_mfg"} .
+				"\n" if
+				defined($pr->{"usb_mfg"});
+			    $output .= "      Model:" .
+				$pr->{"usb_mdl"} . "\n" if
+				defined($pr->{"usb_mdl"});
+			    $output .= "      Description: " .
+				$pr->{"usb_des"} .
+				"\n" if
+				defined($pr->{"usb_des"});
+			    $output .= "      Command Set:" .
+				$pr->{"usb_cmd"} . "\n" if
+				defined($pr->{"usb_cmd"});
+			}
+			if (defined($pr->{"snmp_ieee"}) ||
+			    defined($pr->{"snmp_mfg"}) ||
+			    defined($pr->{"snmp_mdl"}) ||
+			    defined($pr->{"snmp_des"}) ||
+			    defined($pr->{"snmp_cmd"})) {
+			    $output .= "    SNMP\n";
+			    $output .= "      IEEE-1284 Device ID: " .
+				$pr->{"snmp_ieee"} . "\n" if
+				defined($pr->{"snmp_ieee"});
+			    $output .= "      Manufacturer: " .
+				$pr->{"snmp_mfg"} .
+				"\n" if
+				defined($pr->{"snmp_mfg"});
+			    $output .= "      Model:" .
+				$pr->{"snmp_mdl"} . "\n" if
+				defined($pr->{"snmp_mdl"});
+			    $output .= "      Description: " .
+				$pr->{"snmp_des"} .
+				"\n" if
+				defined($pr->{"snmp_des"});
+			    $output .= "      Command Set:" .
+				$pr->{"snmp_cmd"} . "\n" if
+				defined($pr->{"snmp_cmd"});
+			}
+		    }
+		} else {
+		    $output .= "$id|$make|$model\n";
+		}
+	    }
+	}
+    }
+ 
+    # XML footer
+    if ($format eq "xml") {
+	$output .= "</printers>\n";
+    }
+
+    # All drivers for a given printer (or all drivers)
+} elsif ($querytype =~ /^(drivers?)/i) {
+    my @drivers;
+    my $recdriver;
+    my $pdrivers;
+    my $localethresholds = {};
+    $moreinfo=1 if $onlylicensetext;
+    if ($p) {
+	# Get recommended driver for $printer
+	$recdriver = $p->{'driver'};
+
+	# Fetch list of all drivers for $printer
+	@drivers = $db->get_drivers_for_printer($printer);
+
+	if ($locale) {
+	    for my $d (@drivers) {
+		my $dr = $db->get_driver($d);
+		$pdrivers->{$dr->{'name'}} = $dr;
+		$dr->{'group'} = 'ungrouped' if
+		    !$dr->{'group'};
+		$dr->{'localesmatch'} = 0;
+		if ($dr->{'locales'}) {
+		    if (($dr->{'locales'} =~ /\bothers\b/i) &&
+			($locale =~ 
+			 /^([a-z][a-z]_[A-Z][A-Z]|[a-z][a-z]|[A-Z][A-Z])$/)) {
+			$dr->{'localesmatch'} = 10;
+		    }
+		    if ($locale =~ 
+			/^([a-z][a-z])_([A-Z][A-Z])$/) {
+			my $language = $1;
+			my $country = $2;
+			if ($dr->{'locales'} =~
+			    /\b$locale\b/) {
+			    $dr->{'localesmatch'} = 50;
+			} elsif ($dr->{'locales'} =~
+				 /$country\b/) {
+			    $dr->{'localesmatch'} = 40;
+			} elsif ($dr->{'locales'} =~
+				 /\b$language/) {
+			    $dr->{'localesmatch'} = 30;
+			} elsif ($dr->{'locales'} =~
+				 /\b$country/i) {
+			    $dr->{'localesmatch'} = 25;
+			} elsif ($dr->{'locales'} =~
+				 /$language\b/i) {
+			    $dr->{'localesmatch'} = 35;
+			}
+		    } elsif ($locale =~ /^([A-Z][A-Z])$/) {
+			if ($dr->{'locales'} =~ /$locale\b/) {
+			    $dr->{'localesmatch'} = 40;
+			} elsif ($dr->{'locales'} =~
+				 /\b$locale/i) {
+			    $dr->{'localesmatch'} = 25;
+			}
+		    } elsif ($locale =~ /^([a-z][a-z])$/) {
+			if ($dr->{'locales'} =~ /\b$locale/) {
+			    $dr->{'localesmatch'} = 30;
+			} elsif ($dr->{'locales'} =~
+				 /$locale\b/i) {
+			    $dr->{'localesmatch'} = 35;
+			}
+		    }
+		} else {
+		    if ($locale =~ 
+			/^([a-z][a-z]_[A-Z][A-Z]|[a-z][a-z]|[A-Z][A-Z])$/) {
+			$dr->{'localesmatch'} = 10;
+		    }
+		}
+		$localethresholds->{$dr->{'group'}} =
+		    $dr->{'localesmatch'} if
+			$dr->{'localesmatch'} >
+			$localethresholds->{$dr->{'group'}};
+	    }
+	}
+    } elsif ($driver && ($driver !~ /^all$/i)) {
+	# One single selected driver
+	@drivers = ($driver);
+    } else {
+	# Fetch list of all drivers
+	@drivers = $db->get_driverlist();
+    }
+
+    if ($format eq "xml") {
+	# XML header with optional printer ID
+	$output .= "<drivers" . 
+	    ($showprinterid && $printer && ($driver !~ /^all$/i)
+	     ? " printer=\"printer/$printer\"" : "") . ">\n";
+    } elsif ($showprinterid && $printer && ($driver !~ /^all$/i)) {
+	# Optional printer ID output in text format
+	$output .= "Printer: $printer\n";
+    }
+
+    # List entries
+    for my $d (sort { lc($a) cmp lc($b) } @drivers) {
+	my $haveppds = 0;
+	my $prexc = undef;
+	my @packages;
+	my $dr;
+	if ($moreinfo || $noobsoletes || $onlyfree || $onlynonfree ||
+	    $onlypatents || $nopatents ||
+	    $onlymanufacturer || $onlydownload || $onlyppdfiles ||
+	    $nolicensetext || $onlylicensetext || $origlicensetext ||
+	    $origlicenselink || $locale || $onlydrvpkg) {
+	    if ($pdrivers) {
+		$dr = $pdrivers->{$d};
+	    } else {
+		$dr = $db->get_driver($d);
+	    }
+	    if (defined($p->{'drivers'})) {
+		foreach my $pd (@{$p->{'drivers'}}) {
+		    if (($pd->{'id'} eq $d) &&
+			defined($pd->{'ppd'}) &&
+			$pd->{'ppd'} ne '') {
+			$haveppds = 1;
+			last;
+		    }
+		}
+	    }
+	    if ($moreinfo || $onlydrvpkg) {
+		my $drvmask = drivermask($dr, $d);
+		@packages =
+		    packagesformask($drvmask,
+				    join(",",
+					 ($sourcedrvpkg ? "src" : ""),
+					 ($nobinarydrvpkg ? "" :
+					  ($architectures ? "" : "bin")),
+					 ($architectures ?
+					  $architectures : ())),
+				    $packagesystem, $lsbversion);
+	    }
+	    next if $onlydrvpkg && (scalar(@packages) == 0);
+	    next if $onlyppdfiles && !$haveppds;
+	    next if $onlydownload &&
+		(scalar(@packages) == 0) && !$haveppds;
+	    next if $noobsoletes && defined($dr->{'obsolete'});
+	    next if $onlyfree && (defined($dr->{'free'}) &&
+				  ($dr->{'free'} eq "0"));
+	    next if $onlynonfree && (!defined($dr->{'free'}) ||
+				     ($dr->{'free'} ne "0"));
+	    next if $onlypatents && (!defined($dr->{'patents'}) ||
+				     ($dr->{'patents'} eq "0"));
+	    next if $nopatents && (defined($dr->{'patents'}) &&
+				   ($dr->{'patents'} ne "0"));
+	    next if $locale && ($dr->{'localesmatch'} <
+				$localethresholds->{$dr->{'group'}});
+	    next if $onlymanufacturer &&
+		(!defined($dr->{'manufacturersupplied'}) ||
+		 ($dr->{'manufacturersupplied'} eq "0") ||
+		 (defined($p->{'make'}) &&
+		  ($p->{'make'} !~
+		   m,^($dr->{'manufacturersupplied'})$,i)));
+	    if ($printer && defined($dr->{'printers'})) {
+		foreach my $pr (@{$dr->{'printers'}}) {
+		    if ($pr->{'id'} eq $printer) {
+			$prexc = $pr;
+			last;
+		    }
+		}
+	    }
+	}
+	if ($format eq "xml") {
+	    # XML output
+	    if ($moreinfo) {
+		$output .= "  <driver id=\"driver/" . $d . "\">\n";
+		if (!($onlylicensetext || $origlicensetext ||
+		      $origlicenselink)) {
+		    $output .= "    <name>" . $d . "</name>\n";
+		    $output .= ($d eq $recdriver ?
+				"    <recommended />\n" : "");
+		    $output .= "    <url>" . $dr->{'url'} . "</url>\n" if
+			defined($dr->{'url'});
+		    $output .= "    <obsolete replace=\"" .
+			$dr->{'obsolete'} .
+			"\" />\n" if
+			defined($dr->{'obsolete'});
+		    $output .= "    <supplier>" .
+			Foomatic::DB::htmlify($dr->{'supplier'}) .
+			"</supplier>\n" if
+			defined($dr->{'supplier'});
+		    if (defined($dr->{'manufacturersupplied'})) {
+			$output .= "    " .
+			    ($dr->{'manufacturersupplied'} eq "0"
+			     ? "<thirdpartysupplied />"
+			     : ($dr->{'manufacturersupplied'} eq "1"
+				? "<manufacturersupplied />"
+				: (!defined($p->{'make'})
+				   ? "<manufacturersupplied />"
+				   : ($p->{'make'} =~
+				      m,^($dr->{'manufacturersupplied'})$,i
+				      ? "<manufacturersupplied />"
+				      : "<thirdpartysupplied />")))) .
+				      "\n";
+		    }
+		    $output .= "    <license>" .
+			Foomatic::DB::htmlify($dr->{'license'}) .
+			"</license>\n" if
+			defined($dr->{'license'});
+		}
+		if (!$nolicensetext) {
+		    if (!($origlicensetext || $origlicenselink)) {
+			if (defined($dr->{'licenselink'})) {
+			    $output .= "    <licenselink>" . 
+				expandurl($dr->{'licenselink'}, 1) .
+				"</licenselink>\n";
+			    $output .= "    <licensetext>" . 
+				Foomatic::DB::htmlify
+				(downloadurl($dr->{'licenselink'})) .
+				"</licensetext>\n";
+			} elsif (defined($dr->{'licensetext'})) {
+			    $output .= "    <licensetext>" . 
+				Foomatic::DB::htmlify
+				($dr->{'licensetext'}) .
+				"</licensetext>\n";
+			}
+		    }
+		    if (defined($dr->{'origlicenselink'})) {
+			$output .= "    <origlicenselink>" . 
+			    expandurl($dr->{'origlicenselink'}, 1) .
+			    "</origlicenselink>\n" if
+			    !$origlicensetext;
+			$output .= "    <origlicensetext>" . 
+			    Foomatic::DB::htmlify
+			    (downloadurl($dr->{'origlicenselink'})) .
+			    "</origlicensetext>\n" if
+			    !$origlicenselink;
+		    } elsif (defined($dr->{'origlicensetext'})) {
+			$output .= "    <origlicensetext>" . 
+			    Foomatic::DB::htmlify
+			    ($dr->{'origlicensetext'}) .
+			    "</origlicensetext>\n" if
+			    !$origlicenselink;
+		    }
+		}
+		if (!($onlylicensetext || $origlicensetext ||
+		      $origlicenselink)) {
+		    $output .= "    " .
+			($dr->{'free'} eq "1" ? "<freesoftware />" :
+			 "<nonfreesoftware />") . "\n" if
+			 defined($dr->{'free'});
+		    $output .= "    " .
+			($dr->{'patents'} eq "1" ? "<patents />" :
+			 "<nopatents />") . "\n" if
+			 defined($dr->{'patents'});
+		    if (defined($dr->{'supportcontacts'})) {
+			$output .= "    <supportcontacts>\n";
+			for my $sc (@{$dr->{'supportcontacts'}}) {
+			    $output .= "      <supportcontact " .
+				join(" ",
+				     (defined($sc->{'level'}) ?
+				      "level=\"" . $sc->{'level'} . "\"" :
+				      ()),
+				     (defined($sc->{'url'}) ?
+				      "url=\"" . $sc->{'url'} .
+				      "\"" : ())) .
+				      ">" .
+				      Foomatic::DB::htmlify
+				      ($sc->{'description'}) .
+				      "</supportcontact>\n";
+			}
+			$output .= "    </supportcontacts>\n";
+		    }
+		    if (defined($dr->{'shortdescription'})) {
+			my $s = Foomatic::DB::htmlify
+			    ($dr->{'shortdescription'});
+			$output .= "    <shortdescription>" .
+			    $s . "</shortdescription>\n" if $s;
+		    }
+		    $output .= "    <execution>\n      " .
+			($dr->{'type'} eq "P" ? "<postscript />" :
+			 ($dr->{'type'} eq "G" ? "<ghostscript />" :
+			  ($dr->{'type'} eq "U" ? "<uniprint />" :
+			   ($dr->{'type'} eq "F" ? "<filter />" :
+			    ($dr->{'type'} eq "C" ? "<cups />" :
+			     ($dr->{'type'} eq "I" ? "<ijs />" :
+			      ($dr->{'type'} eq "O" ? "<opvp />" :
+			       ()))))))) . "\n    </execution>\n" if
+			       defined($dr->{'type'});
+		    $output .= "    <functionality>\n" if
+			defined($dr->{'drvmaxresx'}) ||
+			defined($dr->{'drvmaxresy'}) ||
+			defined($dr->{'drvcolor'}) ||
+			defined($dr->{'text'}) ||
+			defined($dr->{'lineart'}) ||
+			defined($dr->{'graphics'}) ||
+			defined($dr->{'photo'}) ||
+			defined($dr->{'load'}) ||
+			defined($dr->{'speed'}) ||
+			(defined($prexc) &&
+			 (defined($prexc->{'excmaxresx'}) ||
+			  defined($prexc->{'excmaxresy'}) ||
+			  defined($prexc->{'exccolor'}) ||
+			  defined($prexc->{'exctext'}) ||
+			  defined($prexc->{'exclineart'}) ||
+			  defined($prexc->{'excgraphics'}) ||
+			  defined($prexc->{'excphoto'}) ||
+			  defined($prexc->{'excload'}) ||
+			  defined($prexc->{'excspeed'})));
+		    if (defined($prexc) &&
+			defined($prexc->{'excmaxresx'})) {
+			$output .= "      <maxresx>" .
+			    $prexc->{'excmaxresx'} . "</maxresx>\n";
+		    } elsif (defined($dr->{'drvmaxresx'})) {
+			$output .= "      <maxresx>" .
+			    $dr->{'drvmaxresx'} . "</maxresx>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excmaxresy'})) {
+			$output .= "      <maxresy>" .
+			    $prexc->{'excmaxresy'} . "</maxresy>\n";
+		    } elsif (defined($dr->{'drvmaxresy'})) {
+			$output .= "      <maxresy>" .
+			    $dr->{'drvmaxresy'} . "</maxresy>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'exccolor'})) {
+			$output .= "      " .
+			    ($prexc->{'exccolor'} eq "1" ? "<color />" :
+			     "<monochrome />") . "\n";
+		    } elsif (defined($dr->{'drvcolor'})) {
+			$output .= "      " .
+			    ($dr->{'drvcolor'} eq "1" ? "<color />" :
+			     "<monochrome />") . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'exctext'})) {
+			$output .= "      <text>" .
+			    $prexc->{'exctext'} . "</text>\n";
+		    } elsif (defined($dr->{'text'})) {
+			$output .= "      <text>" .
+			    $dr->{'text'} . "</text>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'exclineart'})) {
+			$output .= "      <lineart>" .
+			    $prexc->{'exclineart'} . "</lineart>\n";
+		    } elsif (defined($dr->{'lineart'})) {
+			$output .= "      <lineart>" .
+			    $dr->{'lineart'} . "</lineart>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excgraphics'})) {
+			$output .= "      <graphics>" .
+			    $prexc->{'excgraphics'} . "</graphics>\n";
+		    } elsif (defined($dr->{'graphics'})) {
+			$output .= "      <graphics>" .
+			    $dr->{'graphics'} . "</graphics>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excphoto'})) {
+			$output .= "      <photo>" .
+				$prexc->{'excphoto'} . "</photo>\n";
+		    } elsif (defined($dr->{'photo'})) {
+			$output .= "      <photo>" .
+			    $dr->{'photo'} . "</photo>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excload'})) {
+			$output .= "      <load>" .
+			    $prexc->{'excload'} . "</load>\n";
+		    } elsif (defined($dr->{'load'})) {
+			$output .= "      <load>" .
+			    $dr->{'load'} . "</load>\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excspeed'})) {
+			$output .= "      <speed>" .
+			    $prexc->{'excspeed'} . "</speed>\n";
+		    } elsif (defined($dr->{'speed'})) {
+			$output .= "      <speed>" .
+			    $dr->{'speed'} . "</speed>\n";
+		    }
+		    $output .= "    </functionality>\n" if
+			defined($dr->{'drvmaxresx'}) ||
+			defined($dr->{'drvmaxresy'}) ||
+			defined($dr->{'drvcolor'}) ||
+			defined($dr->{'text'}) ||
+			defined($dr->{'lineart'}) ||
+			defined($dr->{'graphics'}) ||
+			defined($dr->{'photo'}) ||
+			defined($dr->{'load'}) ||
+			defined($dr->{'speed'}) ||
+			(defined($prexc) &&
+			 (defined($prexc->{'excmaxresx'}) ||
+			  defined($prexc->{'excmaxresy'}) ||
+			  defined($prexc->{'exccolor'}) ||
+			  defined($prexc->{'exctext'}) ||
+			  defined($prexc->{'exclineart'}) ||
+			  defined($prexc->{'excgraphics'}) ||
+			  defined($prexc->{'excphoto'}) ||
+			  defined($prexc->{'excload'}) ||
+			  defined($prexc->{'excspeed'})));
+		    if (scalar(@packages) > 0) {
+			$output .= "    <packages>\n";
+			my ($openedarch, $arch, $oldarch) = ("", "", "");
+			my ($pkgsys, $oldpkgsys) = ("", "");
+			my %pkgsysdone = ();
+			foreach my $pkg (@packages) {
+			    next if ($onlyscopes &&
+				     (($onlyscopes !~ /\ball\b/) &&
+				      ($onlyscopes !~
+				       /\b\Q$pkg->{'scope'}\E\b/))) ||
+				       ($notscopes &&
+					(($notscopes =~ /\ball\b/) ||
+					 ($notscopes =~
+					  /\b\Q$pkg->{'scope'}\E\b/)));
+			    $arch = $pkg->{'arch'};
+			    $pkgsys = $pkg->{'pkgsys'};
+			    $output .= "      </" . $openedarch . ">\n" if
+				$oldarch &&
+				($archs{$oldarch} ne $archs{$arch});
+			    if ($archs{$oldarch} ne $archs{$arch}) {
+				$output .= "      <" . $arch . ">\n";
+				$openedarch=$arch;
+			    }
+				next if $onlynewestdrvpkg &&
+				    ($archs{$arch} eq $archs{$oldarch}) &&
+				    (($pkgsys eq $oldpkgsys) ||
+				     $pkgsysdone{$pkgsys});
+			    $pkgsysdone{$pkgsys} = 1;
+			    $output .= "        <package file=\"" .
+				$pkg->{'file'} . "\">\n";
+			    $output .= "          <url>" .
+				($pkg->{'url'} !~ m!^(https?|ftp)://! ?
+				 $siteurl : "") .
+				 $pkg->{'url'} . "</url>\n";
+			    $output .= "          <realversion>" .
+				$pkg->{'realversion'} . "</realversion>\n";
+			    $output .= "          <version>" .
+				$pkg->{'version'} . "</version>\n";
+			    $output .= "          <release>" .
+				$pkg->{'release'} . "</release>\n";
+			    $output .= "          <lsbver>" .
+				$pkg->{'lsbver'} . "</lsbver>\n";
+			    $output .= "          <sortindex>" .
+				$pkg->{'sortindex'} . "</sortindex>\n";
+			    $output .= "          <text>" .
+				$pkg->{'text'} . "</text>\n";
+			    $output .= "          <arch>" .
+				$pkg->{'arch'} . "</arch>\n";
+			    $output .= "          <pkgsys>" .
+				$pkg->{'pkgsys'} . "</pkgsys>\n";
+			    $output .= "          <scope>" .
+				$pkg->{'scope'} . "</scope>\n";
+			    my $drlc = $pkg->{'basename'};
+			    $drlc =~ s/^openprinting-(ppds-|)//;
+			    $output .= "          <repositories>\n";
+			    if ($pkg->{'pkgsys'} =~ /^rpm$/) {
+				$output .= "            <yum>";
+				$output .= "[openprinting-" . $drlc .
+				    "-driver]\n";
+				$output .= "name=OpenPrinting LSB-" .
+				    $pkg->{'lsbver'} .
+				    "-based driver packages of \"" . $d .
+				    "\"\n";
+				$output .= "baseurl=" . $siteurl .
+				    $driverdirurl . "/components/lsb" .
+				    $pkg->{'lsbver'} . "/" . $drlc .
+				    "/RPMS\n";
+				$output .= "enabled=1\n";
+				$output .= "gpgcheck=0\n";
+				$output .= "</yum>\n";
+				$output .= "            <zypper>";
+				$output .= "zypper sa " . $siteurl .
+				    $driverdirurl . "/components/lsb" .
+				    $pkg->{'lsbver'} . "/" . $drlc .
+				    "/RPMS/ " . $drlc;
+				$output .= "</zypper>\n";
+			    }
+			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
+				$output .= "            <apt>";
+				$output .= "deb " . $siteurl .
+				    $driverdirurl . "/debian/ lsb" .
+				    $pkg->{'lsbver'} . " " . $drlc;
+				$output .= "</apt>\n";
+			    }
+			    $output .= "          </repositories>\n";
+			    $output .= "        </package>\n";
+			    $oldarch = $arch;
+			    $oldpkgsys = $pkgsys;
+			}
+			$output .= "      </" . $openedarch . ">\n"
+			    if $oldarch;
+			$output .= "    </packages>\n";
+		    }
+		    if ($haveppds) {
+			$output .= "    <ppds>\n";
+			foreach my $pd (@{$p->{'drivers'}}) {
+			    if (($pd->{'id'} eq $d) &&
+				defined($pd->{'ppd'}) &&
+				$pd->{'ppd'} ne '') {
+				$output .= "      <ppd>" .
+				    ($pd->{'ppd'} =~ m!^PPD/! ?
+				     $siteurl . $ppddirurl : "") .
+				     $pd->{'ppd'} . "</ppd>\n";
+			    }
+			}
+			$output .= "    </ppds>\n";
+		    }
+		    if (defined($dr->{requires}) &&
+			(scalar(@{$dr->{requires}}) > 0)) {
+			$output .= "    <requires>\n";
+			foreach my $req (@{$dr->{requires}}) {
+			    my $rdriver = $req->{'driver'};
+			    my $rversion = $req->{'version'};
+			    $output .= "      <driver" .
+				($rversion ?
+				 " version=\"" . 
+				 Foomatic::DB::htmlify($rversion) . "\"" :
+				 "") .
+				 ">" . $rdriver . "</driver>\n";
+			}
+			$output .= "    </requires>\n";
+		    }
+		}
+		$output .= "  </driver>\n";
+	    } else {
+		$output .= "  <driver" .
+		    ($d eq $recdriver ? " recommended=\"1\"" : "") . ">" .
+		    $d . "</driver>\n";
+	    }
+	} else {
+	    if ($onlylicensetext) {
+		if ($dr->{'licenselink'}) {
+		    $output = downloadurl($dr->{'licenselink'});
+		} else {
+		    my $lt = $dr->{'licensetext'};
+		    $lt =~ s/\n\s*/\n/g;
+		    $lt =~ s/^[\n\r\s]*//s;
+		    $lt =~ s/[\n\r\s]*$//s;
+		    $lt =~ s/\s*$//gm;
+		    $output .= $lt . "\n";
+		}
+	    } elsif ($origlicensetext) {
+		if ($dr->{'origlicenselink'}) {
+		    $output = downloadurl($dr->{'origlicenselink'});
+		} else {
+		    my $lt = $dr->{'origlicensetext'};
+		    $lt =~ s/\n\s*/\n/g;
+		    $lt =~ s/^[\n\r\s]*//s;
+		    $lt =~ s/[\n\r\s]*$//s;
+		    $lt =~ s/\s*$//gm;
+		    $output .= $lt . "\n";
+		}
+	    } elsif ($origlicenselink) {
+		$output = expandurl($dr->{'origlicenselink'}, 1);
+	    } else {
+		# Simple text output
+		$output .= $d . ($d eq $recdriver ? "*" : "") . "\n";
+		if ($moreinfo) {
+		    $output .= "  URL: " . $dr->{'url'} . "\n" if
+			defined($dr->{'url'});
+		    $output .= "  Obsolete, replacement: " .
+			$dr->{'obsolete'} . "\n" if
+			defined($dr->{'obsolete'});
+		    $output .= "  Supplier: " .
+			$dr->{'supplier'} .
+			"\n" if
+			defined($dr->{'supplier'});
+		    if (defined($dr->{'manufacturersupplied'})) {
+			$output .= "  Manufacturer-supplied: " .
+			    ($dr->{'manufacturersupplied'} eq "0"
+			     ? "No"
+			     : ($dr->{'manufacturersupplied'} eq "1"
+				? "Yes"
+				: (!defined($p->{'make'})
+				   ? "Yes"
+				   : ($p->{'make'} =~
+				      m,^($dr->{'manufacturersupplied'})$,i
+				      ? "Yes"
+				      : "No")))) . "\n";
+		    }
+		    $output .= "  License: " .
+			$dr->{'license'} . "\n" if
+			defined($dr->{'license'});
+		    if (!$nolicensetext) {
+			my $lt;
+			if (defined($dr->{'licenselink'})) {
+			    $output .= "  License link: " .
+				expandurl($dr->{'licenselink'}, 1) . "\n";
+			    $lt = downloadurl($dr->{'licenselink'});
+			} elsif (defined($dr->{'licensetext'})) {
+			    $lt = $dr->{'licensetext'};
+			}
+			if ($lt) {
+			    $lt =~ s/\n\s*/\n    /gs;
+			    $lt =~ s/^[\n\r\s]*//s;
+			    $lt =~ s/[\n\r\s]*$//s;
+			    $lt =~ s/\s*$//gm;
+			    $output .= "  License text:\n    " .
+				$lt . "\n";
+			}
+			if (defined($dr->{'origlicenselink'})) {
+			    $output .= "  Original License link: " .
+				expandurl($dr->{'origlicenselink'}, 1) .
+				"\n";
+			    $lt = downloadurl($dr->{'origlicenselink'});
+			} elsif (defined($dr->{'origlicensetext'})) {
+			    $lt = $dr->{'origlicensetext'};
+			}
+			if ($lt) {
+			    $lt =~ s/\n\s*/\n    /gs;
+			    $lt =~ s/^[\n\r\s]*//s;
+			    $lt =~ s/[\n\r\s]*$//s;
+			    $lt =~ s/\s*$//gm;
+			    $output .= "  Original License text:\n    " .
+				$lt . "\n";
+			}
+		    }
+		    $output .= "  Free Software: " .
+			($dr->{'free'} eq "1" ? "Yes" : "No") . "\n" if
+			defined($dr->{'free'});
+		    $output .= "  Patented algorithms: " .
+			($dr->{'patents'} eq "1" ? "Yes" : "No") . "\n" if
+			defined($dr->{'patents'});
+		    if (defined($dr->{'supportcontacts'})) {
+			for my $sc (@{$dr->{'supportcontacts'}}) {
+			    $output .= "  Support contact: " . 
+				$sc->{'url'} . ", " .
+				$sc->{'description'} . " (" .
+				$sc->{'level'} . ")\n";
+			}
+		    }
+		    if (defined($dr->{'shortdescription'})) {
+			my $s = $dr->{'shortdescription'};
+			$s =~ s/(<\s*p\s*\/?\s*>\s*|<\s*br\s*\/?\s*>\s*)+/ /g;
+			$s =~ s/[\s\n]+/ /gs;
+			$s =~ s/^ //;
+			$s =~ s/ $//;
+			$output .= "  Short Description: " . $s . "\n" if $s;
+		    }
+		    $output .= "  Driver type: " .
+			$driver_types{$dr->{'type'}} . "\n" if
+			defined($dr->{'type'});
+		    if (defined($prexc) &&
+			defined($prexc->{'excmaxresx'})) {
+			$output .= "  Max. X Resolution: " .
+			    $prexc->{'excmaxresx'} . "\n";
+		    } elsif (defined($dr->{'drvmaxresx'})) {
+			$output .= "  Max. X Resolution: " .
+			    $dr->{'drvmaxresx'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excmaxresy'})) {
+			$output .= "  Max. Y Resolution: " .
+			    $prexc->{'excmaxresy'} . "\n";
+		    } elsif (defined($dr->{'drvmaxresy'})) {
+			$output .= "  Max. Y Resolution: " .
+			    $dr->{'drvmaxresy'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'exccolor'})) {
+			$output .= "  Color output: " .
+			    ($dr->{'exccolor'} eq "1" ? "Yes" : "No")
+			    . "\n";
+		    } elsif (defined($dr->{'drvcolor'})) {
+			$output .= "  Color output: " .
+			    ($dr->{'drvcolor'} eq "1" ? "Yes" : "No") .
+			    "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'exctext'})) {
+			$output .= "  Text printing support: " .
+			    $prexc->{'exctext'} . "\n";
+		    } elsif (defined($dr->{'text'})) {
+			$output .= "  Text printing support: " .
+			    $dr->{'text'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'exclineart'})) {
+			$output .= "  Line art printing support: " .
+			    $prexc->{'exclineart'} . "\n";
+		    } elsif (defined($dr->{'lineart'})) {
+			$output .= "  Line art printing support: " .
+			    $dr->{'lineart'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excgraphics'})) {
+			$output .= "  Graphics printing support: " .
+			    $prexc->{'excgraphics'} . "\n";
+		    } elsif (defined($dr->{'graphics'})) {
+			$output .= "  Graphics printing support: " .
+			    $dr->{'graphics'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excphoto'})) {
+			$output .= "  Photo printing support: " .
+			    $prexc->{'excphoto'} . "\n";
+		    } elsif (defined($dr->{'photo'})) {
+			$output .= "  Photo printing support: " .
+			    $dr->{'photo'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excload'})) {
+			$output .= "  System resource consumption: " .
+			    $prexc->{'excload'} . "\n";
+		    } elsif (defined($dr->{'load'})) {
+			$output .= "  System resource consumption: " .
+			    $dr->{'load'} . "\n";
+		    }
+		    if (defined($prexc) &&
+			defined($prexc->{'excspeed'})) {
+			$output .= "  Rendering speed: " .
+			    $prexc->{'excspeed'} . "\n";
+		    } elsif (defined($dr->{'speed'})) {
+			$output .= "  Rendering speed: " .
+			    $dr->{'speed'} . "\n";
+		    }
+		    if (scalar(@packages) > 0) {
+			my ($arch, $oldarch) = ("", "");
+			my ($pkgsys, $oldpkgsys) = ("", "");
+			my %pkgsysdone = ();
+			foreach my $pkg (@packages) {
+			    next if ($onlyscopes &&
+				     (($onlyscopes !~ /\ball\b/) &&
+				      ($onlyscopes !~
+				       /\b\Q$pkg->{'scope'}\E\b/))) ||
+				       ($notscopes &&
+					(($notscopes =~ /\ball\b/) ||
+					 ($notscopes =~
+					  /\b\Q$pkg->{'scope'}\E\b/)));
+			    $arch = $pkg->{'arch'};
+			    $pkgsys = $pkg->{'pkgsys'};
+			    $output .= ($arch ne "src" ?
+					"  Packages for " . $arch :
+					"  Source packages") . "\n" if
+					$archs{$oldarch} ne $archs{$arch};
+			    next if $onlynewestdrvpkg &&
+				($archs{$arch} eq $archs{$oldarch}) &&
+				(($pkgsys eq $oldpkgsys) ||
+				 $pkgsysdone{$pkgsys});
+			    $pkgsysdone{$pkgsys} = 1;
+			    $output .= "    File: " .
+				$pkg->{'file'} . "\n";
+			    $output .= "      URL: " .
+				($pkg->{'url'} !~ m!^(https?|ftp)://! ?
+				 $siteurl : "") .
+				 $pkg->{'url'} . "\n";
+			    $output .= "      Real Version: " .
+				$pkg->{'realversion'} . "\n";
+			    $output .= "      Version: " .
+				$pkg->{'version'} . "\n";
+			    $output .= "      Release: " .
+				$pkg->{'release'} . "\n";
+			    $output .= "      LSB version: " .
+				$pkg->{'lsbver'} . "\n";
+			    $output .= "      Sorting index: " .
+				$pkg->{'sortindex'} . "\n";
+			    $output .= "      Link text: " .
+				$pkg->{'text'} . "\n";
+			    $output .= "      Architecture: " .
+				$pkg->{'arch'} . "\n";
+			    $output .= "      Packaging System: " .
+				$pkg->{'pkgsys'} . "\n";
+			    $output .= "      Scope: " .
+				$pkg->{'scope'} . "\n";
+			    $output .= "      Repositories\n";
+			    my $drlc = $pkg->{'basename'};
+			    $drlc =~ s/^openprinting-(ppds-|)//;
+			    if ($pkg->{'pkgsys'} =~ /^rpm$/) {
+				$output .= "        yum:\n";
+				$output .= "          [openprinting-"
+				    . $drlc . "-driver]\n";
+				$output .= "          name=OpenPrinting " .
+				    "LSB-" . $pkg->{'lsbver'} .
+				    "-based driver packages of \"" . $d .
+				    "\"\n";
+				$output .= "          baseurl=" .
+				    $siteurl . $driverdirurl .
+				    "/components/lsb" . $pkg->{'lsbver'} .
+				    "/" . $drlc . "/RPMS\n";
+				$output .= "          enabled=1\n";
+				$output .= "          gpgcheck=0\n";
+				$output .= "        zypper: ";
+				$output .= "zypper sa " . $siteurl .
+				    $driverdirurl . "/components/lsb" .
+				    $pkg->{'lsbver'} . "/" . $drlc .
+				    "/RPMS/ " . $drlc . "\n";
+			    }
+			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
+				$output .= "        apt: ";
+				$output .= "deb " . $siteurl .
+				    $driverdirurl . "/debian/ lsb" .
+				    $pkg->{'lsbver'} . " " . $drlc . "\n";
+			    }
+			    $oldarch = $arch;
+			    $oldpkgsys = $pkgsys;
+			}
+		    }
+		    if ($haveppds) {
+			$output .= "  PPD files:\n";
+			foreach my $pd (@{$p->{'drivers'}}) {
+			    if (($pd->{'id'} eq $d) &&
+				defined($pd->{'ppd'}) &&
+				$pd->{'ppd'} ne '') {
+				$output .= "    " . 
+				    ($pd->{'ppd'} =~ m!^PPD/! ?
+				     $siteurl . $ppddirurl : "") .
+				     $pd->{'ppd'} . "\n";
+			    }
+			}
+		    }
+		    if (defined($dr->{requires}) &&
+			(scalar(@{$dr->{requires}}) > 0)) {
+			$output .= "  Requires:\n";
+			foreach my $req (@{$dr->{requires}}) {
+			    my $rdriver = $req->{'driver'};
+			    my $rversion = $req->{'version'};
+			    $output .= "    Driver: " . $rdriver .
+				($rversion ? " ($rversion)" : "") .
+				"\n";
+			}
+		    }
+		}
+	    }
+	}
+    }
+    # XML footer
+    if ($format eq "xml") {
+	$output .= "</drivers>\n";
+    }
+} else {
+    $output .= "<invalidquerytype />\n" if $format eq "xml";
+}
+
+print $output;
+
+exit 0;
+
+sub expandurl {
+    # Expand links to downloadable files
+    # $mode = 0: Site-internal link
+    # $mode = 1: Absolute link
+    my ($link, $mode) = @_;
+    $link =~ s/^\s*?(.*)\s*?$/$1/s;
+    if ($link !~ m!^((https?|ftp)://|/)!) {
+	$link = "foomatic-db/db/source/" . $link;
+    }
+    if ($mode && ($link !~ m!^(https?|ftp)://!)) {
+	$link = $siteurl . "/" . $link;
+    }
+    return $link;
+}
+
+sub downloadurl {
+    # Download an URL and return the content
+    my ($url) = @_;
+    use Foomatic::DB;
+    my $db = new Foomatic::DB;
+    return $db->getpage(expandurl($url, 1), 1);
+}

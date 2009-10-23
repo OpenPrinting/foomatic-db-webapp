@@ -1,0 +1,4 @@
+server: @dbServer@
+user: @dbUser@
+password: @dbPass@
+database: @db@
