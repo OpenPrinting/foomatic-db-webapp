@@ -23,6 +23,9 @@ if ($_GET['show'] == "1") {
 }
 
 $ppdcmdline = "cd foomatic/foomatic-db-engine; ./foomatic-ppdfile -p $printer -d $driver";
+if ($_GET['shortgui'] == "on") {
+   $ppdcmdline .= " -w";    
+}
 
 passthru($ppdcmdline);
 
