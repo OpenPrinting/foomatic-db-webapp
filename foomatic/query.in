@@ -4,7 +4,6 @@
 # formats, for example for printer setup tools so that they can find and
 # download driver packages.
 
-use CGI qw/ :standard :html3 /;
 use Digest::MD5 qw(md5_hex);
 use strict;
 
@@ -19,10 +18,19 @@ my $ppddirurl = "@PPDDIRURL@";
 my $driverdirurl = "@DRIVERDIRURL@";
 
 my $output;
-my $query = new CGI;
+
+# Read command line
+my %param;
+foreach my $arg (@ARGV) {
+    if ($arg =~ /^([^=]+)=(.*)$/) {
+	my $key = $1;
+	my $value = $2;
+	$param{$key} = $value;
+    }
+}
 
 # Determine output format
-my $format = $query->param('format');
+my $format = $param{'format'};
 if ($format && ($format !~ /^(text|xml)$/i)) {
     die ("Invalid output format: $format\n");
 }
@@ -32,37 +40,37 @@ if (!$format) {
 }
 
 # Read out the other options
-my $querytype = $query->param('type');
-my $make = $query->param('make');
-my $model = $query->param('model');
-my $printer = $query->param('printer');
-my $driver = $query->param('driver');
-my $uilanguage = $query->param('uilanguage');
-my $moreinfo = ($query->param('moreinfo') ? 1 : 0);
-my $showprinterid = ($query->param('showprinterid') ? 1 : 0);
-my $onlydownload = ($query->param('onlydownload') ? 1 : 0);
-my $onlyppdfiles = ($query->param('onlyppdfiles') ? 1 : 0);
-my $onlydrvpkg = ($query->param('onlydriverpackages') ? 1 : 0);
-my $sourcedrvpkg = ($query->param('sourcedriverpackages') ? 1 : 0);
-my $nobinarydrvpkg = ($query->param('nobinarydriverpackages') ? 1 : 0);
-my $onlynewestdrvpkg = ($query->param('onlynewestdriverpackages') ? 1 : 0);
-my $architectures = $query->param('architectures');
-my $onlyscopes = $query->param('onlyscopes');
-my $notscopes = $query->param('notscopes');
-my $locale = $query->param('locale');
-my $noobsoletes = ($query->param('noobsoletes') ? 1 : 0);
-my $onlyfree = ($query->param('onlyfree') ? 1 : 0);
-my $onlynonfree = ($query->param('onlynonfree') ? 1 : 0);
-my $onlypatents = ($query->param('onlypatents') ? 1 : 0);
-my $nopatents = ($query->param('nopatents') ? 1 : 0);
-my $onlymanufacturer = ($query->param('onlymanufacturer') ? 1 : 0);
-my $nolicensetext = ($query->param('nolicensetext') ? 1 : 0);
-my $onlylicensetext = ($query->param('onlylicensetext') ? 1 : 0);
-my $origlicensetext = ($query->param('origlicensetext') ? 1 : 0);
-my $origlicenselink = ($query->param('origlicenselink') ? 1 : 0);
-my $packagesystem = $query->param('packagesystem');
+my $querytype = $param{'type'};
+my $make = $param{'make'};
+my $model = $param{'model'};
+my $printer = $param{'printer'};
+my $driver = $param{'driver'};
+my $uilanguage = $param{'uilanguage'};
+my $moreinfo = ($param{'moreinfo'} ? 1 : 0);
+my $showprinterid = ($param{'showprinterid'} ? 1 : 0);
+my $onlydownload = ($param{'onlydownload'} ? 1 : 0);
+my $onlyppdfiles = ($param{'onlyppdfiles'} ? 1 : 0);
+my $onlydrvpkg = ($param{'onlydriverpackages'} ? 1 : 0);
+my $sourcedrvpkg = ($param{'sourcedriverpackages'} ? 1 : 0);
+my $nobinarydrvpkg = ($param{'nobinarydriverpackages'} ? 1 : 0);
+my $onlynewestdrvpkg = ($param{'onlynewestdriverpackages'} ? 1 : 0);
+my $architectures = $param{'architectures'};
+my $onlyscopes = $param{'onlyscopes'};
+my $notscopes = $param{'notscopes'};
+my $locale = $param{'locale'};
+my $noobsoletes = ($param{'noobsoletes'} ? 1 : 0);
+my $onlyfree = ($param{'onlyfree'} ? 1 : 0);
+my $onlynonfree = ($param{'onlynonfree'} ? 1 : 0);
+my $onlypatents = ($param{'onlypatents'} ? 1 : 0);
+my $nopatents = ($param{'nopatents'} ? 1 : 0);
+my $onlymanufacturer = ($param{'onlymanufacturer'} ? 1 : 0);
+my $nolicensetext = ($param{'nolicensetext'} ? 1 : 0);
+my $onlylicensetext = ($param{'onlylicensetext'} ? 1 : 0);
+my $origlicensetext = ($param{'origlicensetext'} ? 1 : 0);
+my $origlicenselink = ($param{'origlicenselink'} ? 1 : 0);
+my $packagesystem = $param{'packagesystem'};
 $packagesystem = "all" if !$packagesystem;
-my $lsbversion = $query->param('lsbversion');
+my $lsbversion = $param{'lsbversion'};
 $lsbversion = "all" if !$lsbversion;
 
 # Check whether there is really given a manufacturer name with the "make"
