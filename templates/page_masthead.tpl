@@ -66,14 +66,14 @@
 				<div id="navbar">
 					<div id="primary-nav">
 						<ul>
-							<li><a href="/" id="activetab" title="Home"><span>Home</span></a></li>
-							<li><a href="/about" title="About Us"><span>About Us</span></a></li>
-							<li><a href="/news-media" title="News &amp; Media"><span>News &amp; Media</span></a></li>
-							<li><a href="/programs" title="Programs"><span>Programs</span></a></li>
-							<li><a href="/collaborate" title="Collaborate"><span>Collaborate</span></a></li>
-							<li><a href="/participate" title="Participate"><span>Participate</span></a></li>
-							<li><a href="/events" title="Events"><span>Events</span></a></li>
-							<li><a href="/linux-training" title="Training"><span>Training</span></a></li>
+							<li><a href="{$MAINURL}/" id="activetab" title="Home"><span>Home</span></a></li>
+							<li><a href="{$MAINURL}/about" title="About Us"><span>About Us</span></a></li>
+							<li><a href="{$MAINURL}/news-media" title="News &amp; Media"><span>News &amp; Media</span></a></li>
+							<li><a href="{$MAINURL}/programs" title="Programs"><span>Programs</span></a></li>
+							<li><a href="{$MAINURL}/collaborate" title="Collaborate"><span>Collaborate</span></a></li>
+							<li><a href="{$MAINURL}/participate" title="Participate"><span>Participate</span></a></li>
+							<li><a href="{$MAINURL}/events" title="Events"><span>Events</span></a></li>
+							<li><a href="{$MAINURL}/linux-training" title="Training"><span>Training</span></a></li>
 						</ul>
 					</div>
 					
