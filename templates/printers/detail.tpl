@@ -8,8 +8,13 @@
 	{section name=printer loop=$data}
 
 	<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
-		Recommended Driver: <a href="{$BASEURL}driver/{$data[printer].default_driver}" title="{$data[printer].default_driver}">{$data[printer].default_driver}</a><br>
-		Driver URL: <a href="{$data[printer].url}">{$data[printer].url}</a><br>
+		Recommended Driver: <a href="{$BASEURL}driver/{$data[printer].default_driver}" title="{$data[printer].default_driver}">{$data[printer].default_driver}</a>
+		( 
+			<a href="{$data[printer].url}">Homepage</a> 
+			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
+			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">download PPD</a> 
+		)
+		<br>
 		Contrib URL: <a href="{$data[printer].contrib_url}">{$data[printer].contrib_url}</a>
 	</p>
 	
