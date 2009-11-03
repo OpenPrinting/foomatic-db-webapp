@@ -28,6 +28,7 @@ $DB = DB::getInstance();
 $SMARTY->assign('CONF',$CONF);
 $SMARTY->assign('PAGE',$PAGE);
 $SMARTY->assign('BASEURL',$CONF->baseURL);
+$SMARTY->assign('MAINURL',$CONF->mainURL);
 $SMARTY->assign_by_ref('SESSION',$SESSION);
 $SESSION->startupTasks();
 $SMARTY->assign_by_ref('SESSION',$SESSION);
