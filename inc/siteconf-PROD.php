@@ -6,6 +6,7 @@ class SiteConfig {
 		// %s will be replaced with the page title as set per page
 		
 	public $baseURL = '/'; // with tailing slash, from document root
+	public $mainURL = 'http://www.linuxfoundation.org'; //main site for tabs
 
 	public $dbUser = 'opuser';
 	public $dbPass = 'Goose5ai';
