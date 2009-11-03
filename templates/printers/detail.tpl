@@ -12,7 +12,7 @@
 		( 
 			<a href="{$data[printer].url}">Homepage</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
-			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">download PPD</a> 
+			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
 		)
 		<br>
 		Contrib URL: <a href="{$data[printer].contrib_url}">{$data[printer].contrib_url}</a>
