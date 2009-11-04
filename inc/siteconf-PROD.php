@@ -7,6 +7,7 @@ class SiteConfig {
 		
 	public $baseURL = '/'; // with tailing slash, from document root
 	public $mainURL = 'http://www.linuxfoundation.org'; //main site for tabs
+	public $mainURI = '/collaborate/workgroups/openprinting/'; // with tailing slash, from document root
 
 	public $dbUser = 'opuser';
 	public $dbPass = 'Goose5ai';

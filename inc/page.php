@@ -37,17 +37,19 @@ class Page {
 	public function addGNavItems() {
 		global $CONF; 
 		$b = $CONF->baseURL;		
+		$mb = $CONF->mainURL . $CONF->mainURI;
 		
 		//Create subnavigation
-		$this->addGNavItem('OpenPrinting',$b,'home');
-		$this->addGNavItem('Database',$b.'database','db');
+		$this->addGNavItem('OpenPrinting',$mb,'home');
+		$this->addGNavItem('Database',$mb.'database/databaseintro','db');
 		$this->addGNavItem('Printers',$b.'printers','printer');
 		$this->addGNavItem('Drivers',$b.'drivers','driver');
-		$this->addGNavItem('FAQ',$b.'faq','faq');
-		$this->addGNavItem('Foomatic',$b.'foomatic','foo');
-		$this->addGNavItem('Articles',$b.'articles','articles');
-		$this->addGNavItem('Documentation',$b.'docs','doc');
-		$this->addGNavItem('Developers',$b.'developers','dev');
+		$this->addGNavItem('FAQ',$mb.'database/indexfaq','faq');
+		$this->addGNavItem('Foomatic',$mb.'database/foomatic','foo');
+		$this->addGNavItem('Articles',$mb.'database/articles','articles');
+		$this->addGNavItem('Projects',$mb.'database/projects','projects');
+		$this->addGNavItem('Documentation',$mb.'database/docs','doc');
+		$this->addGNavItem('Developers',$mb.'development','dev');
 	}
 }
 
