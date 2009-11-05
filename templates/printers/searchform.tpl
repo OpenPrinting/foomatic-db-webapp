@@ -3,7 +3,7 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h1>Printer listings</h1>
+	<h1>Printer Listings</h1>
 	
 	<p>Introduction text goes here.</p>
 		

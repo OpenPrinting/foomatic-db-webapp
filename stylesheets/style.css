@@ -714,7 +714,7 @@ a:active{
 
 
 
-.breadcrumb{font-size:10px; color: #999; text-transform:capitalize;margin:0 0 5px;padding:0 0 5px 0;}
+.breadcrumb{font-size:10px; color: #999; margin:0 0 5px;padding:0 0 5px 0;}
 
 .breadcrumb a{
 	background: transparent url(../images/icons/bullet.gif) no-repeat center right;

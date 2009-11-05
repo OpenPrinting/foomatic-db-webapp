@@ -1,9 +1,9 @@
 <?php
 include('inc/common.php');
-$PAGE->setPageTitle('Printer Search');
+$PAGE->setPageTitle('Printer: ' . $_GET['manufacturer'] . ' ' . $_GET['model']);	
 $PAGE->setActiveID('printer');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
-$PAGE->addBreadCrumb($_GET['manufacturer'] . '/' . $_GET['model']);	
+$PAGE->addBreadCrumb($_GET['manufacturer'] . ' ' . $_GET['model']);	
 
 $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 $SMARTY->assign('model',urldecode($_GET['model']) );

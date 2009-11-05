@@ -59,7 +59,7 @@
 					</div>
 					
 					<div id="lf-logo">
-						<a href="http://linuxfoundation.org"></a>
+						<a href="{$MAINURL}"></a>
 					</div>				
 				</div>
 				

@@ -2,7 +2,7 @@
 include('inc/common.php');
 
 
-$PAGE->setPageTitle('Driver List');
+$PAGE->setPageTitle('Printer Driver List');
 $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 

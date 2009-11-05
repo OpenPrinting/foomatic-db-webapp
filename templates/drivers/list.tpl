@@ -3,7 +3,7 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h1>Driver listings</h1>
+	<h1>Printer Driver Listings</h1>
 
 	<p>This is our list of printer drivers for Linux and Unix. You may view information for any given driver and download
 		available files by clicking the relevant links. If you know of any driver not represented here, please let us know!</p>
