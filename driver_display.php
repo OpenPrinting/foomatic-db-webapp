@@ -8,7 +8,6 @@ if(empty($_GET['driver'])) {
 
 $PAGE->setPageTitle('Driver List');
 $PAGE->setActiveID('driver');
-$PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');	
 $PAGE->addBreadCrumb($_GET['driver']);	
 

@@ -5,7 +5,6 @@ $SESSION->pageLock('driver_upload');
 
 $PAGE->setPageTitle('Driver Upload');
 $PAGE->setActiveID('driver');
-$PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 $PAGE->addBreadCrumb('Upload New Driver');
 

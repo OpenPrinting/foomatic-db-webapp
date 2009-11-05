@@ -16,9 +16,11 @@ class Page {
 	}
 	
 	public function __construct() {
-		global $CONF; $b = $CONF->baseURL;
-		$this->addBreadcrumb('The Linux Foundation','http://www.linuxfoundation.org/');
-		$this->addBreadcrumb('OpenPrinting',$b);
+		global $CONF;
+		$m = $CONF->mainURL;		
+		$mb = $CONF->mainURL . $CONF->mainURI;
+		$this->addBreadcrumb('The Linux Foundation',$m);
+		$this->addBreadcrumb('OpenPrinting',$mb);
 		$this->addGNavItems();
 	}
 	

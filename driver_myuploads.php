@@ -6,7 +6,6 @@ if(!$SESSION->checkPermission('driver_noqueue')) $SMARTY->assign('UNTRUSTED',1);
 
 $PAGE->setPageTitle('Uploads and Statuses');
 $PAGE->setActiveID('driver');
-$PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 $PAGE->addBreadCrumb('Uploads and Statuses');
 

@@ -2,9 +2,8 @@
 include('inc/common.php');
 $PAGE->setPageTitle('Printer Search');
 $PAGE->setActiveID('printer');
-$PAGE->addBreadCrumb('Database');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
-
+$PAGE->addBreadCrumb('Printer Search');
 
 $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 $SMARTY->assign('model',$_GET['model']);

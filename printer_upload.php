@@ -5,8 +5,8 @@ include('inc/common.php');
 
 $PAGE->setPageTitle('Printer Upload');
 $PAGE->setActiveID('printer');
-$PAGE->addBreadCrumb('Database', $CONF->baseURL.'printers/');
-$PAGE->addBreadCrumb('Printers');
+$PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
+$PAGE->addBreadCrumb('Printer Upload');
 
 $SMARTY->display('printers/upload.tpl');
 	
