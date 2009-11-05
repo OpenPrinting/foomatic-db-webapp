@@ -15,6 +15,9 @@
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
 		)
 		<br>
+		if there is at least 1 driver_asset tbl for driver id... show: 
+		Generic Instructions: CUPS, LPD, LPRng, PPR, PDQ, no spooler
+		<br>
 		Contrib URL: <a href="{$data[printer].contrib_url}">{$data[printer].contrib_url}</a>
 	</p>
 	
