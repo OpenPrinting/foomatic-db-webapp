@@ -1,0 +1,597 @@
+<?php
+require_once("db.php");
+require_once("margin.php");
+require_once("translation.php");
+require_once("driver_dependency.php");
+require_once("driver_package.php");
+require_once("driver_support_contact.php");
+require_once("driver_printer_association.php");
+
+class Driver
+{
+  // Boolean flag to determine if data is present
+  private $loaded;
+	
+  // This contains the XML data
+  public $id;
+  public $name;
+  public $driver_group;
+  public $locales;
+  public $obsolete;
+  public $pcdriver;
+  public $url;
+  public $supplier;
+  public $thirdpartysupplied;
+  public $manufacturersupplied;
+  public $license;
+  public $licensetext;
+  public $licenselink;
+  public $nonfreesoftware;
+  public $patents;
+  public $shortdescription;
+  public $maxresx;
+  public $maxresy;
+  public $color;
+  public $text;
+  public $lineart;
+  public $graphics;
+  public $photo;
+  public $load_time;
+  public $speed;
+  public $execution;
+  public $nopjl;
+  public $nopageaccounting;
+  public $prototype;
+  public $pdf_prototype;
+  public $ppdentry;
+  public $comments;
+
+  // Contains of list of objects of respective data
+  public $packages;
+  public $dependencies;
+  public $supportcontacts;
+  public $margins;
+  public $printers;
+
+  public function __construct($data = null) {
+    $this->packages = null;
+    $this->dependencies = null;
+    $this->supportcontacts = null;
+    $this->margins = null;
+    $this->printers = null;
+	
+    if ($data != null) {
+      switch((string)gettype($data)) {
+      case 'array':
+	$this->id = (string)$data['id'];
+	$this->name = (string)$data['name'];
+	$this->driver_group = (string)$data['driver_group'];
+	$this->locales = (string)$data['locales'];
+	$this->obsolete = (string)$data['obsolete'];
+	$this->pcdriver = (string)$data['pcdriver'];
+	$this->url = (string)$data['url'];
+	$this->supplier = (string)$data['supplier'];
+	$this->thirdpartysupplied = (bool)$data['thirdpartysupplied'];
+	$this->manufacturersupplied = (string)$data['manufacturersupplied'];
+	$this->license = (string)$data['license'];
+	$this->licensetext = (string)$data['licensetext'];
+	$this->licenselink = (string)$data['licenselink'];
+	$this->nonfreesoftware = (bool)$data['nonfreesoftware'];
+	$this->patents = (bool)$data['patents'];
+	$this->shortdescription = (string)$data['shortdescription'];
+	$this->max_res_x = (string)$data['max_res_x'];
+	$this->max_res_y = (string)$data['max_res_y'];
+	$this->color = (int)$data['color'];
+	$this->text = (string)$data['text'];
+	$this->lineart = (string)$data['lineart'];
+	$this->graphics = (string)$data['graphics'];
+	$this->photo = (string)$data['photo'];
+	$this->load_time = (string)$data['load_time'];
+	$this->speed = (string)$data['speed'];
+	$this->execution = (string)$data['execution'];
+	$this->nopjl = (string)$data['no_pjl'];
+	$this->nopageaccounting = (string)$data['no_pageaccounting'];
+	$this->prototype = (string)$data['prototype'];
+	$this->pdf_prototype = (string)$data['pdf_prototype'];
+	$this->ppdentry = (string)$data['ppdentry'];
+	$this->comments = (string)$data['comments'];
+	$this->loaded = true;
+	break;
+			
+      case 'object':
+	if (get_class($data) == "SimpleXMLElement") {
+	  list(,$this->id) = preg_split("/\//", $data['id']);
+	  $this->name = (string)$data->name;
+	  $this->driver_group = (string)$data->group;
+	  $this->locales = (string)$data->locales;
+	  if (array_key_exists('obsolete', $data)) {
+	    $this->obsolete = (string)$data->obsolete['replace'];
+	  }
+	  $this->pcdriver = (string)$data->pcdriver;
+	  $this->url = (string)$data->url;
+	  if ($data->license->en) {
+	    $this->supplier = (string)$data->supplier->en;
+	  } else {
+	    $this->supplier = (string)$data->supplier;
+	  }
+	  $this->thirdpartysupplied = !array_key_exists('manufacturersupplied', $data);
+	  if (!$this->thirdpartysupplied) {
+	    $this->manufacturersupplied = (string)$data->manufacturersupplied;
+	  }
+	  if ($data->license->en) {
+	    $this->license = (string)$data->license->en;
+	  } else {
+	    $this->license = (string)$data->license;
+	  }
+	  $this->licensetext = (string)$data->licensetext->en;
+	  $this->licenselink = (string)$data->licensetext->en['url'];
+	  $this->nonfreesoftware = (bool)array_key_exists('nonfreesoftware', $data);
+	  $this->patents = (bool)array_key_exists('patents', $data);
+	  $this->shortdescription = (string)$data->shortdescription->en;
+	  $this->comments = (string)$data->comments->en;
+
+	  // <functionality>
+	  if ($data->functionality != false) {
+	    if ($data->functionality->maxresx != false) {
+	      $this->max_res_x = (string)$data->functionality->maxresx;
+	    } else {
+	      $this->max_res_x = -1;
+	    }
+	    if ($data->functionality->maxresy != false) {
+	      $this->max_res_y = (string)$data->functionality->maxresy;
+	    } else {
+	      $this->max_res_y = -1;
+	    }
+	    if (array_key_exists('color', $data->functionality)) {
+	      $this->color = 1;
+	    } else if (array_key_exists('monochrome', $data->functionality)) {
+	      $this->color = 0;
+	    } else {
+	      $this->color = -1;
+	    }
+	    if ($data->functionality->text != false) {
+	      $this->text = (string)$data->functionality->text;
+	    } else {
+	      $this->text = -1;
+	    }
+	    if ($data->functionality->lineart != false) {
+	      $this->lineart = (string)$data->functionality->lineart;
+	    } else {
+	      $this->lineart = -1;
+	    }
+	    if ($data->functionality->graphics != false) {
+	      $this->graphics = (string)$data->functionality->graphics;
+	    } else {
+	      $this->graphics = -1;
+	    }
+	    if ($data->functionality->photo != false) {
+	      $this->photo = (string)$data->functionality->photo;
+	    } else {
+	      $this->photo = -1;
+	    }
+	    if ($data->functionality->load != false) {
+	      $this->load_time = (string)$data->functionality->load;
+	    } else {
+	      $this->load_time = -1;
+	    }
+	    if ($data->functionality->speed != false) {
+	      $this->speed = (string)$data->functionality->speed;
+	    } else {
+	      $this->speed = -1;
+	    }
+	  } else {
+	    $this->max_res_x = -1;
+	    $this->max_res_y = -1;
+	    $this->color = -1;
+	    $this->text = -1;
+	    $this->lineart = -1;
+	    $this->graphics = -1;
+	    $this->photo = -1;
+	    $this->load_time = -1;
+	    $this->speed = -1;
+	  }
+	  // </functionality>
+				
+	  // <execution>
+	  if ($data->execution != false) {
+	    $this->nopjl = (bool)array_key_exists('nopjl', $data->execution);
+	    $this->nopageaccounting = (bool)array_key_exists('nopageaccounting', $data->execution);
+	    $this->prototype = (string)$data->execution->prototype;
+	    $this->pdf_prototype = (string)$data->execution->prototype_pdf;
+	    $this->ppdentry = (string)$data->execution->ppdentry;
+	    if ($data->execution->margins != false) $this->margins = new Margin($data->execution->margins, null, $this->id);
+	    if ($data->execution->requires != false) {
+	      $i = 0;
+	      $this->dependencies = array();
+	      foreach ($data->execution->requires as $dependency) {
+		$this->dependencies[$i] = new DriverDependency($this->id, $dependency);
+		$i++;
+	      }
+	    }
+	
+	    unset($data->execution->nopjl);
+	    unset($data->execution->nopageaccounting);
+	    unset($data->execution->prototype);
+	    unset($data->execution->prototype_pdf);
+	    unset($data->execution->ppdentry);
+	    unset($data->execution->margins);
+	    unset($data->execution->requires);
+	    // Remove also the entry coming from lines which are commented
+	    // out in the XML file
+	    unset($data->execution->comment);
+	    $this->execution = (string)key($data->execution);
+	  }
+	  // </execution>
+	}
+	$this->loaded = true;
+	break;
+      }
+      // Prepare the translation data
+      if ($data->supplier) {
+	$this->translation["supplier"] = new Translation($data->supplier, "driver", array("id" => $this->id), "supplier");
+      }
+      if ($data->license) {
+	$this->translation["license"] = new Translation($data->license, "driver", array("id" => $this->id), "license");
+      }
+      if ($data->licensetext) {
+	$this->translation["licensetext"] = new Translation($data->licensetext, "driver", array("id" => $this->id), "licensetext");
+      }
+      if ($data->licensetext) {
+	$this->translation["licenselink"] = new Translation($data->licensetext, "driver", array("id" => $this->id), "licenselink");
+      }
+      if ($data->shortdescription) {
+	$this->translation["shortdescription"] = new Translation($data->shortdescription, "driver", array("id" => $this->id), "shortdescription");
+      }
+      if ($data->comments) {
+	$this->translation["comments"] = new Translation($data->comments, "driver", array("id" => $this->id), "comments");
+      }
+
+      // Create supportcontacts list
+      if ($data->supportcontacts && $data->supportcontacts->supportcontact) {
+	$i = 0;
+	$this->supportcontacts = array();
+	foreach ($data->supportcontacts->supportcontact as $supportcontact) {
+	  $this->supportcontacts[$i] = new DriverSupportContact($this->id, $supportcontact);
+	  $i++;
+	}
+      }
+	
+      // Create packages list
+      if ($data->packages && $data->packages->package) {
+	$i = 0;
+	$this->packages = array();
+	foreach ($data->packages->package as $package) {
+	  $this->packages[$i] = new DriverPackage($this->id, $package);
+	  $i++;
+	}
+      }
+
+      // Create printers list
+      if ($data->printers && $data->printers->printer) {
+	$i = 0;
+	$this->printers = array();
+	foreach ($data->printers->printer as $printer) {
+	  $this->printers[$i] = new DriverPrinterAssociation($this->id, $printer);
+	  $i++;
+	}
+      }
+
+    }
+  }
+
+  public function loadXMLFile($filename) {
+    if (!file_exists($filename)) {
+      return false;
+    }
+    $fh = fopen($filename, "r");
+    if ($fh) {
+      $data = fread($fh, filesize($filename));
+      return $this->loadXMLString($data);
+    }
+    return false;
+  }
+
+  /*
+   * Initialize class from an XML string
+   * @return bool True if initialization was successful
+   * @param $data string Contains the XML as a string
+   */
+  public function loadXMLString($data) {
+    $xml = simplexml_load_string($data);
+    if (!$xml) {
+      return false;
+    }
+	
+    $this->__construct($xml);
+
+    return $this->loaded;
+  }
+
+  public function loadDB($id, DB $db = null) {
+    if ($id == null) {
+      return false;
+    }
+	
+    if ($db == null) {
+      $db = DB::getInstance();
+    }
+	
+    // Clear any previous data present
+    unset($this->translation);
+    unset($this->supportcontacts);
+    unset($this->dependencies);
+    unset($this->printers);
+    unset($this->packages);
+    $this->margins = null;
+	
+    $id = mysql_real_escape_string($id);
+
+    // Load the translations
+    foreach(array('supplier', 'license', 'licensetext', 'licenselink', 'shortdescription', 'comments') as $field) {
+      $this->translation[$field] = new Translation(null, "driver", array("id" => $this->id), $field);
+      $this->translation[$field]->loadDB("driver", array("id" => $this->id), $field, $db);
+    }
+
+    // Prepare the query string for extracting main driver details
+    $query = "select * from driver where id=\"$id\"";
+    $result = $db->query($query);
+
+    if ($result == null) {
+      return false;
+    }
+    $row = mysql_fetch_assoc($result);
+    $this->__construct($row);
+    mysql_free_result($result);
+	
+    // Prepare the query string for extracting details about the driver's support contacts
+    $query = "select * from driver_support_contact where driver_id=\"{$this->id}\"";
+    $result = $db->query($query);
+
+    if ($result) {
+      while($row = mysql_fetch_assoc($result)) {
+	$this->supportcontacts[sizeof($this->supportcontacts)] = new DriverSupportContact($this->id, $row);
+      }
+    }
+    mysql_free_result($result);
+	
+    // Prepare the query string for extracting details about the driver's dependencies
+    $query = "select * from driver_dependency where driver_id=\"{$this->id}\"";
+    $result = $db->query($query);
+	
+    if ($result) {
+      while($row = mysql_fetch_assoc($result)) {
+	$this->dependencies[sizeof($this->dependencies)] = new DriverDependency($this->id, $row);
+      }
+    }
+    mysql_free_result($result);
+	
+    // Prepare the query string for extracting details about the driver's packages
+    $query = "select * from driver_package where driver_id=\"{$this->id}\"";
+    $result = $db->query($query);
+
+    if ($result) {
+      while($row = mysql_fetch_assoc($result)) {
+	$this->packages[sizeof($this->packages)] = new DriverPackage($this->id, $row);
+      }
+    }
+    mysql_free_result($result);
+	
+    // Prepare the query string for extracting details about the printers that work with this driver
+    $query = "select * from driver_printer_assoc where driver_id=\"{$this->id}\"";
+    $result = $db->query($query);
+
+    if ($result) {
+      while($row = mysql_fetch_assoc($result)) {
+	$this->printers[sizeof($this->printers)] = new DriverPrinterAssociation($this->id, $row);
+      }
+    }
+    mysql_free_result($result);
+	
+    return true;
+  }
+
+  public function saveDB(DB $db = null) {
+    if ($db == null) {
+      $db = DB::getInstance();
+    }
+
+    if (!$this->loaded) return false;
+	
+    $props = array();
+    $props['name'] = $this->name;
+    $props['driver_group'] = $this->driver_group;
+    $props['locales'] = $this->locales;
+    $props['obsolete'] = $this->obsolete;
+    $props['pcdriver']= $this->pcdriver;
+    $props['url'] = $this->url;
+    $props['supplier'] = $this->supplier;
+    $props['thirdpartysupplied'] = $this->thirdpartysupplied;
+    $props['manufacturersupplied'] = $this->manufacturersupplied;
+    $props['license'] = $this->license;
+    $props['licensetext'] = $this->licensetext;
+    $props['licenselink'] = $this->licenselink;
+    $props['nonfreesoftware'] = $this->nonfreesoftware;
+    $props['patents'] = $this->patents;
+    $props['shortdescription'] = $this->shortdescription;
+    $props['max_res_x'] = $this->max_res_x;
+    $props['max_res_y'] = $this->max_res_y;
+    $props['color'] = $this->color;
+    $props['text'] = $this->text;
+    $props['lineart'] = $this->lineart;
+    $props['graphics'] = $this->graphics;
+    $props['photo'] = $this->photo;
+    $props['load_time'] = $this->load_time;
+    $props['speed'] = $this->speed;
+    $props['execution'] = $this->execution;
+    $props['no_pjl'] = $this->nopjl;
+    $props['no_pageaccounting'] = $this->nopageaccounting;
+    $props['prototype'] = $this->prototype;
+    $props['pdf_prototype'] = $this->pdf_prototype;
+    $props['ppdentry'] = $this->ppdentry;
+    $props['comments'] = $this->comments;
+	
+    // Find out if there is already an entry present and if so, remove it
+    // before creating a new one
+    $query = "select * from driver where id=\"{$this->id}\"";
+    $result = $db->query($query);
+    $count = mysql_num_rows($result);
+    mysql_free_result($result);
+    if ($count) {
+      if (!$this->removeFromDB($this->id, $db)) {
+	return false;
+      }
+    }
+
+    // Prepare the query string to insert a new record
+    $query = "insert into driver(";
+    $fields = "id,";
+    $values = "\"{$this->id}\",";
+    foreach($props as $key=>$value) {
+      $fields .= "$key,";
+      if (((string)gettype($value) == 'integer') and
+	  ((int)$value == -1)) {
+	$values .= "NULL,";
+      } else {
+	$values .= "\"".mysql_real_escape_string($value)."\",";
+      }
+    }
+    $fields[strlen($fields) - 1] = ')';
+    $values[strlen($values) - 1] = ')';
+    $query .= $fields." values(".$values;
+    $result = $db->query($query);
+    if ($result == null) {
+      echo "[ERROR] While saving driver data...\n".$db->getError()."\n";
+      return false;
+    }
+	
+    // Trigger the save of translation data
+    if ($this->translation) {
+      foreach ($this->translation as $field => $trobj) {
+	if (!$trobj->saveDB($db)) {
+	  echo "[ERROR] While saving driver translation data for the \"$field\" field...\n".$db->getError()."\n";
+	  return false;
+	}
+      }
+    }
+			
+    // Trigger the save of package data
+    if ($this->packages) {
+      foreach ($this->packages as $package) {
+	if (!$package->saveDB($db)) {
+	  echo "[ERROR] While saving driver package data...\n".$db->getError()."\n";
+	  return false;
+	}
+      }
+    }
+	
+    // Trigger the save of support contact data
+    if ($this->supportcontacts) {
+      foreach ($this->supportcontacts as $supportcontact) {
+	if (!$supportcontact->saveDB($db)) {
+	  echo "[ERROR] While saving driver supportcontact data...\n".$db->getError()."\n";
+	  return false;
+	}
+      }
+    }
+	
+    // Trigger the save of dependency data
+    if ($this->dependencies) {
+      foreach ($this->dependencies as $dependency) {
+	if (!$dependency->saveDB($db)) {
+	  echo "[ERROR] While saving driver dependency data...\n".$db->getError()."\n";
+	  return false;
+	}
+      }
+    }
+	
+    // Trigger the save of associated printers data
+    if ($this->printers) {
+      foreach ($this->printers as $printer) {
+	if (!$printer->saveDB($db)) {
+	  echo "[ERROR] While saving driver printer data...\n".$db->getError()."\n";
+	  return false;
+	}
+      }
+    }
+	
+    // Trigger the save of the margins
+    if ($this->margins) {
+      if (!$this->margins->saveDB($db)) {
+	echo "[ERROR] While saving driver's margin specs...\n".$db->getError()."\n";
+	return false;
+      }
+    }
+
+    return true;
+  }
+
+  public function removeFromDB($id, DB $db = null) {
+    if ($id == null) {
+      return false;
+    }
+	
+    if ($db == null) {
+      $db = DB::getInstance();
+    }
+	
+    $id = mysql_real_escape_string($id);
+
+    // Prepare the query string for removing the main driver entry
+    $query = "delete from driver where id=\"$id\";";
+    // Remove the main entry, this automatically removes also the
+    // translations, dependencies, support contacts, and package masks
+    $result = $db->query($query);
+    if ($result == null) {
+      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
+      return false;
+    }
+
+    // Now delete the unprintable margin data. All driver-specific and
+    // printer/driver-combo-specific definitions belong to the driver entry.
+    // This means that we have to delete all margin definitions with the ID
+    // of this driver
+    $query = "delete from margin where driver_id=\"$id\";";
+    // Execute the deletion of margin definitions. This does not delete any
+    // items in other tables
+    $result = $db->query($query);
+    if ($result == null) {
+      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
+    }
+
+    // Complete the deletion by removing the driver-related printer/driver
+    // association data.
+    // Completely delete printer/driver associations which come only from the
+    // driver entry (check also if the printer entry does not exist and
+    // also delete in that case)
+    $query = "delete driver_printer_assoc " .
+      "from driver_printer_assoc left join printer " .
+      "on driver_printer_assoc.printer_id=printer.id " .
+      "where driver_printer_assoc.driver_id=\"$id\" and " .
+      "(fromprinter=false or printer.id is null);";
+    $result = $db->query($query);
+    if ($result == null) {
+      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
+    }
+    // Remove driver-specific items from the printer/driver association
+    // otherwise
+    $query = "update driver_printer_assoc set " .
+      "max_res_x=NULL, max_res_y=NULL, color=NULL, text=NULL, lineart=NULL, " . 
+      "graphics=NULL, photo=NULL, load_time=NULL, speed=NULL, ppdentry=NULL, " .
+      "comments=NULL, fromdriver=false " .
+      "where driver_id=\"$id\";";
+    $result = $db->query($query);
+    if ($result == null) {
+      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
+    }
+    $query = "update driver_printer_assoc_translation set " .
+      "comments=NULL " .
+      "where driver_id=\"$id\";";
+    $result = $db->query($query);
+    if ($result == null) {
+      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
+    }
+	
+    return true;
+  }
+}
+?>
