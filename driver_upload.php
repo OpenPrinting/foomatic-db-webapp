@@ -1,7 +1,7 @@
 <?php
 include('inc/common.php');
 
-//$SESSION->pageLock('driver_upload');
+$SESSION->pageLock('driver_upload');
 
 $PAGE->setPageTitle('Driver Upload');
 $PAGE->setActiveID('driver');
@@ -73,6 +73,13 @@ if(isset($_GET['upload']) && $um->hasFiles()) {
 }
 
 		//$SMARTY->assign('data',$data);
+
+		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
+		$auth = $USER->fetchUserRoles();
+
+		$SMARTY->assign('isUploader', $USER->isUploader($auth) );
+		$SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
+		
 		$SMARTY->display('drivers/upload.tpl');
 
 ?>		

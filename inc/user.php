@@ -32,11 +32,41 @@ class User {
 		}
 	}
 
-	public function isValid() { return $this->valid; }
-	public function getUserName() { return $this->userName; }
-	public function getFullName() { return $this->fullName; }
-	public function getEmail() { return $this->email; }
+	public function isValid() { 
+		return $this->valid; 
+	}
 	
+	public function getUserName() { 
+		return $this->userName; 
+	}
+	
+	public function getFullName() { 
+		return $this->fullName; 
+	}
+	public function getEmail() { 
+		return $this->email; 
+	}
+	
+	public function isUploader($arr){
+		if(array_key_exists('1',$arr)){
+			if($arr['1'] == "Uploader"){
+				return true;
+			}
+		}
+		else{
+			return false;
+		}
+	}
+	public function isTrustedUploader($arr){
+		if(array_key_exists('2',$arr)){
+			if($arr['2'] == "Trusted Uploader"){
+				return true;
+			}
+		}
+		else{
+			return false;
+		}
+	}
 
 	// Return true if permission is granted, false if otherwise
 	public function checkPermission($priv) {

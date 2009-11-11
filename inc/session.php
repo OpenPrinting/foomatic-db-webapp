@@ -22,7 +22,9 @@ class Session {
 		return Session::$self;
 	}
 
-	public function isLoggedIn() { return $this->loggedIn; }
+	public function isLoggedIn() { 
+		return $this->loggedIn; 
+	}
 	
 	public function authenticate($u,$p) {
 		if(empty($u) || empty($p)) {

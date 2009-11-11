@@ -23,8 +23,9 @@
 		<li><a href="404.php?id=doc">Some other documentation link</a></li>
 	</ul>
 
-{if $SESSION->isloggedIn()}
-	{if $USER->isUploader() || $USER->isTrustedUploader}
+{if $isLoggedIn == "1" }
+	{if $isUploader || $isTrustedUploader }
+
 		
 <br>	
 <form method="post" action="/drivers/upload" enctype="multipart/form-data">
@@ -213,7 +214,7 @@
 	is okay.
 </p>
 
-{if !$USER->isTrustedUploader() }
+{if !$isTrustedUploader }
 	<p><strong>Note:</strong> your driver will be placed in the moderation queue and will be reviewed by an administrator
 		before being added to the database.</p>
 {/if}
@@ -222,7 +223,7 @@
 <input type="file" name="payload"></input>
 
 
-<br>
+<br><br>
 <input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>
 
 </form>
