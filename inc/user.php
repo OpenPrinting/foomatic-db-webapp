@@ -47,6 +47,10 @@ class User {
 		return $this->email; 
 	}
 	
+	public function getPerms(){
+		return $this->permissions;
+	}
+	
 	public function isUploader($arr){
 		if(array_key_exists('1',$arr)){
 			if($arr['1'] == "Uploader"){
