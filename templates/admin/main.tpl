@@ -11,7 +11,7 @@
 	
 	{if $ALLOW_ROLE_ADMIN}
 		<h2>User roles and permissions</h2>
-		<p>To manage user roles, permissions, and memberships, visit the <a href="{$BASEURL}admin/roleadmin.php">roles administration page.</a></p>
+		<p>To manage user roles, permissions, and memberships, visit the <a href="{$BASEURL}admin/roleadmin">roles administration page.</a></p>
 	{/if}
 	
 </div>
