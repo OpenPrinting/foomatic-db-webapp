@@ -1,5 +1,6 @@
 <?php
 include('inc/common.php');
+
 $PAGE->setPageTitle('Printer: ' . $_GET['manufacturer'] . ' ' . $_GET['model']);	
 $PAGE->setActiveID('printer');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
