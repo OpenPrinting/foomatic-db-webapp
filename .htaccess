@@ -7,7 +7,9 @@ RewriteRule ^login/?$ login.php		[L]
 RewriteRule ^logout/?$ login.php?doLogout		[L]
 
 RewriteRule ^admin/?$ admin_home.php		[L]
-RewriteRule ^admin/([^/]+)$ admin_$1		[L]
+
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^admin/([^/]+)$ admin_$1.php?%1		[L]
 
 RewriteRule ^query.cgi/?$ query.php               [L]
 RewriteRule ^ppd-o-matic.cgi/?$ ppd-o-matic.php               [L]
