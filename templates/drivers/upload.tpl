@@ -24,7 +24,7 @@
 	</ul>
 
 {if $isLoggedIn == "1" }
-	{if $isUploader || $isTrustedUploader }
+	{if $isUploader || $isTrustedUploader || $isAdmin }
 
 		
 <br>	
@@ -214,9 +214,10 @@
 	is okay.
 </p>
 
-{if !$isTrustedUploader }
+{if !$isTrustedUploader && !$isAdmin }
 	<p><strong>Note:</strong> your driver will be placed in the moderation queue and will be reviewed by an administrator
 		before being added to the database.</p>
+		<input type="hidden" name="submitQueue" value="1" >
 {/if}
 	
 <input type="hidden" name="submitFile" value="1" >
@@ -224,7 +225,7 @@
 
 
 <br><br>
-<input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>
+<input type="submit" name="submit" value="Submit Driver"> <a href="/printers/upload">Cancel</a>
 
 </form>
 
