@@ -173,6 +173,7 @@
 		</td>
 	</tr>
 </table>
+<br>
 <input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>
 </form>
 
