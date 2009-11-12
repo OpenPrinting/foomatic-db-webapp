@@ -22,7 +22,7 @@
 			
 			<form class="small-form" method="post" action="/printers?action=search">
 			<!-- manufacturer combobox -->
-			<table cellpadding="4" width="100%">
+			<table cellpadding="4" width="100%" style="border-bottom:1px solid #ddd;">
 				<tr>
 					<td width="45%" valign="top">
 						<b>Manufacturer </b><br>
@@ -47,7 +47,26 @@
 
 			</table>
 			</form>
-
+			<form class="small-form" method="post" action="/printers?action=searchall">
+			<table cellpadding="4">
+				<tr>
+					<td valign="top">
+						<b>List by Manufacturer </b><br>
+						<select id="showby_manufacturer" name="showby_manufacturer">
+						<option value="">--select manufacturer--</option>
+						{foreach from=$makes item=make}
+							<option value="{$make|escape}">{$make|escape}</option>
+						{foreachelse}
+							<option value="0">None Avail</option>
+						{/foreach}
+						</select>
+					</td>
+					<td>
+						<input type="submit" value="Show All" />
+					</td>
+				</tr>
+			</table>
+			</form>
 		</fieldset>
 
 	
