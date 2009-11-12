@@ -16,11 +16,12 @@
 			<strong>{$errorMessage}</strong>
 		</div>
 	{/if}
-	<form class="small-form" method="post" action="/printers?action=search">
+	
 		<fieldset class="wide-label clearfix">
 			<legend>Query printer database</legend>
 			
-				<!-- manufacturer combobox -->
+			<form class="small-form" method="post" action="/printers?action=search">
+			<!-- manufacturer combobox -->
 			<table cellpadding="4" width="100%">
 				<tr>
 					<td width="45%" valign="top">
@@ -45,9 +46,10 @@
 				</tr>
 
 			</table>
+			</form>
 
 		</fieldset>
-	</form>
+
 	
 
 	<h2>Add a new printer</h2>

@@ -12,9 +12,14 @@
 <p>Note that if you make a mistake you can edit everything at any time after submitting. So do not create another printer entry if you are not content. Simply correct your entry where needed.</p>
 <br>	
 
+{if $isLoggedIn == "1" }
+
 <h2>Printer Information</h2>
 <br>
 <form action="/printers/upload" method="post">
+	{if $isTrusted || $isAdmin }
+		<input type="hidden" value="1" name="noqueue"/>
+	{/if}	
 	<input type="hidden" value="1.1" name="basev"/>
 	<input type="hidden" value="" name="backupmake"/>
 	<input type="hidden" value="" name="backupmodel"/>
@@ -24,11 +29,9 @@
 	<br><br>
 	<table cellpadding="4" style="background: #eee; border: 1px solid #ccc;">
 		<tr bgcolor="#dfdfdf">
-			<td align="right">Your e-Mail:</td> 
-			<td><input type="text" size="32" tabindex="1" name="email"/> </td>
-			<td><p>Your e-mail address. Not required, but if you supply it, we can ask you in the 
-			case that something is not clear in your new printer entry. We will not give your 
-			address to any third party, nor will we display it on web pages without any protection.</p></td>
+			<td align="right">Release Date:</td> 
+			<td><input type="text" size="32" tabindex="1" name="release_date"/> </td>
+			<td><p>Future release date</p></td>
 		</tr> 
 		<tr bgcolor="#efefef">
 			<td align="right">New entry:</td> 
@@ -634,6 +637,7 @@
 <br>
 <input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>
 </form>
+{/if}
 
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
