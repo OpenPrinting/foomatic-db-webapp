@@ -5,6 +5,11 @@
 
 	<h1>Add a New Printer</h1>
 
+<p>There are a fair number of things kept in this database about each printer. Unfortunately, this makes for a somewhat long form.</p>
+
+<p>Please take a few minutes and fill out anything you can. Note that your printer entry is only useful if the reader can see how he gets the printer to work (driver, where to get the driver if it is not yet listed at OpenPrinting, to which printer is yours compatible, special tricks, ...) or if he gets the message that this model definitely does not work. If you get red warning/error messages, read them and try to fix the problems. Use "Save Anyway" only if you are absolutely sure that you have done it the right way.</p>
+
+<p>Note that if you make a mistake you can edit everything at any time after submitting. So do not create another printer entry if you are not content. Simply correct your entry where needed.</p>
 <br>	
 
 <h2>Printer Information</h2>
