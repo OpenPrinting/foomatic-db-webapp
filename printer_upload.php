@@ -1,7 +1,8 @@
 <?php
 include('inc/common.php');
-//$SESSION->pageLock('printer_upload');
-//if(!$SESSION->checkPermission('printer_noqueue')) $SMARTY->assign('UNTRUSTED',1);
+
+$SESSION->pageLock('printer_upload');
+
 
 $PAGE->setPageTitle('Printer Upload');
 $PAGE->setActiveID('printer');
@@ -30,6 +31,14 @@ $SMARTY->assign('scaleOption', array(
 $SMARTY->assign('scaleSelect', '');
 
 
+		if($SESSION->checkPermission('printer_noqueue')) $SMARTY->assign('isTrusted',1);
+		
+		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
+		$auth = $USER->fetchUserRoles();
+		
+		$adminPerms = $USER->getPerms();
+		$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
+		
 $SMARTY->display('printers/upload.tpl');
 	
 ?>
