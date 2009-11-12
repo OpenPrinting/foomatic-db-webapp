@@ -3,6 +3,7 @@ include('inc/common.php');
 $PAGE->setPageTitle('Printers by Manufacturer');
 $PAGE->setActiveID('printer');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
+$PAGE->addBreadCrumb($_GET['manufacturer']);
 
 if($_GET['manufacturer'] ==""){
 	header('location: /printers');
