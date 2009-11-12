@@ -3,5 +3,13 @@ INSERT INTO `openprinting`.`web_permissions` (
 `title`
 )
 VALUES (
-'printer_upload', 'allow printer uploading'
+'printer_upload', 'Allow printer uploading'
+);
+
+INSERT INTO `openprinting`.`web_permissions` (
+`privName` ,
+`title`
+)
+VALUES (
+'printer_noqueue', 'Bypass printer upload moderation queue'
 );
