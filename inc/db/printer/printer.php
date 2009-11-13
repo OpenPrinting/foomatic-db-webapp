@@ -28,6 +28,7 @@ class Printer
   public $ppdentry;
   public $contrib_url;
   public $comments;
+  public $unverified;
 
   public function __construct($data = null) {
     $this->mechanism = array();
@@ -53,6 +54,7 @@ class Printer
 	  $this->ppdentry = (string)$xml->ppdentry;
 	  $this->contrib_url = (string)$xml->contrib_url;
 	  $this->comments = (string)$xml->comments->en;
+	  $this->unverified = (bool)array_key_exists('unverified', $xml);
 
 	  // <mechanism>
 	  if ($xml->mechanism != false)
@@ -60,7 +62,7 @@ class Printer
 	      $mechanism = &$xml->mechanism;
 	      $this->mechanism['resx'] = '';
 	      $this->mechanism['resy'] = '';
-	      if (array_key_exists("resolution", $this->mechanism)) {
+	      if (array_key_exists("resolution", $mechanism)) {
 		$this->mechanism['resx'] = (string)$mechanism->resolution->dpi->x;
 		$this->mechanism['resy'] = (string)$mechanism->resolution->dpi->y;
 	      }
@@ -209,7 +211,7 @@ class Printer
 	}
       }
       // </drivers>
-		}
+    }
   }
     
   /**
@@ -242,6 +244,104 @@ class Printer
     return false;
   }
 	
+  public function toXML($indent = 0) {
+    $is = str_pad("", $indent);
+    if (!$this->id) return false;
+    $xmlstr = "$is<printer id=\"printer/{$this->id}\">\n";
+    if ($this->make)
+	$xmlstr .= "$is  <make>" . htmlspecialchars($this->make) . "</make>\n";
+    if ($this->model) 
+      $xmlstr .= "$is  <model>" . htmlspecialchars($this->model) .
+	"</model>\n";
+    if ($this->pcmodel)
+      $xmlstr .= "$is  <pcmodel>{$this->pcmodel}</pcmodel>\n";
+    $mechanism = "";
+    if ($this->mechanism['type'])
+      $mechanism .= "$is    <{$this->mechanism['type']} />\n";
+    if ($this->mechanism['color'])
+      $mechanism .= "$is    <color />\n";
+    $res = "";
+    if ($this->mechanism['resx'])
+      $res .= "$is        <x>{$this->mechanism['resx']}</x>\n";
+    if ($this->mechanism['resy'])
+      $res .= "$is        <y>{$this->mechanism['resy']}</y>\n";
+    if ($res)
+      $mechanism .= "$is    <resolution>\n$is      <dpi>\n$res" .
+	"$is      </dpi>\n$is    </resolution>\n";
+    if ($this->margins)
+      $mechanism .= $this->margins->toXML($indent + 4);
+    if ($mechanism)
+      $xmlstr .= "$is  <mechanism>\n$mechanism$is  </mechanism>\n";
+    if ($this->url)
+      $xmlstr .= "$is  <url>" . htmlspecialchars($this->url) . "</url>\n";
+    $lang = "";
+    foreach(array('postscript', 'pdf', 'pcl', 'lips', 'escp', 'escp2',
+		  'hpgl2', 'tiff') as $pdl) {
+      if ($this->lang[$pdl] != false) {
+	$lang .= "$is    <{$pdl} ";
+	if ($this->lang["{$pdl}_level"])
+	  $lang .= "level=\"" . htmlspecialchars($this->lang["{$pdl}_level"]) .
+	     "\" ";
+	$lang .= "/>\n";
+      }
+    }
+    if ($this->lang['proprietary']) $lang .= "$is    <proprietary />\n";
+    if ($this->lang['pjl']) $lang .= "$is    <pjl />\n";
+    if ($this->lang['text'])
+	$lang .= "$is    <text>\n$is      <charset>" . $this->lang['text'] .
+	    "</charset>\n$is    </text>\n";
+    if ($lang)
+	$xmlstr .= "$is  <lang>\n$lang$is  </lang>\n";
+    $autodetect = "";
+    foreach(array('general', 'parallel', 'usb', 'snmp') as $connection) {
+      $components = "";
+      foreach(array('ieee1284', 'commandset', 'description',
+		    'manufacturer', 'model') as $component) {
+	if ($this->autodetect[$connection][$component] != false)
+	  $components .= "$is      <$component>" .
+	    htmlspecialchars($this->autodetect[$connection][$component]) .
+	    "</$component>\n";
+      }
+      if ($components)
+	$autodetect .= "$is    <$connection>\n$components" .
+	  "$is    </$connection>\n";
+    }
+    if ($autodetect)
+      $xmlstr .= "$is  <autodetect>\n$autodetect" .
+	"$is  </autodetect>\n";
+    if ($this->functionality)
+      $xmlstr .= "$is  <functionality>{$this->functionality}" .
+	"</functionality>\n";
+    if ($this->default_driver)
+      $xmlstr .= "$is  <driver>{$this->default_driver}</driver>\n";
+    if ($this->drivers != false) {
+      $drvlist = "";
+      foreach($this->drivers as $driver) {
+	$drvlist .= $driver->toXML($indent + 4, true);
+      }
+      if ($drvlist)
+	$xmlstr .= "$is  <drivers>\n" . $drvlist . "$is  </drivers>\n";
+    }
+    if ($this->ppdentry)
+      $xmlstr .= "$is  <ppdentry>" . htmlspecialchars($this->ppdentry) .
+      "</ppdentry>\n";
+    if ($this->contrib_url)
+      $xmlstr .= "$is  <contrib_url>" .
+	htmlspecialchars($this->contrib_url) .
+	"</contrib_url>\n";
+    if ($this->comments != false) {
+      $xmlstr .= "$is  <comments>\n$is    <en>";
+      $xmlstr .= htmlspecialchars($this->comments);
+      $xmlstr .= "</en>\n";
+      if ($this->translation["comments"])
+	$xmlstr .= $this->translation["comments"]->toXML($indent + 4);
+      $xmlstr .= "$is  </comments>\n";
+    }
+    $xmlstr .= "$is</printer>\n";
+
+    return $xmlstr;
+  }
+
   public function loadDB($id, DB $db = null) {
     if ($db == null) {
       $db = DB::getInstance();
@@ -263,8 +363,8 @@ class Printer
     unset($this->translation);
 
     // Load the translations
-    $this->translation['comments'] = new Translation(null, "printer", array("id" => $this->id), 'comments');
-    $this->translation['comments']->loadDB("printer", array("id" => $this->id), 'comments', $db);
+    $this->translation['comments'] = new Translation(null, "printer", array("id" => $id), 'comments');
+    $this->translation['comments']->loadDB("printer", array("id" => $id), 'comments', $db);
 		
     while($row = mysql_fetch_assoc($result)) {
       $this->id = (string)$row['id'];
@@ -277,6 +377,7 @@ class Printer
       $this->contrib_url = (string)$row['contrib_url'];
       $this->ppdentry = (string)$row['ppdentry'];
       $this->comments = (string)$row['comments'];
+      $this->unverified = (bool)$row['unverified'];
 
       $this->mechanism['type'] = (string)$row['mechanism'];
       $this->mechanism['color'] = (bool)$row['color'];
@@ -325,6 +426,23 @@ class Printer
       $this->autodetect['snmp']['model'] = (string)$row['snmp_model'];
     }
 
+    // Prepare the query string for extracting details about the drivers that
+    // work with this printer
+    $query = "select * from driver_printer_assoc where printer_id=\"{$this->id}\"";
+    $result = $db->query($query);
+
+    if ($result) {
+      while($row = mysql_fetch_assoc($result)) {
+	$this->drivers[sizeof($this->drivers)] = new DriverPrinterAssociation($this->id, $row, true);
+	$this->drivers[sizeof($this->drivers)-1]->loadDB($row['driver_id'], $this->id, true);
+      }
+    }
+    mysql_free_result($result);
+
+    // Load margin info
+    $this->margins = new Margin(null, $id, null);
+    $this->margins->loadDB($id, null);
+
     $this->loaded = true;
     return true;
   }
@@ -347,6 +465,7 @@ class Printer
     $props['ppdentry'] = (string)$this->ppdentry;
     $props['contrib_url'] = (string)$this->contrib_url;
     $props['comments'] = (string)$this->comments;
+    $props['unverified'] = (string)$this->unverified;
     $props['mechanism'] = (string)$this->mechanism['type'];
     $props['color'] = (string)$this->mechanism['color'];
     $props['res_x'] = (string)$this->mechanism['resx'];

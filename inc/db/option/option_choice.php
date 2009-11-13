@@ -27,7 +27,8 @@ class OptionChoice
     }
     $this->loaded = false;
     $this->data['option_id'] = (string)$id;
-    list(,$this->data['id']) = preg_split("/\//", $data['id']);
+    list(,$this->data['id']) = preg_split("/\//", (string)$data['id']);
+    if (!$this->data['id']) $this->data['id'] = (string)$data['id'];
     if ($data != null) {
       switch((string)gettype($data)) {
       case 'object':
@@ -38,6 +39,11 @@ class OptionChoice
 	  $this->loaded = true;
 	}
 
+	break;
+      case 'array':
+	$this->data['longname'] = (string)$data['longname'];
+	$this->data['shortname'] = (string)$data['shortname'];
+	$this->data['driverval'] = (string)$data['driverval'];
 	break;
       }
 
@@ -83,6 +89,39 @@ class OptionChoice
     return $this->loaded;
   }
 
+  public function toXML($indent = 0) {
+    $is = str_pad("", $indent);
+    $xmlstr = "$is<enum_val id=\"ev/{$this->data['id']}\">\n";
+    if ($this->data['longname'] != false) {
+      $xmlstr .= "$is  <ev_longname>\n$is    <en>";
+      $xmlstr .= htmlspecialchars($this->data['longname']);
+      $xmlstr .= "</en>\n";
+      if ($this->translation["longname"])
+	$xmlstr .= $this->translation["longname"]->toXML($indent + 4);
+      $xmlstr .= "$is  </ev_longname>\n";
+    }
+    if ($this->data['shortname'] != false) {
+      $xmlstr .= "$is  <ev_shortname>\n$is    <en>";
+      $xmlstr .= htmlspecialchars($this->data['shortname']);
+      $xmlstr .= "</en>\n$is  </ev_shortname>\n";
+    }
+    if ($this->data['driverval'] != false) {
+      $xmlstr .= "$is  <ev_driverval>";
+      $xmlstr .= htmlspecialchars($this->data['driverval']);
+      $xmlstr .= "</ev_driverval>\n";
+    }
+    if ($this->constraint != false) {
+      $xmlstr .= "$is  <constraints>\n";
+      foreach($this->constraint as $constraint) {
+	$xmlstr .= $constraint->toXML($indent + 4);
+      }
+      $xmlstr .= "$is  </constraints>\n";
+    }
+    $xmlstr .= "$is</enum_val>\n";
+
+    return $xmlstr;
+  }
+
   public function loadDB($option_id, $id, DB $db = null) {
     if ($id == null) {
       return false;
@@ -97,8 +136,8 @@ class OptionChoice
 
     $id = mysql_real_escape_string($id);
 
-    // Prepare the query string for extracting main driver details
-    $query = "select * from option_choice where option_id=\"$option_id\" and choice_id=\"$id\"";
+    // Prepare the query string for extracting main option choice details
+    $query = "select * from option_choice where option_id=\"$option_id\" and id=\"$id\"";
     $result = $db->query($query);
 
     if ($result == null) {
@@ -118,6 +157,10 @@ class OptionChoice
       }
     }
     mysql_free_result($result);
+
+    // Load the translations                                                  
+    $this->translation["longname"] = new Translation(null, "option_choice", array("id" => $this->data['id'], "option_id" => $this->data['option_id']), "longname");
+    $this->translation["longname"]->loadDB("option_choice", array("id" => $this->data['id'], "option_id" => $this->data['option_id']), "longname", $db);
 
     return true;
   }

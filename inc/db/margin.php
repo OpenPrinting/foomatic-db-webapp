@@ -64,33 +64,51 @@ class Margin
     }
   }
 
-  public function toXML() {
+  public function toXML($indent = 0) {
     $xmlstr = "";
-    if ($this->unit != false) $xmlstr .= "<unit>$this->unit</unit>";
-    if ($this->absolute != false) $xmlstr .= "<absolute />";
-    if ($this->top != false) $xmlstr .= "<top>$this->top</top>";
-    if ($this->left != false) $xmlstr .= "<left>$this->left</left>";
-    if ($this->right != false) $xmlstr .= "<right>$this->right</right>";
-    if ($this->bottom != false) $xmlstr .= "<bottom>$this->bottom</bottom>";
-    if (strlen($xmlstr)) $xmlstr = "<general>".$xmlstr."</general>";
-
-    foreach ($this->exception as $exception) {
-      if ($exception['pagesize'] == false) continue;
-      $xmlstr .= "<exception PageSize=\"{$exception['PageSize']}\">";
-      if ($this->unit != false) $xmlstr .= "<unit>{$exception['unit']}</unit>";
-      if ($this->absolute != false) $xmlstr .= "<absolute />";
-      if ($this->top != false) $xmlstr .= "<top>{$exception['top']}</top>";
-      if ($this->left != false) $xmlstr .= "<left>{$exception['left']}</left>";
-      if ($this->right != false) $xmlstr .= "<right>{$exception['right']}</right>";
-      if ($this->bottom != false) $xmlstr .= "<bottom>{$exception['bottom']}</bottom>";
-      $xmlstr = "</exception>";
+    $is = str_pad("", $indent);
+    if ($this->unit != false) $xmlstr .= "$is    <unit>{$this->unit}</unit>\n";
+    if ($this->unit or $this->top or $this->left or $this->right or
+	$this->bottom) {
+      if ($this->absolute != false) {
+	$xmlstr .= "$is    <absolute />\n";
+      } else {
+	$xmlstr .= "$is    <relative />\n";
+      }
     }
+    if ($this->top != false) $xmlstr .= "$is    <top>{$this->top}</top>\n";
+    if ($this->left != false) $xmlstr .= "$is    <left>{$this->left}</left>\n";
+    if ($this->right != false) $xmlstr .= "$is    <right>{$this->right}</right>\n";
+    if ($this->bottom != false) $xmlstr .= "$is    <bottom>{$this->bottom}</bottom>\n";
+    if (strlen($xmlstr)) $xmlstr = "$is  <general>\n".$xmlstr."$is  </general>\n";
+
+    if ($this->exception) {
+      foreach ($this->exception as $exception) {
+	  if (($exception['pagesize'] == false) or
+	      ($exception['top'] == false and $exception['left'] == false and
+	       $exception['right'] == false and $exception['bottom'] == false))
+	      continue;
+	$xmlstr .= "$is  <exception PageSize=\"{$exception['pagesize']}\">\n";
+	if ($exception['unit'] != false) $xmlstr .= "$is    <unit>{$exception['unit']}</unit>\n";
+	if ($exception['absolute'] != false) {
+	  $xmlstr .= "$is    <absolute />\n";
+	} else {
+	  $xmlstr .= "$is    <relative />\n";
+	}
+	if ($exception['top'] != false) $xmlstr .= "$is    <top>{$exception['top']}</top>\n";
+	if ($exception['left'] != false) $xmlstr .= "$is    <left>{$exception['left']}</left>\n";
+	if ($exception['right'] != false) $xmlstr .= "$is    <right>{$exception['right']}</right>\n";
+	if ($exception['bottom'] != false) $xmlstr .= "$is    <bottom>{$exception['bottom']}</bottom>\n";
+	$xmlstr .= "$is  </exception>\n";
+      }
+    }
+    if (strlen($xmlstr)) $xmlstr = "$is<margins>\n".$xmlstr."$is</margins>\n";
 	
     return $xmlstr;
   }
 
   public function loadDB($printer_id = null, $driver_id = null, $db = null) {
-    if (!$printer_id && !$driver_id) return null;
+    if (!$printer_id and !$driver_id) return null;
     if ($db == null) {
       $db = DB::getInstance();
     }
@@ -98,11 +116,17 @@ class Margin
     $printer_id = mysql_escape_string($printer_id);
     $driver_id = mysql_escape_string($driver_id);
 
-    $query = "select * from margins where ";
+    $query = "select * from margin where ";
     $conditions = "";
-    if ($printer_id != false) $conditions .= "printer_id=\"$printer_id\"";
-    if (strlen($conditions)) $conditions .= " and ";
-    if ($driver_id != false) $conditions .= "driver_id=\"$driver_id\"";
+    if ($printer_id)
+      $conditions .= "printer_id=\"$printer_id\"";
+    else
+      $conditions .= "(printer_id is null or printer_id=\"\")";
+    $conditions .= " and ";
+    if ($driver_id)
+      $conditions .= "driver_id=\"$driver_id\"";
+    else
+      $conditions .= "(driver_id is null or driver_id=\"\")";
     $query .= $conditions;
 
     $this->driver_id = $this->printer_id = null;
@@ -128,18 +152,18 @@ class Margin
     if ($result != null) {
       $this->driver_id = $driver_id;
       $this->printer_id = $printer_id;
-		
-      unset($this->exceptions);
-      $this->exceptions = array();
+
+      unset($this->exception);
+      $this->exception = array();
       $i = 0;
       while($row = mysql_fetch_array($result)) {
-	$this->exceptions[$i]['PageSize'] = (string)$row['pagesize'];
-	$this->exceptions[$i]['unit'] = (string)$row['margin_unit'];
-	$this->exceptions[$i]['absolute'] = (bool)$row['margin_absolute'];
-	$this->exceptions[$i]['top'] = (string)$row['margin_top'];
-	$this->exceptions[$i]['left'] = (string)$row['margin_left'];
-	$this->exceptions[$i]['right'] = (string)$row['margin_right'];
-	$this->exceptions[$i]['bottom'] = (string)$row['margin_bottom'];
+	$this->exception[$i]['pagesize'] = (string)$row['pagesize'];
+	$this->exception[$i]['unit'] = (string)$row['margin_unit'];
+	$this->exception[$i]['absolute'] = (bool)$row['margin_absolute'];
+	$this->exception[$i]['top'] = (string)$row['margin_top'];
+	$this->exception[$i]['left'] = (string)$row['margin_left'];
+	$this->exception[$i]['right'] = (string)$row['margin_right'];
+	$this->exception[$i]['bottom'] = (string)$row['margin_bottom'];
 	$i++;
       }
     }
@@ -161,7 +185,7 @@ class Margin
     if ($count) {
       $query = "update margin set ";
       $query .= "margin_unit=\"".mysql_real_escape_string($this->unit)."\",";
-      $query .= "margin_absolute=\"".(bool)$this->absolute."\",";
+      $query .= "margin_absolute=\"".mysql_real_escape_string(($this->absolute == true ? "1" : "0"))."\",";
       $query .= "margin_top=\"".mysql_real_escape_string($this->top)."\",";
       $query .= "margin_left=\"".mysql_real_escape_string($this->left)."\",";
       $query .= "margin_right=\"".mysql_real_escape_string($this->right)."\",";
@@ -173,13 +197,13 @@ class Margin
       $query .= "\"".mysql_real_escape_string($this->printer_id)."\",";
       $query .= "\"".mysql_real_escape_string($this->unit)."\",";
       $query .= "\"general\",";
-      $query .= "\"".(bool)($this->absolute)."\",";
+      $query .= "\"".mysql_real_escape_string(($this->absolute == true ? "1" :  "0"))."\",";
       $query .= "\"".mysql_real_escape_string($this->top)."\",";
       $query .= "\"".mysql_real_escape_string($this->left)."\",";
       $query .= "\"".mysql_real_escape_string($this->right)."\",";
       $query .= "\"".mysql_real_escape_string($this->bottom)."\")";
     }
-	
+
     $result = $db->query($query);
     if ($result == null) {
       echo "[ERROR] Unable to save margin's general data: (".$db->getErrorNo().") ".$db->getError()."\n";
@@ -196,7 +220,7 @@ class Margin
 	if ($count) {
 	  $query = "update margin set ";
 	  $query .= "margin_unit=\"".mysql_real_escape_string($e['unit'])."\",";
-	  $query .= "margin_absolute=\"".(bool)$e['absolute']."\",";
+	  $query .= "margin_absolute=\"".mysql_real_escape_string(($e['absolute'] == true ? "1" : "0"))."\",";
 	  $query .= "margin_top=\"".mysql_real_escape_string($e['top'])."\",";
 	  $query .= "margin_left=\"".mysql_real_escape_string($e['left'])."\",";
 	  $query .= "margin_right=\"".mysql_real_escape_string($e['right'])."\",";
@@ -209,7 +233,7 @@ class Margin
 	  $query .= "\"".mysql_real_escape_string($e['unit'])."\",";
 	  $query .= "\"exception\",";
 	  $query .= "\"".mysql_real_escape_string($e['pagesize'])."\",";
-	  $query .= "\"".(bool)($this->absolute)."\",";
+	  $query .= "\"".mysql_real_escape_string(($e['absolute'] == true ? "1" : "0"))."\",";
 	  $query .= "\"".mysql_real_escape_string($e['top'])."\",";
 	  $query .= "\"".mysql_real_escape_string($e['left'])."\",";
 	  $query .= "\"".mysql_real_escape_string($e['right'])."\",";

@@ -81,7 +81,7 @@ class Driver
 	$this->shortdescription = (string)$data['shortdescription'];
 	$this->max_res_x = (string)$data['max_res_x'];
 	$this->max_res_y = (string)$data['max_res_y'];
-	$this->color = (int)$data['color'];
+	$this->color = $data['color'];
 	$this->text = (string)$data['text'];
 	$this->lineart = (string)$data['lineart'];
 	$this->graphics = (string)$data['graphics'];
@@ -307,6 +307,178 @@ class Driver
     return $this->loaded;
   }
 
+  public function toXML($indent = 0) {
+    $is = str_pad("", $indent);
+    if (!$this->id) return false;
+    $xmlstr = "$is<driver id=\"driver/{$this->id}\">\n";
+    if ($this->name)
+      $xmlstr .= "$is  <name>" . htmlspecialchars($this->name) . "</name>\n";
+    if ($this->driver_group)
+      $xmlstr .= "$is  <group>" . htmlspecialchars($this->driver_group) .
+	"</group>\n";
+    if ($this->locales)
+      $xmlstr .= "$is  <locales>" . htmlspecialchars($this->locales) .
+	"</locales>\n";
+    if ($this->pcdriver)
+      $xmlstr .= "$is  <pcdriver>" . $this->pcdriver . "</pcdriver>\n";
+    if ($this->url)
+      $xmlstr .= "$is  <url>" . htmlspecialchars($this->url) . "</url>\n";
+    if ($this->obsolete)
+      $xmlstr .= "$is  <obsolete replace=\"" .
+	htmlspecialchars($this->obsolete) . "\" />\n";
+    if ($this->supplier) {
+      $trans = "";
+      if ($this->translation['supplier'])
+	$trans = $this->translation["supplier"]->toXML($indent + 4);
+      if ($trans) {
+	$xmlstr .= "$is  <supplier>\n$is    <en>";
+	$xmlstr .= htmlspecialchars($this->supplier);
+	$xmlstr .= "</en>\n";
+	$xmlstr .= $trans;
+	$xmlstr .= "$is  </supplier>\n";
+      } else {
+	$xmlstr .= "$is  <supplier>" . htmlspecialchars($this->supplier) .
+	  "</supplier>\n";
+      }
+    }
+    if ($this->thirdpartysupplied == true)
+      $xmlstr .= "$is  <thirdpartysupplied />\n";
+    if ($this->manufacturersupplied)
+      $xmlstr .= "$is  <manufacturersupplied>" .
+	htmlspecialchars($this->manufacturersupplied) .
+	"</manufacturersupplied>\n";
+    if ($this->license) {
+      $trans = "";
+      if ($this->translation['license'])
+	$trans = $this->translation["license"]->toXML($indent + 4);
+      if ($trans) {
+	$xmlstr .= "$is  <license>\n$is    <en>";
+	$xmlstr .= htmlspecialchars($this->license);
+	$xmlstr .= "</en>\n";
+	$xmlstr .= $trans;
+	$xmlstr .= "$is  </license>\n";
+      } else {
+	$xmlstr .= "$is  <license>" . htmlspecialchars($this->license) .
+	  "</license>\n";
+      }
+    }
+    if ($this->licensetext or $this->licenselink) {
+      $xmlstr .= "$is  <licensetext>\n";
+      if ($this->licensetext)
+	$xmlstr .= "$is    <en>" . htmlspecialchars($this->licensetext) .
+	  "</en>\n";
+      else
+	$xmlstr .= "$is    <en url=\"" .
+	  htmlspecialchars($this->licenselink) . "\" />\n";
+      if ($this->translation["licensetext"])
+	$xmlstr .= $this->translation["licensetext"]->toXML($indent + 4);
+      if ($this->translation["licenselink"])
+	$xmlstr .= $this->translation["licenselink"]->toXML($indent + 4);
+      $xmlstr .= "$is  </licensetext>\n";
+    }
+    if ($this->nonfreesoftware == true)
+      $xmlstr .= "$is  <nonfreesoftware />\n";
+    if ($this->patents == true)
+      $xmlstr .= "$is  <patents />\n";
+    if ($this->supportcontacts) {
+      $xmlstr .= "$is  <supportcontacts>\n";
+      foreach ($this->supportcontacts as $supportcontact)
+	$xmlstr .= $supportcontact->toXML($indent + 4);
+      $xmlstr .= "$is  </supportcontacts>\n";
+    }
+    if ($this->shortdescription != false) {
+      $xmlstr .= "$is  <shortdescription>\n$is    <en>";
+      $xmlstr .= htmlspecialchars($this->shortdescription);
+      $xmlstr .= "</en>\n";
+      if ($this->translation["shortdescription"])
+	$xmlstr .= $this->translation["shortdescription"]->toXML($indent + 4);
+      $xmlstr .= "$is  </shortdescription>\n";
+    }
+    if ($this->packages) {
+      $xmlstr .= "$is  <packages>\n";
+      foreach ($this->packages as $package)
+	$xmlstr .= $package->toXML($indent + 4);
+      $xmlstr .= "$is  </packages>\n";
+    }
+    $func = "";
+    if ($this->max_res_x != false and
+        $this->max_res_x != -1)
+      $func .= "$is    <maxresx>{$this->max_res_x}</maxresx>\n";
+    if ($this->max_res_y != false and
+	$this->max_res_y != -1)
+      $func .= "$is    <maxresy>{$this->max_res_y}</maxresy>\n";
+    if ($this->color != null and $this->color != -1) {
+      if ($this->color == 1) {
+	$func .= "$is    <color />\n";
+      } elseif ($this->color == 0) {
+	$func .= "$is    <monochrome />\n";
+      }
+    }
+    if ($this->text != false and
+	$this->text != -1)
+      $func .= "$is    <text>{$this->text}</text>\n";
+    if ($this->lineart != false and
+	$this->lineart != -1)
+      $func .= "$is    <lineart>{$this->lineart}</lineart>\n";
+    if ($this->graphics != false and
+	$this->graphics != -1)
+      $func .= "$is    <graphics>{$this->graphics}</graphics>\n";
+    if ($this->photo != false and
+	$this->photo != -1)
+      $func .= "$is    <photo>{$this->photo}</photo>\n";
+    if ($this->load_time != false and
+	$this->load_time != -1)
+      $func .= "$is    <load>{$this->load_time}</load>\n";
+    if ($this->speed != false and
+	$this->speed != -1)
+      $func .= "$is    <speed>{$this->speed}</speed>\n";
+    if (strlen($func))
+      $xmlstr .= "$is  <functionality>\n$func$is  </functionality>\n";
+    $execution = "";
+    if ($this->dependencies)
+      foreach ($this->dependencies as $dependency)
+	$execution .= $dependency->toXML($indent + 4);
+    if ($this->execution)
+      $execution .= "$is    <{$this->execution} />\n";
+    if ($this->nopjl == true)
+      $execution .= "$is    <nopjl />\n";
+    if ($this->nopageaccounting == true)
+      $execution .= "$is    <nopageaccounting />\n";
+    if ($this->prototype)
+      $execution .= "$is    <prototype>" . htmlspecialchars($this->prototype) .
+	"</prototype>\n";
+    if ($this->pdf_prototype)
+      $execution .= "$is    <prototype_pdf>" .
+        htmlspecialchars($this->pdf_prototype) .
+        "</prototype_pdf>\n";
+    if ($this->margins)
+      $execution .= $this->margins->toXML($indent + 4);
+    if ($this->ppdentry)
+      $execution .= "$is    <ppdentry>" . htmlspecialchars($this->ppdentry) .
+	"</ppdentry>\n";
+    if (strlen($execution))
+      $xmlstr .= "$is  <execution>\n$execution$is  </execution>\n";
+    if ($this->comments != false) {
+      $xmlstr .= "$is  <comments>\n$is    <en>";
+      $xmlstr .= htmlspecialchars($this->comments);
+      $xmlstr .= "</en>\n";
+      if ($this->translation["comments"])
+	$xmlstr .= $this->translation["comments"]->toXML($indent + 4);
+      $xmlstr .= "$is  </comments>\n";
+    }
+    if ($this->printers != false) {
+      $prnlist = "";
+      foreach($this->printers as $printer) {
+	$prnlist .= $printer->toXML($indent + 4);
+      }
+      if ($prnlist)
+	$xmlstr .= "$is  <printers>\n" . $prnlist . "$is  </printers>\n";
+    }
+    $xmlstr .= "$is</driver>\n";
+
+    return $xmlstr;
+  }
+
   public function loadDB($id, DB $db = null) {
     if ($id == null) {
       return false;
@@ -328,8 +500,8 @@ class Driver
 
     // Load the translations
     foreach(array('supplier', 'license', 'licensetext', 'licenselink', 'shortdescription', 'comments') as $field) {
-      $this->translation[$field] = new Translation(null, "driver", array("id" => $this->id), $field);
-      $this->translation[$field]->loadDB("driver", array("id" => $this->id), $field, $db);
+      $this->translation[$field] = new Translation(null, "driver", array("id" => $id), $field);
+      $this->translation[$field]->loadDB("driver", array("id" => $id), $field, $db);
     }
 
     // Prepare the query string for extracting main driver details
@@ -350,6 +522,7 @@ class Driver
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
 	$this->supportcontacts[sizeof($this->supportcontacts)] = new DriverSupportContact($this->id, $row);
+	$this->supportcontacts[sizeof($this->supportcontacts)-1]->loadDB($this->id, $row['url'], $row['level']);
       }
     }
     mysql_free_result($result);
@@ -383,10 +556,15 @@ class Driver
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
 	$this->printers[sizeof($this->printers)] = new DriverPrinterAssociation($this->id, $row);
+        $this->printers[sizeof($this->printers)-1]->loadDB($this->id, $row['printer_id']);
       }
     }
     mysql_free_result($result);
 	
+    // Load margin info
+    $this->margins = new Margin(null, null, $id);
+    $this->margins->loadDB(null, $id);
+
     return true;
   }
 

@@ -34,12 +34,13 @@ class DriverPackage
     }
   }
 
-  public function toXML() {
-    $xmlstr = "<package";
+  public function toXML($indent = 0) {
+    $is = str_pad("", $indent);
+    $xmlstr = "$is<package";
     if ($this->scope) {
-      $xmlstr .= " scope=\"{$this->scope}\"";
+      $xmlstr .= " scope=\"" . htmlspecialchars($this->scope) . "\"";
     }
-    $xmlstr .= ">{$this->name}</package>";
+    $xmlstr .= ">" . htmlspecialchars($this->name) . "</package>\n";
     
     return $xmlstr;
   }

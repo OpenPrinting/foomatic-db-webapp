@@ -59,17 +59,69 @@ class DriverSupportContact
     return true;
   }
   
-  public function toXML() {
-    $xmlstr = "<supportcontact ";
+  public function toXML($indent = 0) {
+    $is = str_pad("", $indent);
+    $xmlstr = "$is<supportcontact";
     if ($this->url) {
-      $xmlstr .= "url=\"{$this->url}\" ";
+      $xmlstr .= " url=\"" . htmlspecialchars($this->url) . "\"";
     }
     if ($this->level) {
-      $xmlstr .= "level=\"{$this->level}\"";
+      $xmlstr .= " level=\"{$this->level}\"";
     }
-    $xmlstr .= ">{$this->description}</supportcontact>";
+    $xmlstr .= ">";
+    $trans = "";
+    if ($this->translation["description"])
+      $trans .= $this->translation["description"]->toXML($indent + 2);
+    if ($trans) {
+      $xmlstr .= "\n$is  <en>";
+      $xmlstr .= htmlspecialchars($this->description);
+      $xmlstr .= "</en>\n";
+      $xmlstr .= $trans;
+      $xmlstr .= "$is";
+    } else {
+      $xmlstr .= htmlspecialchars($this->description);
+    }
+    $xmlstr .= "</supportcontact>\n";
 
     return $xmlstr;
+  }
+
+  public function loadDB($driver_id, $url, $level, DB $db = null) {
+    if ($driver_id == null or $url == null or $level == null) {
+      return false;
+    }
+
+    if ($db == null) {
+       $db = DB::getInstance();
+    }
+
+    // Clear any previous data present
+    unset($this->translation);
+    unset($this->driver_id);
+    unset($this->url);
+    unset($this->level);
+    unset($this->description);
+
+    $driver_id = mysql_real_escape_string($driver_id);
+    $url = mysql_real_escape_string($url);
+    $level = mysql_real_escape_string($level);
+
+    // Prepare the query string for extracting main driver support contact
+    // details
+    $query = "select * from driver_support_contact where driver_id=\"$driver_id\" and url=\"$url\" and level=\"$level\"";
+    $result = $db->query($query);
+    if ($result == null) {
+	return false;
+    }
+    $row = mysql_fetch_assoc($result);
+    $this->__construct($driver_id, $row);
+    mysql_free_result($result);
+
+    // Load the translations
+    $this->translation["description"] = new Translation(null, "driver_support_contact", array("driver_id" => $this->driver_id, "url" => $this->url, "level" => $this->level), "description");
+    $this->translation["description"]->loadDB("driver_support_contact", array("driver_id" => $this->driver_id, "url" => $this->url, "level" => $this->level), "description", $db);
+
+    return true;
   }
 
   public function saveDB(DB $db = null) {

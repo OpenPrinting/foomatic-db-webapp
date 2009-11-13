@@ -131,6 +131,12 @@ class Option
 
     $id = mysql_real_escape_string($id);
 	
+    // Load the translations
+    foreach(array('longname', 'comments') as $field) {
+      $this->translation[$field] = new Translation(null, "option", array("id" => $id), $field);
+      $this->translation[$field]->loadDB("option", array("id" => $id), $field, $db);
+    }
+
     // Prepare the query string for extracting main option details
     $query = "select * from options where id=\"$id\"";
     $result = $db->query($query);
@@ -148,7 +154,8 @@ class Option
 	
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
-	$this->choice[sizeof($this->chpoce)] = new OptionChoice($this->data['id'], $row);
+	$this->choice[sizeof($this->choice)] = new OptionChoice($this->data['id'], $row);
+	$this->choice[sizeof($this->choice)-1]->loadDB($this->data['id'], $row['id']);
       }
     }
     mysql_free_result($result);

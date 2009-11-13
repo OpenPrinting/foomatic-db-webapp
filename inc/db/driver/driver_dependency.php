@@ -35,12 +35,13 @@ class DriverDependency
     }
   }
 
-  public function toXML() {
-    $xmlstr = "<requires";
+  public function toXML($indent = 0) {
+    $is = str_pad("", $indent);
+    $xmlstr = "$is<requires";
     if ($this->version) {
-      $xmlstr .= " version=\"{$this->version}\"";
+	$xmlstr .= " version=\"" . htmlspecialchars($this->version) . "\"";
     }
-    $xmlstr .= ">{$this->required_driver}</requires>";
+    $xmlstr .= ">{$this->required_driver}</requires>\n";
 
     return $xmlstr;
   }

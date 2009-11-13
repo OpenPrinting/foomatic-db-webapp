@@ -27,23 +27,33 @@ class OptionConstraint
     }
     if ($data != null) {
       switch((string)gettype($data)) {			
-      case 'object':
-	if (get_class($data) == "SimpleXMLElement") {
-	  $this->data['sense'] = (string)$data['sense'];
-	  $this->data['driver'] = (string)$data->driver;
-	  $this->data['printer'] = (string)$data->printer;
-	  if (!$this->data['printer']) {
-	    if ($data->make) {
-	      $this->data['printer'] = (string)printerIDfromMakeModel($data->make, $data->model);
+	case 'object':
+	  if (get_class($data) == "SimpleXMLElement") {
+	    $this->data['sense'] = (string)$data['sense'];
+	    $this->data['driver'] = (string)$data->driver;
+	    list($prefix, $this->data['printer']) = preg_split("/\//", (string)$data->printer);
+	    if (!$this->data['printer'] or ($prefix != "printer")) {
+		$this->data['printer'] = (string)$data->printer;
 	    }
+	    if (!$this->data['printer']) {
+	      if ($data->make) {
+		$this->data['printer'] = (string)printerIDfromMakeModel($data->make, $data->model);
+	      }
+	    }
+	    list($prefix, $this->data['defval']) = preg_split("/\//", (string)$data->arg_defval);
+	    if (!$this->data['defval'] or ($prefix != "ev")) {
+	      $this->data['defval'] = (string)$data->arg_defval;
+	    }
+	    $this->loaded = true;
 	  }
-	  list($prefix, $this->data['defval']) = preg_split("/\//", (string)$data->arg_defval);
-	  if (!$this->data['defval'] or ($prefix != "ev")) {
-	    $this->data['defval'] = (string)$data->arg_defval;
-	  }
+	  break;
+	case 'array':
+	  $this->data['sense'] = (string)$data['sense'];
+	  $this->data['printer'] = (string)$data['printer'];
+	  $this->data['driver'] = (string)$data['driver'];
+	  $this->data['defval'] = (string)$data['defval'];
 	  $this->loaded = true;
-	}
-	break;
+	  break;
       }
     }
   }
@@ -74,6 +84,35 @@ class OptionConstraint
     $this->__construct($xml);
 
     return $this->loaded;
+  }
+
+  public function toXML($indent = 0, $is_eval_option = false) {
+    $is = str_pad("", $indent);
+    $xmlstr = "$is<constraint";
+    if ($this->data['sense']) {
+      $xmlstr .= " sense=\"{$this->data['sense']}\"";
+    }
+    $xmlstr .= ">\n";
+    if (array_key_exists('driver', $this->data))
+      $xmlstr .= "$is  <driver>{$this->data['driver']}</driver>\n";
+    if (array_key_exists('printer', $this->data)) {
+      if (substr($this->data['printer'], -1) == "-") {
+	$make = substr($this->data['printer'], 0, -1);
+	$xmlstr .= "$is  <make>" . htmlspecialchars($make) . "</make>\n";
+      } else {
+	$xmlstr .= "$is  <printer>printer/{$this->data['printer']}" .
+	  "</printer>\n";
+      }
+    }
+    if ($this->data['is_choice_constraint'] == false and
+	$this->data['defval']) {
+      $xmlstr .= "$is  <arg_defval>";
+      if ($is_eval_option) $xmlstr .= "ev/";
+      $xmlstr .= htmlspecialchars($this->data['defval']) . "</arg_defval>\n";
+    }
+    $xmlstr .= "$is</constraint>\n";
+
+    return $xmlstr;
   }
 
   public function loadDB($id, DB $db = null) {
