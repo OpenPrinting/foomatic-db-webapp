@@ -144,16 +144,16 @@ class OptionChoice
       return false;
     }
     $row = mysql_fetch_assoc($result);
-    $this->__construct($row);
+    $this->__construct($id, $row);
     mysql_free_result($result);
 
     // Query string for extracting details about the choice's constraints
-    $query = "select * from option_constraint where option_id=\"$id\" and choice_id=\"$id\" and is_choice_constraint=1";
+    $query = "select * from option_constraint where option_id=\"$option_id\" and choice_id=\"$id\" and is_choice_constraint=1";
     $result = $db->query($query);
 
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
-	$this->constraint[sizeof($this->constraint)] = new OptionConstraint($this->data['id'], $row);
+	  $this->constraint[sizeof($this->constraint)] = new OptionConstraint($option_id, $row, $id);
       }
     }
     mysql_free_result($result);

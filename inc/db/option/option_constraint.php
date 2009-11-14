@@ -93,9 +93,9 @@ class OptionConstraint
       $xmlstr .= " sense=\"{$this->data['sense']}\"";
     }
     $xmlstr .= ">\n";
-    if (array_key_exists('driver', $this->data))
+    if ($this->data['driver'])
       $xmlstr .= "$is  <driver>{$this->data['driver']}</driver>\n";
-    if (array_key_exists('printer', $this->data)) {
+    if ($this->data['printer']) {
       if (substr($this->data['printer'], -1) == "-") {
 	$make = substr($this->data['printer'], 0, -1);
 	$xmlstr .= "$is  <make>" . htmlspecialchars($make) . "</make>\n";
@@ -104,8 +104,7 @@ class OptionConstraint
 	  "</printer>\n";
       }
     }
-    if ($this->data['is_choice_constraint'] == false and
-	$this->data['defval']) {
+    if (strlen($this->data['defval'])) {
       $xmlstr .= "$is  <arg_defval>";
       if ($is_eval_option) $xmlstr .= "ev/";
       $xmlstr .= htmlspecialchars($this->data['defval']) . "</arg_defval>\n";

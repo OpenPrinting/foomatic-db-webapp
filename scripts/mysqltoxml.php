@@ -14,7 +14,6 @@ if ($options['p']) {
   $id = $options['p'];
   $printer = new Printer();
   $error = !$printer->loadDB($id);
-  //print var_dump($printer);
   if (!$error) print $printer->toXML();
 }
 if ($error) {
@@ -26,7 +25,6 @@ if ($options['d']) {
   $id = $options['d'];
   $driver = new Driver();
   $error = !$driver->loadDB($id);
-  //print var_dump($driver);
   if (!$error) print $driver->toXML();
 }
 if ($error) {
