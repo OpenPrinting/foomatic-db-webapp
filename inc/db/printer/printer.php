@@ -248,17 +248,17 @@ class Printer
     $is = str_pad("", $indent);
     if (!$this->id) return false;
     $xmlstr = "$is<printer id=\"printer/{$this->id}\">\n";
-    if ($this->make)
+    if (strlen($this->make))
 	$xmlstr .= "$is  <make>" . htmlspecialchars($this->make) . "</make>\n";
-    if ($this->model) 
+    if (strlen($this->model)) 
       $xmlstr .= "$is  <model>" . htmlspecialchars($this->model) .
 	"</model>\n";
-    if ($this->pcmodel)
+    if (strlen($this->pcmodel))
       $xmlstr .= "$is  <pcmodel>{$this->pcmodel}</pcmodel>\n";
     $mechanism = "";
-    if ($this->mechanism['type'])
+    if (strlen($this->mechanism['type']))
       $mechanism .= "$is    <{$this->mechanism['type']} />\n";
-    if ($this->mechanism['color'])
+    if (strlen($this->mechanism['color']))
       $mechanism .= "$is    <color />\n";
     $res = "";
     if ($this->mechanism['resx'])
@@ -272,14 +272,14 @@ class Printer
       $mechanism .= $this->margins->toXML($indent + 4);
     if ($mechanism)
       $xmlstr .= "$is  <mechanism>\n$mechanism$is  </mechanism>\n";
-    if ($this->url)
+    if (strlen($this->url))
       $xmlstr .= "$is  <url>" . htmlspecialchars($this->url) . "</url>\n";
     $lang = "";
     foreach(array('postscript', 'pdf', 'pcl', 'lips', 'escp', 'escp2',
 		  'hpgl2', 'tiff') as $pdl) {
-      if ($this->lang[$pdl] != false) {
+	if ($this->lang[$pdl]) {
 	$lang .= "$is    <{$pdl} ";
-	if ($this->lang["{$pdl}_level"])
+	if (strlen($this->lang["{$pdl}_level"]))
 	  $lang .= "level=\"" . htmlspecialchars($this->lang["{$pdl}_level"]) .
 	     "\" ";
 	$lang .= "/>\n";
@@ -287,7 +287,7 @@ class Printer
     }
     if ($this->lang['proprietary']) $lang .= "$is    <proprietary />\n";
     if ($this->lang['pjl']) $lang .= "$is    <pjl />\n";
-    if ($this->lang['text'])
+    if (strlen($this->lang['text']))
 	$lang .= "$is    <text>\n$is      <charset>" . $this->lang['text'] .
 	    "</charset>\n$is    </text>\n";
     if ($lang)
@@ -297,7 +297,7 @@ class Printer
       $components = "";
       foreach(array('ieee1284', 'commandset', 'description',
 		    'manufacturer', 'model') as $component) {
-	if ($this->autodetect[$connection][$component] != false)
+	  if (strlen($this->autodetect[$connection][$component]))
 	  $components .= "$is      <$component>" .
 	    htmlspecialchars($this->autodetect[$connection][$component]) .
 	    "</$component>\n";
@@ -309,10 +309,10 @@ class Printer
     if ($autodetect)
       $xmlstr .= "$is  <autodetect>\n$autodetect" .
 	"$is  </autodetect>\n";
-    if ($this->functionality)
+    if (strlen($this->functionality))
       $xmlstr .= "$is  <functionality>{$this->functionality}" .
 	"</functionality>\n";
-    if ($this->default_driver)
+    if (strlen($this->default_driver))
       $xmlstr .= "$is  <driver>{$this->default_driver}</driver>\n";
     if ($this->drivers != false) {
       $drvlist = "";
@@ -322,14 +322,14 @@ class Printer
       if ($drvlist)
 	$xmlstr .= "$is  <drivers>\n" . $drvlist . "$is  </drivers>\n";
     }
-    if ($this->ppdentry)
+    if (strlen($this->ppdentry))
       $xmlstr .= "$is  <ppdentry>" . htmlspecialchars($this->ppdentry) .
       "</ppdentry>\n";
-    if ($this->contrib_url)
+    if (strlen($this->contrib_url))
       $xmlstr .= "$is  <contrib_url>" .
 	htmlspecialchars($this->contrib_url) .
 	"</contrib_url>\n";
-    if ($this->comments != false) {
+    if (strlen($this->comments)) {
       $xmlstr .= "$is  <comments>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->comments);
       $xmlstr .= "</en>\n";

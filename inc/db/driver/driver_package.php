@@ -37,7 +37,7 @@ class DriverPackage
   public function toXML($indent = 0) {
     $is = str_pad("", $indent);
     $xmlstr = "$is<package";
-    if ($this->scope) {
+    if (strlen($this->scope)) {
       $xmlstr .= " scope=\"" . htmlspecialchars($this->scope) . "\"";
     }
     $xmlstr .= ">" . htmlspecialchars($this->name) . "</package>\n";

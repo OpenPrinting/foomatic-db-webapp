@@ -153,7 +153,7 @@ class DriverPrinterAssociation
     if ($is_printer == true and $this->data['fromprinter'] == true) {
       $xmlstr .= "$is<driver>\n";
       $xmlstr .= "$is  <id>{$this->data['driver_id']}</id>\n";
-      if ($this->data['pcomments'] != false) {
+      if (strlen($this->data['pcomments'])) {
 	$xmlstr .= "$is  <comments>\n$is    <en>";
 	$xmlstr .= htmlspecialchars($this->data['pcomments']);
 	$xmlstr .= "</en>\n";
@@ -161,14 +161,14 @@ class DriverPrinterAssociation
 	  $xmlstr .= $this->translation["pcomments"]->toXML($indent + 2);
 	$xmlstr .= "$is  </comments>\n";
       }
-      if ($this->data['ppd'] != false)
+      if (strlen($this->data['ppd']))
 	$xmlstr .= "$is  <ppd>" . htmlspecialchars($this->data['ppd']) . 
 	  "</ppd>\n";
       $xmlstr .= "$is</driver>\n";
     } elseif ($is_printer == false and $this->data['fromdriver'] == true) {
       $xmlstr .= "$is<printer>\n";
       $xmlstr .= "$is  <id>printer/{$this->data['printer_id']}</id>\n";
-      if ($this->data['comments'] != false) {
+      if (strlen($this->data['comments'])) {
 	$xmlstr .= "$is  <comments>\n$is    <en>";
 	$xmlstr .= htmlspecialchars($this->data['comments']);
 	$xmlstr .= "</en>\n";
@@ -178,10 +178,10 @@ class DriverPrinterAssociation
       }
       $func = "";
       if ($this->data['max_res_x'] != false and
-          $this->data['max_res_x'] != -1)
+          $this->data['max_res_x'] > 0)
 	$func .= "$is    <maxresx>{$this->data['max_res_x']}</maxresx>\n";
       if ($this->data['max_res_y'] != false and
-          $this->data['max_res_y'] != -1)
+          $this->data['max_res_y'] > 0)
 	$func .= "$is    <maxresy>{$this->data['max_res_y']}</maxresy>\n";
       if ($this->data['color'] != null) {
 	  if ($this->data['color'] == 1) {
@@ -190,29 +190,29 @@ class DriverPrinterAssociation
 	      $func .= "$is    <monochrome />\n";
 	  }
       }
-      if ($this->data['text'] != false and
+      if (strlen($this->data['text']) and
           $this->data['text'] != -1)
 	$func .= "$is    <text>{$this->data['text']}</text>\n";
-      if ($this->data['lineart'] != false and
+      if (strlen($this->data['lineart']) and
           $this->data['lineart'] != -1)
 	$func .= "$is    <lineart>{$this->data['lineart']}</lineart>\n";
-      if ($this->data['graphics'] != false and
+      if (strlen($this->data['graphics']) and
           $this->data['graphics'] != -1)
 	$func .= "$is    <graphics>{$this->data['graphics']}</graphics>\n";
-      if ($this->data['photo'] != false and
+      if (strlen($this->data['photo']) and
           $this->data['photo'] != -1)
 	$func .= "$is    <photo>{$this->data['photo']}</photo>\n";
-      if ($this->data['load_time'] != false and
+      if (strlen($this->data['load_time']) and
           $this->data['load_time'] != -1)
 	$func .= "$is    <load>{$this->data['load_time']}</load>\n";
-      if ($this->data['speed'] != false and
+      if (strlen($this->data['speed']) and
           $this->data['speed'] != -1)
 	$func .= "$is    <speed>{$this->data['speed']}</speed>\n";
       if (strlen($func))
 	  $xmlstr .= "$is  <functionality>\n$func$is  </functionality>\n";
       if ($this->margins)
 	  $xmlstr .= $this->margins->toXML($indent + 2);
-      if ($this->data['ppdentry'] != false and
+      if (strlen($this->data['ppdentry']) and
 	  $this->data['ppdentry'] != -1)
 	$xmlstr .= "$is  <ppdentry>" .
 	  htmlspecialchars($this->data['ppdentry']) . "</ppdentry>\n";

@@ -311,22 +311,22 @@ class Driver
     $is = str_pad("", $indent);
     if (!$this->id) return false;
     $xmlstr = "$is<driver id=\"driver/{$this->id}\">\n";
-    if ($this->name)
+    if (strlen($this->name))
       $xmlstr .= "$is  <name>" . htmlspecialchars($this->name) . "</name>\n";
-    if ($this->driver_group)
+    if (strlen($this->driver_group))
       $xmlstr .= "$is  <group>" . htmlspecialchars($this->driver_group) .
 	"</group>\n";
-    if ($this->locales)
+    if (strlen($this->locales))
       $xmlstr .= "$is  <locales>" . htmlspecialchars($this->locales) .
 	"</locales>\n";
-    if ($this->pcdriver)
+    if (strlen($this->pcdriver))
       $xmlstr .= "$is  <pcdriver>" . $this->pcdriver . "</pcdriver>\n";
-    if ($this->url)
+    if (strlen($this->url))
       $xmlstr .= "$is  <url>" . htmlspecialchars($this->url) . "</url>\n";
-    if ($this->obsolete)
+    if (strlen($this->obsolete))
       $xmlstr .= "$is  <obsolete replace=\"" .
 	htmlspecialchars($this->obsolete) . "\" />\n";
-    if ($this->supplier) {
+    if (strlen($this->supplier)) {
       $trans = "";
       if ($this->translation['supplier'])
 	$trans = $this->translation["supplier"]->toXML($indent + 4);
@@ -347,7 +347,7 @@ class Driver
       $xmlstr .= "$is  <manufacturersupplied>" .
 	htmlspecialchars($this->manufacturersupplied) .
 	"</manufacturersupplied>\n";
-    if ($this->license) {
+    if (strlen($this->license)) {
       $trans = "";
       if ($this->translation['license'])
 	$trans = $this->translation["license"]->toXML($indent + 4);
@@ -362,9 +362,9 @@ class Driver
 	  "</license>\n";
       }
     }
-    if ($this->licensetext or $this->licenselink) {
+    if (strlen($this->licensetext) or strlen($this->licenselink)) {
       $xmlstr .= "$is  <licensetext>\n";
-      if ($this->licensetext)
+      if (strlen($this->licensetext))
 	$xmlstr .= "$is    <en>" . htmlspecialchars($this->licensetext) .
 	  "</en>\n";
       else
@@ -386,7 +386,7 @@ class Driver
 	$xmlstr .= $supportcontact->toXML($indent + 4);
       $xmlstr .= "$is  </supportcontacts>\n";
     }
-    if ($this->shortdescription != false) {
+    if (strlen($this->shortdescription)) {
       $xmlstr .= "$is  <shortdescription>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->shortdescription);
       $xmlstr .= "</en>\n";
@@ -402,10 +402,10 @@ class Driver
     }
     $func = "";
     if ($this->max_res_x != false and
-        $this->max_res_x != -1)
+        $this->max_res_x > 0)
       $func .= "$is    <maxresx>{$this->max_res_x}</maxresx>\n";
     if ($this->max_res_y != false and
-	$this->max_res_y != -1)
+	$this->max_res_y > 0)
       $func .= "$is    <maxresy>{$this->max_res_y}</maxresy>\n";
     if ($this->color != null and $this->color != -1) {
       if ($this->color == 1) {
@@ -414,22 +414,22 @@ class Driver
 	$func .= "$is    <monochrome />\n";
       }
     }
-    if ($this->text != false and
+    if (strlen($this->text) and
 	$this->text != -1)
       $func .= "$is    <text>{$this->text}</text>\n";
-    if ($this->lineart != false and
+    if (strlen($this->lineart) and
 	$this->lineart != -1)
       $func .= "$is    <lineart>{$this->lineart}</lineart>\n";
-    if ($this->graphics != false and
+    if (strlen($this->graphics) and
 	$this->graphics != -1)
       $func .= "$is    <graphics>{$this->graphics}</graphics>\n";
-    if ($this->photo != false and
+    if (strlen($this->photo) and
 	$this->photo != -1)
       $func .= "$is    <photo>{$this->photo}</photo>\n";
-    if ($this->load_time != false and
+    if (strlen($this->load_time) and
 	$this->load_time != -1)
       $func .= "$is    <load>{$this->load_time}</load>\n";
-    if ($this->speed != false and
+    if (strlen($this->speed) and
 	$this->speed != -1)
       $func .= "$is    <speed>{$this->speed}</speed>\n";
     if (strlen($func))
@@ -438,27 +438,27 @@ class Driver
     if ($this->dependencies)
       foreach ($this->dependencies as $dependency)
 	$execution .= $dependency->toXML($indent + 4);
-    if ($this->execution)
+    if (strlen($this->execution))
       $execution .= "$is    <{$this->execution} />\n";
     if ($this->nopjl == true)
       $execution .= "$is    <nopjl />\n";
     if ($this->nopageaccounting == true)
       $execution .= "$is    <nopageaccounting />\n";
-    if ($this->prototype)
+    if (strlen($this->prototype))
       $execution .= "$is    <prototype>" . htmlspecialchars($this->prototype) .
 	"</prototype>\n";
-    if ($this->pdf_prototype)
+    if (strlen($this->pdf_prototype))
       $execution .= "$is    <prototype_pdf>" .
         htmlspecialchars($this->pdf_prototype) .
         "</prototype_pdf>\n";
     if ($this->margins)
       $execution .= $this->margins->toXML($indent + 4);
-    if ($this->ppdentry)
+    if (strlen($this->ppdentry))
       $execution .= "$is    <ppdentry>" . htmlspecialchars($this->ppdentry) .
 	"</ppdentry>\n";
     if (strlen($execution))
       $xmlstr .= "$is  <execution>\n$execution$is  </execution>\n";
-    if ($this->comments != false) {
+    if (strlen($this->comments)) {
       $xmlstr .= "$is  <comments>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->comments);
       $xmlstr .= "</en>\n";

@@ -38,7 +38,7 @@ class DriverDependency
   public function toXML($indent = 0) {
     $is = str_pad("", $indent);
     $xmlstr = "$is<requires";
-    if ($this->version) {
+    if (strlen($this->version)) {
 	$xmlstr .= " version=\"" . htmlspecialchars($this->version) . "\"";
     }
     $xmlstr .= ">{$this->required_driver}</requires>\n";

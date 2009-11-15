@@ -62,10 +62,10 @@ class DriverSupportContact
   public function toXML($indent = 0) {
     $is = str_pad("", $indent);
     $xmlstr = "$is<supportcontact";
-    if ($this->url) {
+    if (strlen($this->url)) {
       $xmlstr .= " url=\"" . htmlspecialchars($this->url) . "\"";
     }
-    if ($this->level) {
+    if (strlen($this->level)) {
       $xmlstr .= " level=\"{$this->level}\"";
     }
     $xmlstr .= ">";

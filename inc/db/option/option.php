@@ -126,12 +126,12 @@ class Option
     if (!$this->data['id']) return false;
     $xmlstr = "$is<option type=\"{$this->data['option_type']}\" " .
       "id=\"opt/{$this->data['id']}\">\n";
-    if ($this->data['shortname'] != false) {
+    if (strlen($this->data['shortname'])) {
       $xmlstr .= "$is  <arg_shortname>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->data['shortname']);
       $xmlstr .= "</en>\n$is  </arg_shortname>\n";
     }
-    if ($this->data['longname'] != false) {
+    if (strlen($this->data['longname'])) {
       $xmlstr .= "$is  <arg_longname>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->data['longname']);
       $xmlstr .= "</en>\n";
@@ -139,7 +139,7 @@ class Option
 	$xmlstr .= $this->translation["longname"]->toXML($indent + 4);
       $xmlstr .= "$is  </arg_longname>\n";
     }
-    if ($this->data['comments'] != false) {
+    if (strlen($this->data['comments'])) {
       $xmlstr .= "$is  <comments>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->data['comments']);
       $xmlstr .= "</en>\n";
@@ -148,38 +148,36 @@ class Option
       $xmlstr .= "$is  </comments>\n";
     }
     $exec = "";
-    if ($this->data['option_group'] != false) {
+    if (strlen($this->data['option_group'])) {
       $exec .= "$is    <arg_group>";
       $exec .= htmlspecialchars($this->data['option_group']);
       $exec .= "</arg_group>\n";
     }
-    if ($this->data['option_order'] != false) {
+    if (strlen($this->data['option_order'])) {
       $exec .= "$is    <arg_order>";
       $exec .= htmlspecialchars($this->data['option_order']);
       $exec .= "</arg_order>\n";
     }
-    if ($this->data['option_section'] != false) {
+    if (strlen($this->data['option_section'])) {
       $exec .= "$is    <arg_section>";
       $exec .= htmlspecialchars($this->data['option_section']);
       $exec .= "</arg_section>\n";
     }
-    if ($this->data['option_spot'] != false) {
+    if (strlen($this->data['option_spot'])) {
       $exec .= "$is    <arg_spot>";
       $exec .= htmlspecialchars($this->data['option_spot']);
       $exec .= "</arg_spot>\n";
     }
     if ($this->data['required'] != null and $this->data['required'] == 1)
 	$func .= "$is    <arg_required />\n";
-    if ($this->data['execution'] != false) {
+    if (strlen($this->data['execution'])) {
       $exec .= "$is    <arg_";
       $exec .= htmlspecialchars($this->data['execution']);
-      $exec .= ">\n";
+      $exec .= " />\n";
     }
-    if ($this->data['prototype'] != false) {
-      $exec .= "$is    <arg_proto>";
-      $exec .= htmlspecialchars($this->data['prototype']);
-      $exec .= "</arg_proto>\n";
-    }
+    $exec .= "$is    <arg_proto>";
+    $exec .= htmlspecialchars($this->data['prototype']);
+    $exec .= "</arg_proto>\n";
     if ($exec)
       $xmlstr .= "$is  <arg_execution>\n$exec$is  </arg_execution>\n";
     if ($this->constraint != false) {

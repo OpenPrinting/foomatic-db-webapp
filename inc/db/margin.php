@@ -67,38 +67,48 @@ class Margin
   public function toXML($indent = 0) {
     $xmlstr = "";
     $is = str_pad("", $indent);
-    if ($this->unit != false) $xmlstr .= "$is    <unit>{$this->unit}</unit>\n";
-    if ($this->unit or $this->top or $this->left or $this->right or
-	$this->bottom) {
+    if (strlen($this->unit)) $xmlstr .= "$is    <unit>{$this->unit}</unit>\n";
+    if (strlen($this->unit) or
+	strlen($this->top) or strlen($this->left) or
+	strlen($this->right) or strlen($this->bottom)) {
       if ($this->absolute != false) {
 	$xmlstr .= "$is    <absolute />\n";
       } else {
 	$xmlstr .= "$is    <relative />\n";
       }
     }
-    if ($this->top != false) $xmlstr .= "$is    <top>{$this->top}</top>\n";
-    if ($this->left != false) $xmlstr .= "$is    <left>{$this->left}</left>\n";
-    if ($this->right != false) $xmlstr .= "$is    <right>{$this->right}</right>\n";
-    if ($this->bottom != false) $xmlstr .= "$is    <bottom>{$this->bottom}</bottom>\n";
+    if (strlen($this->top))
+      $xmlstr .= "$is    <top>{$this->top}</top>\n";
+    if (strlen($this->left))
+      $xmlstr .= "$is    <left>{$this->left}</left>\n";
+    if (strlen($this->right))
+      $xmlstr .= "$is    <right>{$this->right}</right>\n";
+    if (strlen($this->bottom))
+      $xmlstr .= "$is    <bottom>{$this->bottom}</bottom>\n";
     if (strlen($xmlstr)) $xmlstr = "$is  <general>\n".$xmlstr."$is  </general>\n";
 
     if ($this->exception) {
       foreach ($this->exception as $exception) {
-	  if (($exception['pagesize'] == false) or
-	      ($exception['top'] == false and $exception['left'] == false and
-	       $exception['right'] == false and $exception['bottom'] == false))
-	      continue;
+	  if (!strlen($exception['pagesize']) or
+	      (!strlen($exception['top']) and !strlen($exception['left']) and
+	       !strlen($exception['right']) and !strlen($exception['bottom'])))
+	    continue;
 	$xmlstr .= "$is  <exception PageSize=\"{$exception['pagesize']}\">\n";
-	if ($exception['unit'] != false) $xmlstr .= "$is    <unit>{$exception['unit']}</unit>\n";
+	if (strlen($exception['unit']))
+	    $xmlstr .= "$is    <unit>{$exception['unit']}</unit>\n";
 	if ($exception['absolute'] != false) {
 	  $xmlstr .= "$is    <absolute />\n";
 	} else {
 	  $xmlstr .= "$is    <relative />\n";
 	}
-	if ($exception['top'] != false) $xmlstr .= "$is    <top>{$exception['top']}</top>\n";
-	if ($exception['left'] != false) $xmlstr .= "$is    <left>{$exception['left']}</left>\n";
-	if ($exception['right'] != false) $xmlstr .= "$is    <right>{$exception['right']}</right>\n";
-	if ($exception['bottom'] != false) $xmlstr .= "$is    <bottom>{$exception['bottom']}</bottom>\n";
+	if (strlen($exception['top']))
+	  $xmlstr .= "$is    <top>{$exception['top']}</top>\n";
+	if (strlen($exception['left']))
+	  $xmlstr .= "$is    <left>{$exception['left']}</left>\n";
+	if (strlen($exception['right']))
+	  $xmlstr .= "$is    <right>{$exception['right']}</right>\n";
+	if (strlen($exception['bottom']))
+	  $xmlstr .= "$is    <bottom>{$exception['bottom']}</bottom>\n";
 	$xmlstr .= "$is  </exception>\n";
       }
     }
@@ -186,10 +196,22 @@ class Margin
       $query = "update margin set ";
       $query .= "margin_unit=\"".mysql_real_escape_string($this->unit)."\",";
       $query .= "margin_absolute=\"".mysql_real_escape_string(($this->absolute == true ? "1" : "0"))."\",";
-      $query .= "margin_top=\"".mysql_real_escape_string($this->top)."\",";
-      $query .= "margin_left=\"".mysql_real_escape_string($this->left)."\",";
-      $query .= "margin_right=\"".mysql_real_escape_string($this->right)."\",";
-      $query .= "margin_bottom=\"".mysql_real_escape_string($this->bottom)."\"";
+      if (strlen($this->top))
+	$query .=
+	  "margin_top=\"".mysql_real_escape_string($this->top)."\",";
+      else $query .= "margin_top=null,";
+      if (strlen($this->left))
+	$query .=
+	  "margin_left=\"".mysql_real_escape_string($this->left)."\",";
+      else $query .= "margin_left=null,";
+      if (strlen($this->right))
+        $query .=
+	  "margin_right=\"".mysql_real_escape_string($this->right)."\",";
+      else $query .= "margin_right=null,";
+      if (strlen($this->bottom))
+        $query .=
+	  "margin_bottom=\"".mysql_real_escape_string($this->bottom)."\"";
+      else $query .= "margin_bottom=null";
       $query .= " where driver_id=\"{$this->driver_id}\" and printer_id=\"{$this->printer_id}\" and margin_type=\"general\"";
     } else {
       $query = "insert into margin(driver_id,printer_id,margin_unit,margin_type,margin_absolute,margin_top,margin_left,margin_right,margin_bottom) values(";
@@ -198,10 +220,18 @@ class Margin
       $query .= "\"".mysql_real_escape_string($this->unit)."\",";
       $query .= "\"general\",";
       $query .= "\"".mysql_real_escape_string(($this->absolute == true ? "1" :  "0"))."\",";
-      $query .= "\"".mysql_real_escape_string($this->top)."\",";
-      $query .= "\"".mysql_real_escape_string($this->left)."\",";
-      $query .= "\"".mysql_real_escape_string($this->right)."\",";
-      $query .= "\"".mysql_real_escape_string($this->bottom)."\")";
+      if (strlen($this->top))
+	$query .= "\"".mysql_real_escape_string($this->top)."\",";
+      else $query .= "null,";
+      if (strlen($this->left))
+        $query .= "\"".mysql_real_escape_string($this->left)."\",";
+      else $query .= "null,";
+      if (strlen($this->right))
+        $query .= "\"".mysql_real_escape_string($this->right)."\",";
+      else $query .= "null,";
+      if (strlen($this->bottom))
+        $query .= "\"".mysql_real_escape_string($this->bottom)."\")";
+      else $query .= "null)";
     }
 
     $result = $db->query($query);
@@ -221,10 +251,22 @@ class Margin
 	  $query = "update margin set ";
 	  $query .= "margin_unit=\"".mysql_real_escape_string($e['unit'])."\",";
 	  $query .= "margin_absolute=\"".mysql_real_escape_string(($e['absolute'] == true ? "1" : "0"))."\",";
-	  $query .= "margin_top=\"".mysql_real_escape_string($e['top'])."\",";
-	  $query .= "margin_left=\"".mysql_real_escape_string($e['left'])."\",";
-	  $query .= "margin_right=\"".mysql_real_escape_string($e['right'])."\",";
-	  $query .= "margin_bottom=\"".mysql_real_escape_string($e['bottom'])."\"";
+	  if (strlen($e['top']))
+	    $query .=
+	      "margin_top=\"".mysql_real_escape_string($e['top'])."\",";
+	  else $query .= "margin_top=null,";
+          if (strlen($e['left']))
+	    $query .=
+	      "margin_left=\"".mysql_real_escape_string($e['left'])."\",";
+          else $query .= "margin_left=null,";
+          if (strlen($e['right']))
+	    $query .=
+	      "margin_right=\"".mysql_real_escape_string($e['right'])."\",";
+          else $query .= "margin_right=null,";
+          if (strlen($e['bottom']))
+	    $query .=
+	      "margin_bottom=\"".mysql_real_escape_string($e['bottom'])."\"";
+          else $query .= "margin_bottom=null";
 	  $query .= " where driver_id=\"{$this->driver_id}\" and printer_id=\"{$this->printer_id}\" and margin_type=\"exception\" and pagesize=\"{$e['pagesize']}\"";
 	} else {
 	  $query = "insert into margin(driver_id,printer_id,margin_unit,margin_type,pagesize,margin_absolute,margin_top,margin_left,margin_right,margin_bottom) values(";
@@ -234,12 +276,19 @@ class Margin
 	  $query .= "\"exception\",";
 	  $query .= "\"".mysql_real_escape_string($e['pagesize'])."\",";
 	  $query .= "\"".mysql_real_escape_string(($e['absolute'] == true ? "1" : "0"))."\",";
-	  $query .= "\"".mysql_real_escape_string($e['top'])."\",";
-	  $query .= "\"".mysql_real_escape_string($e['left'])."\",";
-	  $query .= "\"".mysql_real_escape_string($e['right'])."\",";
-	  $query .= "\"".mysql_real_escape_string($e['bottom'])."\")";
+          if (strlen($e['top']))
+	    $query .= "\"".mysql_real_escape_string($e['top'])."\",";
+	  else $query .= "null,";
+          if (strlen($e['left']))
+	    $query .= "\"".mysql_real_escape_string($e['left'])."\",";
+          else $query .= "null,";
+          if (strlen($e['right']))
+	    $query .= "\"".mysql_real_escape_string($e['right'])."\",";
+          else $query .= "null,";
+          if (strlen($e['bottom']))
+	    $query .= "\"".mysql_real_escape_string($e['bottom'])."\")";
+          else $query .= "null)";
 	}
-
 	$result = $db->query($query);
 	if ($result == null) {
 	  echo "[ERROR] Unable to save margin's exception data: ".$db->getError()."\n";

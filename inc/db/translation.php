@@ -83,7 +83,7 @@ class Translation
     $xmlstr = "";
     $is = str_pad("", $indent);
     foreach($this->translations as $lang => $trans) { 
-      if ($lang == "en" or $trans == null or $trans == "") continue;
+      if ($lang == "en" or !strlen($trans)) continue;
       $xmlstr .= "$is<$lang>";
       $xmlstr .= htmlspecialchars($trans);
       $xmlstr .= "</$lang>\n";

@@ -92,7 +92,7 @@ class OptionChoice
   public function toXML($indent = 0) {
     $is = str_pad("", $indent);
     $xmlstr = "$is<enum_val id=\"ev/{$this->data['id']}\">\n";
-    if ($this->data['longname'] != false) {
+    if (strlen($this->data['longname'])) {
       $xmlstr .= "$is  <ev_longname>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->data['longname']);
       $xmlstr .= "</en>\n";
@@ -100,16 +100,14 @@ class OptionChoice
 	$xmlstr .= $this->translation["longname"]->toXML($indent + 4);
       $xmlstr .= "$is  </ev_longname>\n";
     }
-    if ($this->data['shortname'] != false) {
+    if (strlen($this->data['shortname'])) {
       $xmlstr .= "$is  <ev_shortname>\n$is    <en>";
       $xmlstr .= htmlspecialchars($this->data['shortname']);
       $xmlstr .= "</en>\n$is  </ev_shortname>\n";
     }
-    if ($this->data['driverval'] != false) {
-      $xmlstr .= "$is  <ev_driverval>";
-      $xmlstr .= htmlspecialchars($this->data['driverval']);
-      $xmlstr .= "</ev_driverval>\n";
-    }
+    $xmlstr .= "$is  <ev_driverval>";
+    $xmlstr .= htmlspecialchars($this->data['driverval']);
+    $xmlstr .= "</ev_driverval>\n";
     if ($this->constraint != false) {
       $xmlstr .= "$is  <constraints>\n";
       foreach($this->constraint as $constraint) {

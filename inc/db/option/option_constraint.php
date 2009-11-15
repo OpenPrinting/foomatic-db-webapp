@@ -89,13 +89,13 @@ class OptionConstraint
   public function toXML($indent = 0, $is_eval_option = false) {
     $is = str_pad("", $indent);
     $xmlstr = "$is<constraint";
-    if ($this->data['sense']) {
+    if (strlen($this->data['sense'])) {
       $xmlstr .= " sense=\"{$this->data['sense']}\"";
     }
     $xmlstr .= ">\n";
-    if ($this->data['driver'])
+    if (strlen($this->data['driver']))
       $xmlstr .= "$is  <driver>{$this->data['driver']}</driver>\n";
-    if ($this->data['printer']) {
+    if (strlen($this->data['printer'])) {
       if (substr($this->data['printer'], -1) == "-") {
 	$make = substr($this->data['printer'], 0, -1);
 	$xmlstr .= "$is  <make>" . htmlspecialchars($make) . "</make>\n";
@@ -104,7 +104,8 @@ class OptionConstraint
 	  "</printer>\n";
       }
     }
-    if (strlen($this->data['defval'])) {
+    if (strlen($this->data['defval']) and
+	$this->data['is_choice_constraint'] != true) {
       $xmlstr .= "$is  <arg_defval>";
       if ($is_eval_option) $xmlstr .= "ev/";
       $xmlstr .= htmlspecialchars($this->data['defval']) . "</arg_defval>\n";
