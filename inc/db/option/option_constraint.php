@@ -40,10 +40,7 @@ class OptionConstraint
 		$this->data['printer'] = (string)printerIDfromMakeModel($data->make, $data->model);
 	      }
 	    }
-	    list($prefix, $this->data['defval']) = preg_split("/\//", (string)$data->arg_defval);
-	    if (!$this->data['defval'] or ($prefix != "ev")) {
-	      $this->data['defval'] = (string)$data->arg_defval;
-	    }
+	    $this->data['defval'] = (string)$data->arg_defval;
 	    $this->loaded = true;
 	  }
 	  break;
@@ -86,7 +83,7 @@ class OptionConstraint
     return $this->loaded;
   }
 
-  public function toXML($indent = 0, $is_eval_option = false) {
+  public function toXML($indent = 0) {
     $is = str_pad("", $indent);
     $xmlstr = "$is<constraint";
     if (strlen($this->data['sense'])) {
@@ -107,7 +104,6 @@ class OptionConstraint
     if (strlen($this->data['defval']) and
 	$this->data['is_choice_constraint'] != true) {
       $xmlstr .= "$is  <arg_defval>";
-      if ($is_eval_option) $xmlstr .= "ev/";
       $xmlstr .= htmlspecialchars($this->data['defval']) . "</arg_defval>\n";
     }
     $xmlstr .= "$is</constraint>\n";

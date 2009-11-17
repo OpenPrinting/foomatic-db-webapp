@@ -184,8 +184,7 @@ class Option
       $xmlstr .= "$is  <constraints>\n";
       foreach($this->constraint as $constraint) {
 	$xmlstr .=
-	  $constraint->toXML($indent + 4,
-			     ($this->data['option_type'] == "enum"));
+	  $constraint->toXML($indent + 4);
       }
       $xmlstr .= "$is  </constraints>\n";
     }
