@@ -8,17 +8,36 @@
 	{section name=printer loop=$data}
 
 	<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
+		Supports: 
+			{if $data[printer].color == "1"} <b><font color="#6B44B6">C</font><font color="#FFCC00">o</font><font color="#10DC98">l</font><font color="#1CA1C2">o</font><font color="#2866EB">r</font></b> {/if}
+			{if $data[printer].color == "0"} <b>Black &amp; White</b> {/if}
+			{if $data[printer].color == ""} Unknown {/if}
+		<br>
+		Functionality: 
+			{if $data[printer].functionality == "A"} <font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
+			{if $data[printer].functionality == "B"} <font color="green">Mostly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
+			{if $data[printer].functionality == "D"} <font color="orange">Partially</font> <img src="/images/icons/Linuxyes.png"> {/if}
+			{if $data[printer].functionality == ""} <font color="black">Unknown</font> <img src="/images/icons/Linuxyes.png"> <sup>???</sup> {/if}
+			{if $data[printer].functionality == "F"} <font color="red">Paperweight</font> <img src="/images/icons/Linuxno.png"> {/if}
+		<br>
+		
 		Recommended Driver: <a href="{$BASEURL}driver/{$data[printer].default_driver}" title="{$data[printer].default_driver}">{$data[printer].default_driver}</a>
 		( 
 			<a href="{$data[printer].url}">Homepage</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
 		)
-		<br>
-		if there is at least 1 driver_asset tbl for driver id... show: 
-		Generic Instructions: CUPS, LPD, LPRng, PPR, PDQ, no spooler
-		<br>
-		Contrib URL: <a href="{$data[printer].contrib_url}">{$data[printer].contrib_url}</a>
+		
+		{if $printer_assoc == "1"} 
+			<br>Generic Instructions: 
+			<a href="/cups-doc.html">CUPS</a>, 
+			<a href="/lpd-doc.html">LPD</a>, 
+			<a href="/lpd-doc.html">LPRng</a>, 
+			<a href="/ppr-doc.html">PPR</a>, 
+			<a href="/pdq-doc.html">PDQ</a>, 
+			<a href="/direct-doc.html">no spooler</a>
+		{/if}
+
 	</p>
 	
 	<h3>Comments</h3>
@@ -31,7 +50,9 @@
 	{if $data[printer].text == "us-ascii"}
 		Printer supports direct text printing with the 'us-ascii' charset.<br>
 	{/if}
-	
+	{if $data[printer].contrib_url != ""}
+		Contrib URL: <a href="{$data[printer].contrib_url}">{$data[printer].contrib_url}</a>
+	{/if}
 	{/section}
 
 </div>
