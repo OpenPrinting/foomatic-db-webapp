@@ -25,7 +25,9 @@
 		Recommended Driver: <a href="{$BASEURL}driver/{$data[printer].default_driver}" title="{$data[printer].default_driver}">{$data[printer].default_driver}</a>
 		( 
 			<!--<a href="{$data[printer].url}">Homepage</a> -->
+			{if $driverUrl != ""}
 			<a href="{$driverUrl}">Homepage</a> 
+			{/if}
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
 		)

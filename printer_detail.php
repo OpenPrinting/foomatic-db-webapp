@@ -19,9 +19,15 @@ $SMARTY->assign('model',urldecode($_GET['model']) );
 			 $driver_id = $row['default_driver'];
 		}
 		
+		$driver_url = "";
 		$resDriver = $DB->query("SELECT * FROM driver WHERE id='".$driver_id."' ");
 		while($rowDriver = $resDriver->getRow()){
-			$driver_url = $rowDriver['url'];
+			if($rowDriver['url']){
+				$driver_url = $rowDriver['url'];
+			}
+			else{
+				$driver_url = "";
+			}
 		}
 		
 		$resDriverAssoc = $DB->query("SELECT COUNT(driver_id) AS cnt FROM driver_printer_assoc WHERE printer_id='".$printer_id."' ");
@@ -38,7 +44,13 @@ $SMARTY->assign('model',urldecode($_GET['model']) );
 		
 		$SMARTY->assign('data',$data);
 		$SMARTY->assign('printer_assoc',$print_assoc);
-		$SMARTY->assign('driverUrl', $driver_url);
+		if($driver_url != ""){
+			$SMARTY->assign('driverUrl', $driver_url);
+		}
+		else{
+			$SMARTY->assign('driverUrl', "");
+		}
+		
 		
 		$SMARTY->display('printers/detail.tpl');
 
