@@ -3,7 +3,7 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h1>Result for {$manufacturer}</h1>
+	<h1>{$manufacturer}</h1>
 
 	<br>
 	<h3 style="border-bottom:1px solid #eee;"><font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"></h3>

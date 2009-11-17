@@ -3,7 +3,7 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h1>Result for {$manufacturer} {$model}</h1>
+	<h1>{$manufacturer} {$model}</h1>
 	
 	{section name=printer loop=$data}
 
@@ -24,7 +24,8 @@
 		<br>
 		Recommended Driver: <a href="{$BASEURL}driver/{$data[printer].default_driver}" title="{$data[printer].default_driver}">{$data[printer].default_driver}</a>
 		( 
-			<a href="{$data[printer].url}">Homepage</a> from driver table
+			<!--<a href="{$data[printer].url}">Homepage</a> -->
+			<a href="{$driverUrl}">Homepage</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
 		)
