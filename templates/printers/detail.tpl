@@ -19,14 +19,16 @@
 			{if $data[printer].functionality == "D"} <font color="orange">Partially</font> <img src="/images/icons/Linuxyes.png"> {/if}
 			{if $data[printer].functionality == ""} <font color="black">Unknown</font> <img src="/images/icons/Linuxyes.png"> <sup>???</sup> {/if}
 			{if $data[printer].functionality == "F"} <font color="red">Paperweight</font> <img src="/images/icons/Linuxno.png"> {/if}
-		<br>
 		
+		{if $data[printer].default_driver != ""}
+		<br>
 		Recommended Driver: <a href="{$BASEURL}driver/{$data[printer].default_driver}" title="{$data[printer].default_driver}">{$data[printer].default_driver}</a>
 		( 
-			<a href="{$data[printer].url}">Homepage</a> 
+			<a href="{$data[printer].url}">Homepage</a> from driver table
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
 		)
+		{/if}
 		
 		{if $printer_assoc == "1"} 
 			<br>Generic Instructions: 
