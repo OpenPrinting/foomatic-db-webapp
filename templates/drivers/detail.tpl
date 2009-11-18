@@ -13,7 +13,7 @@
 		<h2>Printer list</h2>
 		<ul>
 			{foreach from=$printers item=p}
-			{assign var='printerUrl' value="`$BASEURL`printer/`$p.make`/`$p.model`"}	
+			{assign var='printerUrl' value="`$BASEURL`printer/`$p.make`/`$p.id`"}	
 				<li><a href="{$printerUrl|replace:" ":"+"}">{$p.make|escape} {$p.model|escape}</a></li>
 			{foreachelse}
 				<li>No known printers.</li>
