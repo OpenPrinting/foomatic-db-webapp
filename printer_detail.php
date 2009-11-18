@@ -1,23 +1,28 @@
 <?php
 include('inc/common.php');
 
-$PAGE->setPageTitle('Printer: ' . $_GET['manufacturer'] . ' ' . $_GET['model']);	
-$PAGE->setActiveID('printer');
-$PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
-$PAGE->addBreadCrumb($_GET['manufacturer'] . ' ' . $_GET['model']);	
-
-$SMARTY->assign('manufacturer',$_GET['manufacturer']);
-$SMARTY->assign('model',urldecode($_GET['model']) );
-
 
 		// Load manufacturers
-		$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND model='".$_GET['model']."' ");
+		//$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND model='".$_GET['model']."' ");
+		$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND id='".$_GET['id']."' ");
 		$makes = array();
 		while($row = $res->getRow()){
 			 $data[] = $row;
+			 $printer_make = $row['model'];
 			 $printer_id = $row['id'];
 			 $driver_id = $row['default_driver'];
 		}
+
+/**
+ * Had to place down a few lines to do the db call to refactore model 
+ * and url. Url now uses ID
+ */
+
+$PAGE->setPageTitle('Printer: ' . $_GET['manufacturer'] . ' ' . $printer_make);	
+$PAGE->setActiveID('printer');
+$PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
+$PAGE->addBreadCrumb($_GET['manufacturer'] . ' ' . $printer_make);	
+
 		
 		$driver_url = "";
 		$resDriver = $DB->query("SELECT * FROM driver WHERE id='".$driver_id."' ");
@@ -41,8 +46,12 @@ $SMARTY->assign('model',urldecode($_GET['model']) );
 			}
 		}
 		
+		$SMARTY->assign('manufacturer',$_GET['manufacturer']);
+		//$SMARTY->assign('model',urldecode($_GET['model']) );
+		$SMARTY->assign('model',$printer_make );
 		
 		$SMARTY->assign('data',$data);
+		
 		$SMARTY->assign('printer_assoc',$print_assoc);
 		if($driver_url != ""){
 			$SMARTY->assign('driverUrl', $driver_url);

@@ -13,7 +13,7 @@
 		{section name=printerPerfect loop=$dataPerfect}
 			
 				
-			{assign var='printerPerfectUrl' value="`$BASEURL`printer/`$dataPerfect[printerPerfect].make`/`$dataPerfect[printerPerfect].model`"}
+			{assign var='printerPerfectUrl' value="`$BASEURL`printer/`$dataPerfect[printerPerfect].make`/`$dataPerfect[printerPerfect].id`"}
 			<a href="{$printerPerfectUrl|replace:" ":"+"}">{$dataPerfect[printerPerfect].model}</a><br />
 	
 		{/section}
@@ -26,7 +26,7 @@
 
 		{section name=printerMostly loop=$dataMostly}
 				
-			{assign var='printerMostlyUrl' value="`$BASEURL`printer/`$dataMostly[printerMostly].make`/`$dataMostly[printerMostly].model`"}
+			{assign var='printerMostlyUrl' value="`$BASEURL`printer/`$dataMostly[printerMostly].make`/`$dataMostly[printerMostly].id`"}
 			<a href="{$printerMostlyUrl|replace:" ":"+"}">{$dataMostly[printerMostly].model}</a><br />
 			
 	
@@ -40,7 +40,7 @@
 
 		{section name=printerPartially loop=$dataPartially}
 				
-			{assign var='printerPartiallyUrl' value="`$BASEURL`printer/`$dataPartially[printerPartially].make`/`$dataPartially[printerPartially].model`"}
+			{assign var='printerPartiallyUrl' value="`$BASEURL`printer/`$dataPartially[printerPartially].make`/`$dataPartially[printerPartially].id`"}
 			<a href="{$printerPartiallyUrl|replace:" ":"+"}">{$dataPartially[printerPartially].model}</a><br />
 		
 		{/section}
@@ -53,7 +53,7 @@
 
 		{section name=printerUnknown loop=$dataUnknown}
 				
-			{assign var='printerUnknownUrl' value="`$BASEURL`printer/`$data[printerUnknown].make`/`$dataUnknown[printerUnknown].model`"}
+			{assign var='printerUnknownUrl' value="`$BASEURL`printer/`$data[printerUnknown].make`/`$dataUnknown[printerUnknown].id`"}
 			<a href="{$printerUnknownUrl|replace:" ":"+"}">{$dataUnknown[printerUnknown].model}</a><br />
 			
 		{/section}
@@ -66,7 +66,7 @@
 
 		{section name=printerPaperweight loop=$dataPaperweight}
 				
-			{assign var='printerPaperweightUrl' value="`$BASEURL`printer/`$dataPaperweight[printerPaperweight].make`/`$dataPaperweight[printerPaperweight].model`"}
+			{assign var='printerPaperweightUrl' value="`$BASEURL`printer/`$dataPaperweight[printerPaperweight].make`/`$dataPaperweight[printerPaperweight].id`"}
 			<a href="{$printerPaperweightUrl|replace:" ":"+"}">{$dataPaperweight[printerPaperweight].model}</a><br />
 			
 	
