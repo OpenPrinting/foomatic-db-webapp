@@ -1,8 +1,0 @@
-CREATE TABLE printer_translation
-(
-	id VARCHAR(50) NOT NULL,
-	lang VARCHAR(8),
-	comments TEXT NULL,
-	CONSTRAINT pkey PRIMARY KEY(id, lang),
-	FOREIGN KEY(id) REFERENCES printer(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB;
