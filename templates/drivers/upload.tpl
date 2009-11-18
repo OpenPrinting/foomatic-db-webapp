@@ -44,7 +44,7 @@
 	</tr>
 	<tr>
 		<td>Release Date </td>
-		<td><input type="text" name="release_date" id="release_date"></td>
+		<td><input type="text" size="12" name="release_date" id="datepicker"></td>
 		<td>If entered this driver will not get shown on the web site or added to the Foomatic XML database before this date. Publication happens in the beginning of the specified day in UTC.</td>
 	</tr>
 	<tr>

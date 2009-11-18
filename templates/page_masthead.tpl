@@ -20,7 +20,7 @@
 		<script src="{$BASEURL}javascript/swfobject.js" type="text/javascript" charset="utf-8"></script>
 		<script src="{$BASEURL}javascript/menu.js" type="text/javascript"></script>
 		
-		{if $PAGE->getActiveID() == "printer"}
+		{if $PAGE->getActiveID() == "printer" || $PAGE->getActiveID() == "driver"}
 		<script type="text/javascript" src="{$BASEURL}javascript/ui/ui.datepicker.js"></script>
 		
 			{literal}
