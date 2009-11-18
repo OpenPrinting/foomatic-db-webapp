@@ -1,6 +1,6 @@
 	<div id="{$classtype|default:two_col_col_2}">
 
-		<form id="search-block-form" method="post" accept-charset="UTF-8" action="/">
+		<form id="search-block-form" method="post" accept-charset="UTF-8" action="http://www.linuxfoundation.org/">
 			<div>
 				<label style="display: none" for="edit-search-block-form-1">Search this site: </label>
 				<input type="text" class="form-text" title="Enter the terms you wish to search for." value="" size="15" id="edit-search-block-form-1" name="search_block_form" maxlength="128"/>
