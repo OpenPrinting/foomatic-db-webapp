@@ -30,85 +30,20 @@
 	<table cellpadding="4" style="background: #eee; border: 1px solid #ccc;">
 		<tr bgcolor="#dfdfdf">
 			<td align="right">Release Date:</td> 
-			<td><input type="text" size="32" tabindex="1" name="release_date"/> </td>
+			<td><input type="text" size="10" tabindex="1" id="datepicker" name="release_date"/> </td>
 			<td><p>Future release date</p></td>
-		</tr> 
-		<tr bgcolor="#efefef">
-			<td align="right">New entry:</td> 
-			<td><label><input type="checkbox" checked="checked" tabindex="2" value="on" name="newentry"/></label> </td>
-			<td><p>Check the box if you intend to create a new printer entry. If you have modified manufacturer and/or 
-			 model name, the previous entry is conserved. If you want to rename an existing entry, uncheck 
-			 this box.</p></td>
 		</tr> 
 		<tr bgcolor="#dfdfdf">
 			<td align="right">Manufacturer:</td> 
 			<td>
-				<select tabindex="3" name="mmake">
+				<select tabindex="2" name="make">
 					<option value="" selected="selected">Choose here</option>
-					<option value="Alps">Alps</option>
-					<option value="Anitech">Anitech</option>
-					<option value="Apollo">Apollo</option>
-					<option value="Apple">Apple</option>
-					<option value="Avery">Avery</option>
-					<option value="Brother">Brother</option>
-					<option value="CalComp">CalComp</option>
-					<option value="Canon">Canon</option>
-					<option value="Casio">Casio</option>
-					<option value="Citizen">Citizen</option>
-					<option value="CItoh">CItoh</option>
-					<option value="Compaq">Compaq</option>
-					<option value="DEC">DEC</option>
-					<option value="Dell">Dell</option>
-					<option value="Dymo-CoStar">Dymo-CoStar</option>
-					<option value="Epson">Epson</option>
-					<option value="Fujifilm">Fujifilm</option>
-					<option value="Fujitsu">Fujitsu</option>
-					<option value="Generic">Generic</option>
-					<option value="Genicom">Genicom</option>
-					<option value="Gestetner">Gestetner</option>
-					<option value="Heidelberg">Heidelberg</option>
-					<option value="Hitachi">Hitachi</option>
-					<option value="HP">HP</option>
-					<option value="IBM">IBM</option>
-					<option value="Imagen">Imagen</option>
-					<option value="Imagistics">Imagistics</option>
-					<option value="InfoPrint">InfoPrint</option>
-					<option value="Infotec">Infotec</option>
-					<option value="Kodak">Kodak</option>
-					<option value="KONICA MINOLTA">KONICA MINOLTA</option>
-					<option value="Kyocera">Kyocera</option>
-					<option value="Lanier">Lanier</option>
-					<option value="LaserMaster">LaserMaster</option>
-					<option value="Lexmark">Lexmark</option>
-					<option value="Minolta">Minolta</option>
-					<option value="Minolta QMS">Minolta QMS</option>
-					<option value="Mitsubishi">Mitsubishi</option>
-					<option value="NEC">NEC</option>
-					<option value="NRG">NRG</option>
-					<option value="Oce">Oce</option>
-					<option value="Oki">Oki</option>
-					<option value="Olivetti">Olivetti</option>
-					<option value="Olympus">Olympus</option>
-					<option value="Panasonic">Panasonic</option>
-					<option value="PCPI">PCPI</option>
-					<option value="Pentax">Pentax</option>
-					<option value="Printrex">Printrex</option>
-					<option value="QMS">QMS</option>
-					<option value="Raven">Raven</option>
-					<option value="Ricoh">Ricoh</option>
-					<option value="Samsung">Samsung</option>
-					<option value="Savin">Savin</option>
-					<option value="Seiko">Seiko</option>
-					<option value="Sharp">Sharp</option>
-					<option value="SiPix">SiPix</option>
-					<option value="Sony">Sony</option>
-					<option value="Star">Star</option>
-					<option value="Tally">Tally</option>
-					<option value="Tektronix">Tektronix</option>
-					<option value="Texas Instruments">Texas Instruments</option>
-					<option value="Toshiba">Toshiba</option>
-					<option value="Xante">Xante</option>
-					<option value="Xerox">Xerox</option>
+					{foreach from=$makes item=make}
+						<option value="{$make|escape}">{$make|escape}</option>
+					{foreachelse}
+						<option value="0">None Avail</option>
+					{/foreach}
+
 					</select>  
 					OR  
 					<input type="text" size="16" tabindex="4" name="make"/>
