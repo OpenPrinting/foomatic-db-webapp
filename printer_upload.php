@@ -39,6 +39,12 @@ $SMARTY->assign('scaleSelect', '');
 		$adminPerms = $USER->getPerms();
 		$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
 		
+		// Load manufacturers
+		$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+		$makes = array();
+		while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
+		$SMARTY->assign('makes',$makes);
+		
 $SMARTY->display('printers/upload.tpl');
 	
 ?>
