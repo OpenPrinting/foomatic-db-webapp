@@ -16,7 +16,6 @@
 			{assign var='printerPerfectUrl' value="`$BASEURL`printer/`$dataPerfect[printerPerfect].make`/`$dataPerfect[printerPerfect].model`"}
 			<a href="{$printerPerfectUrl|replace:" ":"+"}">{$dataPerfect[printerPerfect].model}</a><br />
 	
-		
 		{/section}
 	{else}
 		None
