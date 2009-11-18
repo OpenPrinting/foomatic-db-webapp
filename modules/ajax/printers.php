@@ -8,7 +8,7 @@ $DB = DB::getInstance();
 $array = array();
 if ($_GET['_name'] == 'manufacturer') {
 	
-	$resModel = $DB->query("SELECT make, model FROM printer WHERE make = '".$_GET['_value']."' ORDER BY make, model");
+	$resModel = $DB->query("SELECT id, make, model FROM printer WHERE make = '".$_GET['_value']."' ORDER BY make, model");
 	
 	while($rModel = $resModel->getRow()){
 
