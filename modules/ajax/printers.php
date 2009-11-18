@@ -14,7 +14,7 @@ if ($_GET['_name'] == 'manufacturer') {
 
 		 if ( $_GET['_value'] == $rModel['make'] )
 		 {
-			$array[] = array($rModel['model'] => $rModel['model']);
+			$array[] = array($rModel['id'] => $rModel['model']);
 	
 		  } else
 		  {
