@@ -7,5 +7,6 @@ CREATE TABLE driver_approval
 	rejected VARCHAR(40),
 	approver VARCHAR(40),
 	comment TEXT,
-	PRIMARY KEY(id)
+	CONSTRAINT pkey PRIMARY KEY(id),
+	FOREIGN KEY(id) REFERENCES driver(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
