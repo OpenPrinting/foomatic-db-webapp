@@ -7,6 +7,5 @@ CREATE TABLE printer_approval
 	rejected VARCHAR(40),
 	approver VARCHAR(40),
 	comment TEXT,
-	CONSTRAINT pkey PRIMARY KEY(id),
-	FOREIGN KEY(id) REFERENCES printer(id) ON DELETE CASCADE ON UPDATE CASCADE
+	PRIMARY KEY(id)
 ) ENGINE=InnoDB;
