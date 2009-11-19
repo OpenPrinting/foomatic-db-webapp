@@ -19,8 +19,7 @@
 	<h2>Documentation</h2>
 	<p>Please take the time to review the documentation for creating driver packages before proceeding.</p>
 	<ul class="bulleted">
-		<li><a href="404.php?id=doc">Some documentation link</a></li>
-		<li><a href="404.php?id=doc">Some other documentation link</a></li>
+		<li><a href="{$MAINURL}/collaborate/workgroups/openprinting/database/databaseintro">Database Introduction</a></li>
 	</ul>
 
 {if $isLoggedIn == "1" }
@@ -220,8 +219,9 @@
 		<input type="hidden" name="submitQueue" value="1" >
 {/if}
 	
-<input type="hidden" name="submitFile" value="1" >
-<input type="file" name="payload"></input>
+
+<input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
+<input type="file" name="payload">
 
 
 <br><br>

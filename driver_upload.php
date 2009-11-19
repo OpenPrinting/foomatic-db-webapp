@@ -51,27 +51,46 @@ $r = $res->toArray('id');
 
 $SMARTY->assign("drivers",$r);
 
-//$um = new UploadManager('/srv/www/lptest/freshies');
-if(isset($_GET['upload']) && $um->hasFiles()) {
-	$file = $um->pop();
-	
-	while($um->hasFiles()) {
-		// Someone tried to upload more than one file. Cheater.
-		$file2 = $um->pop();
-		$um->delete();
-	}
-	
-	if(!preg_match(',^([A-Za-z0-9-]*)-([A-Za-z0-9.]*).tar.gz$,',$file->getOrigName(),$matches)) {
-		echo 'File not acceptable.<br />';
-		echo $file->getOrigName();
-		$file->delete();
-	} else {
-		echo 'Name okay.<br /><br />';
-		print_r($matches);
-	}
-	
-}
 
+///// Kevin Legacy code /////
+		/*
+		//$um = new UploadManager('/srv/www/lptest/freshies');
+		if(isset($_GET['upload']) && $um->hasFiles()) {
+			$file = $um->pop();
+			
+			while($um->hasFiles()) {
+				// Someone tried to upload more than one file. Cheater.
+				$file2 = $um->pop();
+				$um->delete();
+			}
+			
+			if(!preg_match(',^([A-Za-z0-9-]*)-([A-Za-z0-9.]*).tar.gz$,',$file->getOrigName(),$matches)) {
+				echo 'File not acceptable.<br />';
+				echo $file->getOrigName();
+				$file->delete();
+			} else {
+				echo 'Name okay.<br /><br />';
+				print_r($matches);
+			}
+			
+		}
+		*/
+///// Kevin Legacy code /////
+
+if(isset($_POST['submit'])){
+	
+	echo "<pre>";
+	print_r($_POST);
+	print_r($_FILES);
+	echo "</pre>";
+	
+	/**
+	 * Insert into driver tables
+	 */
+
+}
+		
+		
 		//$SMARTY->assign('data',$data);
 
 		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
