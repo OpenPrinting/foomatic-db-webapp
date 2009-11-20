@@ -9,19 +9,27 @@
 				<input type="hidden" value="search_block_form" id="edit-search-block-form" name="form_id"/>
 			</div>
 		</form>	
-
-        <div class="section">
-        	<h4 class="color_site_1 b_color_site_1">My Account</h4>
-			<div>
-				<ul>
-					<li> <a href="{$BASEURL}account/myuploads" >My Uploads</a></li>
-					<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
-					<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
-					<li>Queue Administration</li>
-				</ul>
-				<br>
-			</div>
-        </div>
+	
+		{if $isLoggedIn == "1"}
+		        <div class="section">
+		        	<h4 class="color_site_1 b_color_site_1">My Account</h4>
+					<div>
+						<ul>
+							<li> <a href="{$BASEURL}account/myuploads" >My Uploads</a></li>
+							{if $isUploader || $isTrustedUploader || $isAdmin }
+							<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
+							{/if}
+							{if $isTrusted || $isAdmin }
+							<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
+							{/if}
+							{if $isAdmin }
+							<li>Queue Administration</li>
+							{/if}
+						</ul>
+						<br>
+					</div>
+		        </div>
+		{/if}
 			
         <div class="section">
         	<h4 class="color_site_1 b_color_site_1">Sponsored by</h4>
