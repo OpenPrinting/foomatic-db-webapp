@@ -11,6 +11,8 @@ RewriteRule ^admin/?$ admin_home.php		[L]
 RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^admin/([^/]+)$ admin_$1.php?%1		[L]
 
+RewriteRule ^account/myuploads/?$ account_myuploads.php		[L]
+
 RewriteRule ^query.cgi/?$ query.php               [L]
 RewriteRule ^ppd-o-matic.cgi/?$ ppd-o-matic.php               [L]
 
@@ -25,8 +27,7 @@ RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*) /printer_detail.php?manufacturer=$1&id=$2&%1	[L]
 
 RewriteRule ^drivers/?$ driver_list.php		[L]
-RewriteRule ^drivers/mydrivers/?$ driver_myuploads.php		[L]
 RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
-RewriteRule ^driver/([^/]*)/?$ driver_display.php?driver=$1		[L]
+RewriteRule ^driver/([^/]*)/?$ driver_detail.php?driver=$1		[L]
 
 RewriteRule ^database/?$ database.php		[L]
