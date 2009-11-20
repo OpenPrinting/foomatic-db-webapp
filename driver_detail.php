@@ -6,6 +6,18 @@ if(empty($_GET['driver'])) {
 	exit;
 }
 
+if($SESSION->isloggedIn()){
+	
+		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
+		$auth = $USER->fetchUserRoles();
+		
+		$adminPerms = $USER->getPerms();
+		$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
+
+		$SMARTY->assign('isUploader', $USER->isUploader($auth) );
+		$SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
+}
+
 $PAGE->setPageTitle('Driver: ' . $_GET['driver']);
 $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');	

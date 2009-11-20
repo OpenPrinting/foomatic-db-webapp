@@ -1,16 +1,28 @@
 <?php
 include('inc/common.php');
 
-$SESSION->pageLock('driver_upload');
-if(!$SESSION->checkPermission('driver_noqueue')) $SMARTY->assign('UNTRUSTED',1);
+//$SESSION->pageLock('account_myuploads');
 
-$PAGE->setPageTitle('Uploads and Statuses');
+if(!$SESSION->isloggedIn()){
+	header('location: /login?err=expired');
+}
+
+$PAGE->setPageTitle('My Uploads');
 $PAGE->setActiveID('driver');
-$PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
-$PAGE->addBreadCrumb('Uploads and Statuses');
+//$PAGE->addBreadCrumb('My Account',$CONF->baseURL.'account/');
+$PAGE->addBreadCrumb('My Uploads');
 
-$SMARTY->assign('showTabs', "1");
+		$SMARTY->assign('showTabs', "1");
 
+		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
+		$auth = $USER->fetchUserRoles();
+		
+		$adminPerms = $USER->getPerms();
+		$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
+
+		$SMARTY->assign('isUploader', $USER->isUploader($auth) );
+		$SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
+		
 $SMARTY->display('account/myuploads.tpl');
 
 ?>		

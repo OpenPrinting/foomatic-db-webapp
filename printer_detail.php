@@ -1,6 +1,17 @@
 <?php
 include('inc/common.php');
 
+if($SESSION->isloggedIn()){
+	
+		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
+		$auth = $USER->fetchUserRoles();
+		
+		$adminPerms = $USER->getPerms();
+		$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
+
+		$SMARTY->assign('isUploader', $USER->isUploader($auth) );
+		$SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
+}
 
 		// Load manufacturers
 		//$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND model='".$_GET['model']."' ");

@@ -1,7 +1,8 @@
 <?php
 include('inc/common.php');
 
-if($SESSION->isLoggedIn()) header('Location: index.php');
+if($SESSION->isLoggedIn()) header('Location: /account/myuploads');
+
 $PAGE->setActiveID('home');
 $PAGE->setPageTitle('Login');
 $PAGE->addBreadCrumb('Authentication');
@@ -13,7 +14,8 @@ if($a) {
 	$SMARTY->assign('loginMessage',$a);
 }
 else {
-	if($_GET['err'] != ""){
+	
+	if(isset($_GET['err']) && $_GET['err'] != ""){
 		switch ($_GET['err']) {
 			case "expired":
 				$SMARTY->assign('loginMessage',"Your Session is Expired. Please Login");
