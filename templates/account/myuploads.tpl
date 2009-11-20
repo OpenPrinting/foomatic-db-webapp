@@ -30,7 +30,7 @@
 	<p>The most recent versions of drivers you have uploaded in the past are shown here.</p>
 	-->
 
-	Choose queue. Show queue detail.
+
 		
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
