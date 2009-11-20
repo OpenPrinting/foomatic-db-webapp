@@ -23,7 +23,7 @@
 							<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
 							{/if}
 							{if $isAdmin }
-							<li>Queue Administration</li>
+							<li><a href="{$BASEURL}admin/queue" >Queue Administration</a></li>
 							{/if}
 						</ul>
 						<br>
