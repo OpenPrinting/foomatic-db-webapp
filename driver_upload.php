@@ -79,11 +79,11 @@ $SMARTY->assign("drivers",$r);
 
 if(isset($_POST['submit'])){
 	
-	echo "<pre>";
-	print_r($_POST);
-	print_r($_FILES);
-	print_r($SESSION->getUserName());
-	echo "</pre>";
+	//echo "<pre>";
+	//print_r($_POST);
+	//print_r($_FILES);
+	//print_r($SESSION->getUserName());
+	//echo "</pre>";
 	
 	/**
 	 * Insert into driver tables
