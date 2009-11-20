@@ -12,7 +12,7 @@
 		
 		<script src="{$BASEURL}javascript/jquery-1.3.2.js" type="text/javascript" charset="utf-8"></script>
 		<link type="text/css" href="{$BASEURL}javascript/themes/cupertino/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
-		<script src="{$BASEURL}javascript/ui/jquery-ui-1.7.2.custom.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="{$BASEURL}javascript/ui/jquery-ui-1.7.2.custom.js" type="text/javascript" charset="utf-8"></script>
 		
 		<script src="{$BASEURL}javascript/jquery.chainedSelects.js" type="text/javascript" charset="utf-8"></script>
 		<script src="{$BASEURL}javascript/ajax.js" type="text/javascript" charset="utf-8"></script>
@@ -28,6 +28,17 @@
 			$(function() {
 				$("#datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
 			});
+			</script>
+			{/literal}
+		{/if}
+		
+		{if $showTabs == "1"}
+		<script type="text/javascript" src="{$BASEURL}javascript/ui/ui.tabs.js"></script>
+			{literal}
+			<script type="text/javascript">
+				$(function(){
+					$("#tabs").tabs();
+				});
 			</script>
 			{/literal}
 		{/if}
