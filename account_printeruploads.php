@@ -9,8 +9,7 @@ $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 $PAGE->addBreadCrumb('Uploads and Statuses');
 
-$SMARTY->assign('showTabs', "1");
 
-$SMARTY->display('account/myuploads.tpl');
+$SMARTY->display('account/printeruploads.tpl');
 
 ?>		
