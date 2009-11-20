@@ -4,9 +4,22 @@
 	{include file="page_breadcrumbs.tpl"}
 
 	<h1>My Uploads</h1>
-	
 	<br><br>
-	list with status field with sort on status/date
+	<div id="tabs">
+			<ul>
+				<li><a href="{$BASEURL}account_printeruploads.php">Printers</a></li>
+				<li><a href="{$BASEURL}account_driveruploads.php">Drivers</a></li>
+			</ul>
+			<div id="tabs-1">
+
+			</div>
+
+			<div id="tabs-2">
+			
+			</div>
+
+	</div>
+
 	<br><br>
 	<!--
 	<h2>Uploads currently being processed</h2>
