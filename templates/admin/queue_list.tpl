@@ -10,8 +10,7 @@
 	</p>
 	
 	
-Manage Printer Queue<br>
-Manage Driver Queue
+Manage Printer Queue | Manage Driver Queue
 
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
