@@ -9,6 +9,19 @@
 				<input type="hidden" value="search_block_form" id="edit-search-block-form" name="form_id"/>
 			</div>
 		</form>	
+
+        <div class="section">
+        	<h4 class="color_site_1 b_color_site_1">My Account</h4>
+			<div>
+				<ul>
+					<li> <a href="{$BASEURL}account/myuploads" >My Uploads</a></li>
+					<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
+					<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
+					<li>Queue Administration</li>
+				</ul>
+				<br>
+			</div>
+        </div>
 			
         <div class="section">
         	<h4 class="color_site_1 b_color_site_1">Sponsored by</h4>
