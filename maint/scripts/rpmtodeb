@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+$tmpdir = `mktemp -d /tmp/rpmtodeb.XXXXXX` or
+    _die("Cannot create temporary directory!\n");
+chomp $tmpdir;
+$pwd = `pwd`;
+chomp $pwd;
+my $binarypackage = "$ARGV[0]";
+$binarypackage = "$pwd/$binarypackage" if $binarypackage !~ m:^/:;
+sysrun("cd $tmpdir; fakeroot alien -ckg $binarypackage") or
+    _die("Cannot convert $binarypackage to uncompressed Debian source package!\n");
+my $dir = $binarypackage;
+$dir =~ s/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/$1/i;
+$binarypackage =~ /^.*?([^\/]*)-([a-zA-Z\d\.]+)lsb([\d\.]+)\.([^\.]+)\.rpm/i;
+my $lsbver = $3;
+my $platform = $4;
+my $debianplatform;
+if ($platform eq "noarch") {
+    $debianplatform = "";
+} elsif ($platform eq "i486") {
+    $debianplatform = "-ai386";
+} elsif ($platform eq "x86_64") {
+    $debianplatform = "-aamd64";
+}
+sysrun("cd $tmpdir/$dir && perl -p -i -e 's/^(\\s*Depends:\\s*).*\$/\\1lsb (>= $lsbver)/' debian/control && perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\\#\\1/' debian/rules && dpkg-buildpackage $debianplatform -rfakeroot");
+#or _die("Cannot build binary Debian package from $tmpdir/$dir/!\n");
+my $binarydebpackage = `cd $tmpdir && ls -1 *.deb`;
+sysrun("mv $tmpdir/*.deb .") or
+   _die("Cannot move Debian package to current directory!\n");
+
+sysrun("rm -rf $tmpdir") if ($tmpdir);
+
+print "\n\nPackage converted:\n\n";
+print "RPM package: $binarypackage\n";
+print "Debian package: $binarydebpackage\n";
+
+exit 0;
+
+sub _die {
+    sysrun("rm -rf $tmpdir") if ($tmpdir);
+    sysrun("rm -rf $tmpdir2") if ($tmpdir2);
+    sysrun("rm -f $tmpfile") if ($tmpfile);
+    die("@_");
+}
+
+sub sysrun {
+    my $r = system @_;
+    return (0 == ($r / 256));
+}
+
