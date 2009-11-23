@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Script for automatically updating the MySQL database when data got committed
+# to the BZR repositories of foomatic-db and foomatic-db-nonfree. The script
+# also updates the copies of the Foomatic BZR repositories which provide the
+# manufacturer-supplied ready-made PPD files for the OpenPrinting database.
+
+# This script should be run as a cron job or triggered by BZR commits into
+# foomatic-db and foomatic-db-nonfree.
+
+# Declare vars
+BASE=/srv/www/openprinting-dev
+# Work directory for Foomatic-based backend scripts
+WORKDIR=$BASE/foomatic
+
+( cd $WORKDIR
+    # Update packages from the version control system, then apply the
+    # changed files to the MySQL database
+    ## Package: foomatic-db
+    if [ -d foomatic-db ]; then
+	cd foomatic-db
+	oldrev=`bzr revno`
+	bzr pull
+	rev=`bzr revno`
+	if test "$rev" != "$oldrev"; then
+	    ( cd $BASE
+		./maint/scripts/importfrombzr $WORKDIR/foomatic-db $oldrev $rev
+	    )
+	fi
+	cd ..
+    fi
+    ## Package: foomatic-db-nonfree
+    if [ -d foomatic-db-nonfree ]; then
+	cd foomatic-db-nonfree
+	oldrev=`bzr revno`
+	bzr pull
+	rev=`bzr revno`
+	if test "$rev" != "$oldrev"; then
+	    ( cd $BASE
+		./maint/scripts/importfrombzr $WORKDIR/foomatic-db-nonfree $oldrev $rev
+	    )
+	fi
+	cp -r db/source/PPD/* ../foomatic-db/db/source/PPD/
+	cd ..
+    fi
+)
+
