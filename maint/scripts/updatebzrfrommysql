@@ -29,20 +29,23 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	bzr branch http://bzr.openprinting.org/foomatic/$repo
 
 	# Remove all XML and PPD files
-	rm -rf $repo/db/source
+	#rm -rf $repo/db/source
+	rm -rf $repo/db/source/printer
+	rm -rf $repo/db/source/driver
+	rm -rf $repo/db/source/opt
 	popd > /dev/null 2>&1
 	
 	# Export the current XML files from the MySQL database and also copy
 	# the PPD files
 	if test "$repo" = "foomatic-db-nonfree"; then 
-	    #php maint/scripts/exporttobzr.php -d $tmpdir -p $FOOMATICDIR -n
-	    php maint/scripts/exporttobzr.php -d $tmpdir -n
+	    #php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -p $FOOMATICDIR -n
+	    php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -n
 	else
-	    #php maint/scripts/exporttobzr.php -d $tmpdir -p $FOOMATICDIR -f
-	    php maint/scripts/exporttobzr.php -d $tmpdir -f
+	    #php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -p $FOOMATICDIR -f
+	    php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -f
 	fi
-	mkdir -p $tmpdir/$repo/db/source
-	cp -r $FOOMATICDIR/$repo/db/source/PPD $tmpdir/$repo/db/source
+	#mkdir -p $tmpdir/$repo/db/source
+	#cp -r $FOOMATICDIR/$repo/db/source/PPD $tmpdir/$repo/db/source
 
 	# Look for new files with "bzr status" and add them to the
 	# repository
