@@ -12,6 +12,7 @@ BASE=/srv/www/openprinting-dev
 #FOOMATICDIR=$BASE/foomatic/foomatic-db
 FOOMATICDIR=$BASE/foomatic
 
+cd $BASE
 for repo in foomatic-db-nonfree foomatic-db; do
     pushed=0;
     while test "$pushed" = "0"; do
