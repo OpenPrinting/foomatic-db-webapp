@@ -6,8 +6,8 @@
 # This script should be run as a cron job once a day
 
 # Declare vars
-#BASE=/srv/www/openprinting-dev
-BASE=.
+BASE=/srv/www/openprinting-dev
+#BASE=.
 # Work directory for Foomatic-based backend scripts
 #FOOMATICDIR=$BASE/foomatic/foomatic-db
 FOOMATICDIR=$BASE/foomatic
