@@ -22,7 +22,7 @@ for repo in foomatic-db-nonfree foomatic-db; do
 
         # Create a temporary directory
 	tmpdir= 
-	#trap 'rm -rf $tmpdir' 0 1 2 13 15
+	trap 'rm -rf $tmpdir' 0 1 2 13 15
 	tmpdir=$(mktemp -d -t updatebzrfrommysql.XXXXXX)
 
         # Download the repository
@@ -128,8 +128,8 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	    bzr commit -m "Daily snapshot of `date`"
 
 	    # Push changes up to the server's repository
-	    #bzr push bzr+ssh://`whoami`@bzr.linuxfoundation.org/srv/www/bzr/openprinting/foomatic/$repo && pushed=1
-	    pushed=1
+	    bzr push bzr+ssh://`whoami`@bzr.linuxfoundation.org/srv/www/bzr/openprinting/foomatic/$repo && pushed=1
+	    #pushed=1
 	else
 	    # avoid infinite loop if there are no changes
 	    pushed=1
@@ -137,6 +137,6 @@ for repo in foomatic-db-nonfree foomatic-db; do
 
 	popd > /dev/null 2>&1
 
-	#rm -rf $tmpdir
+	rm -rf $tmpdir
     done
 done
