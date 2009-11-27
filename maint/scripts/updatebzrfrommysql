@@ -59,6 +59,7 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	noadded=1
 	nomodified=1
 	noremoved=1
+	changes=0
 	for f in `bzr status`; do
 	    if [ "$f" = "added:" ]; then
 		state=modified
@@ -71,6 +72,7 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	    elif `echo $f | egrep -q '^db/source/'`; then
 		if test "$state" = "new"; then
 		    bzr add $f;
+		    changes=1
 		    popd > /dev/null 2>&1
 		    if test -z "`php $BASE/maint/scripts/changelogentry.php -f $f`"; then
 			if test "$noadded" = "1"; then
@@ -84,6 +86,7 @@ for repo in foomatic-db-nonfree foomatic-db; do
 		    fi
 		    pushd $tmpdir/$repo > /dev/null 2>&1
 		elif test "$state" = "modified"; then
+		    changes=1
 		    if test "$nomodified" = "1"; then
 			echo -en "\t* $f" >> $tmpdir/modified
 			nomodified=0
@@ -91,6 +94,7 @@ for repo in foomatic-db-nonfree foomatic-db; do
 			echo -en ",\n\t  $f" >> $tmpdir/modified
 		    fi
 		elif test "$state" = "removed"; then
+		    changes=1
 		    if test "$noremoved" = "1"; then
 			echo -en "\t* $f" >> $tmpdir/removed
 			noremoved=0
@@ -101,30 +105,35 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	    fi
 	done
 
-	# Add comment texts for ChangeLog
-	if test "$noadded" = "0"; then
-	    echo -en ":\n\t  New entries added to the MySQL database.\n\n" >> $tmpdir/added
-	fi
-	if test "$nomodified" = "0"; then
-	    echo -en ":\n\t  Entries modified in the MySQL database.\n\n" >> $tmpdir/modified
-	fi
-	if test "$noremoved" = "0"; then
-	    echo -en ":\n\t  Entries removed from the MySQL database.\n\n" >> $tmpdir/removed
-	fi
+	if test "$changes" = "1"; then
+	    # Add comment texts for ChangeLog
+	    if test "$noadded" = "0"; then
+		echo -en ":\n\t  New entries added to the MySQL database.\n\n" >> $tmpdir/added
+	    fi
+	    if test "$nomodified" = "0"; then
+		echo -en ":\n\t  Entries modified in the MySQL database.\n\n" >> $tmpdir/modified
+	    fi
+	    if test "$noremoved" = "0"; then
+		echo -en ":\n\t  Entries removed from the MySQL database.\n\n" >> $tmpdir/removed
+	    fi
 
-	# Put ChangeLog together
-	echo -en `date --rfc-3339=date` > ChangeLog.new
-	echo -en '  OpenPrinting Web Server <webmaster@openprinting.org>\n\n' >> ChangeLog.new
-	cat $tmpdir/approved $tmpdir/added $tmpdir/modified $tmpdir/removed >> ChangeLog.new
-	cat ChangeLog >> ChangeLog.new
-	mv -f ChangeLog.new ChangeLog
+	    # Put ChangeLog together
+	    echo -en `date --rfc-3339=date` > ChangeLog.new
+	    echo -en '  OpenPrinting Web Server <webmaster@openprinting.org>\n\n' >> ChangeLog.new
+	    cat $tmpdir/approved $tmpdir/added $tmpdir/modified $tmpdir/removed >> ChangeLog.new
+	    cat ChangeLog >> ChangeLog.new
+	    mv -f ChangeLog.new ChangeLog
 
-	# Commit the changes to the local repository
-	bzr commit -m "Daily snapshot of `date`"
+	    # Commit the changes to the local repository
+	    bzr commit -m "Daily snapshot of `date`"
 
-	# Push changes up to the server's repository
-	# bzr push bzr+ssh://`whoami`@bzr.linuxfoundation.org/srv/www/bzr/openprinting/foomatic/$repo && pushed=1
-	pushed=1
+	    # Push changes up to the server's repository
+	    #bzr push bzr+ssh://`whoami`@bzr.linuxfoundation.org/srv/www/bzr/openprinting/foomatic/$repo && pushed=1
+	    pushed=1
+	else
+	    # avoid infinite loop if there are no changes
+	    pushed=1
+	fi
 
 	popd > /dev/null 2>&1
 
