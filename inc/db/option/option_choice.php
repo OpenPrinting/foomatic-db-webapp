@@ -27,8 +27,9 @@ class OptionChoice
     }
     $this->loaded = false;
     $this->data['option_id'] = (string)$id;
-    list(,$this->data['id']) = preg_split("/\//", (string)$data['id']);
-    if (!$this->data['id']) $this->data['id'] = (string)$data['id'];
+    list($prefix,$this->data['id']) = preg_split("/\//", (string)$data['id']);
+    if ($prefix != "ev")
+      $this->data['id'] = (string)$data['id'];
     if ($data != null) {
       switch((string)gettype($data)) {
       case 'object':
