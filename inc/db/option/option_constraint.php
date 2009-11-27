@@ -21,7 +21,7 @@ class OptionConstraint
     }
     $this->loaded = false;
     $this->data['option_id'] = $id;
-    if ($choice_id) {
+    if ($choice_id !== null) {
       $this->data['choice_id'] = $choice_id;
       $this->data['is_choice_constraint'] = true;
     }
