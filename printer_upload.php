@@ -37,6 +37,7 @@ if(isset($_POST['submit'])){
     if (strlen($error) > 0) {
 	echo "<pre>";
 	print "ERROR: $error\n";
+	print_r($SESSION->getUserName());
         print_r($_POST);
         echo "</pre>";
 	exit(0);
@@ -48,6 +49,7 @@ if(isset($_POST['submit'])){
 
     $today = date('Y-m-d');
     $release = date('Y-m-d', strtotime($_POST['release_date']));
+    $user = $SESSION->getUserName();
     $DB->query("INSERT INTO printer_approval (
 	     id, 
 	     contributor, 
@@ -58,14 +60,14 @@ if(isset($_POST['submit'])){
              comment
 	 ) values (
 	     \"" . _mysql_real_escape_string($id) . "\", 
-	     \"" . _mysql_real_escape_string("TODO: Submitting User") . "\", 
+	     \"" . _mysql_real_escape_string($user) . "\", 
 	     \"" . _mysql_real_escape_string($release) . "\", 
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
 		  "\"" . _mysql_real_escape_string($today) . "\"" :
 		  "null") . ",
              null,
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
-		  "\"" . _mysql_real_escape_string("TODO: Submitting User") . "\"" :
+		  "\"" . _mysql_real_escape_string($user) . "\"" :
 		  "null") . ",
              \"" . _mysql_real_escape_string("TODO: Upload comment") . "\"
          )");
@@ -255,6 +257,7 @@ if(isset($_POST['submit'])){
 
     echo "<pre>";
     print "SUCCESS\n";
+    print_r($SESSION->getUserName());
     print_r($_POST);
     echo "</pre>";
     exit(0);
