@@ -19,11 +19,11 @@ $PAGE->addBreadCrumb('Printer Upload');
  */
 if(isset($_POST['submit'])){
     $error = "";
+    if (strlen($_POST['make_new']) > 0) {
+        $_POST['make'] = $_POST['make_new'];
+    }
     if (strlen($_POST['make']) <= 0) {
-	$_POST['make'] = $_POST['make_new'];
-	if (strlen($_POST['make']) <= 0) {
-	    $error = "No manufacturer name entered!";
-	}
+        $error = "No manufacturer name entered!";
     }
     if (strlen($_POST['model']) <= 0) {
 	$error = "No model name entered!";
