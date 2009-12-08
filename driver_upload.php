@@ -116,6 +116,13 @@ if(isset($_POST['submit'])){
 		if ($return_value != 0) {
 		    $error = "Problem with file upload, " .
 			"Copying the file caused error code: $return_value!"; 
+		} else {
+		    exec("chmod -R ug+rwX,o+rX $pwd/upload",
+			 $output = array(), $return_value);
+		    if ($return_value != 0) {
+			$error = "Problem with file upload, " .
+			    "Setting the file permissions caused error code: $return_value!"; 
+		    }
 		}
 	    }
 	} else {
