@@ -232,13 +232,8 @@ if(isset($_POST['submit'])){
 		  _mysql_real_escape_string($_POST['max_res_x']) : "null") . ",
 	     " . (strlen($_POST['max_res_y']) > 0 ?
 		  _mysql_real_escape_string($_POST['max_res_y']) : "null") . ",
-	     " . (array_key_exists('color', $_POST) ?
-		  ((sizeof($_POST['color']) > 1) ?
-		   "1" :
-		   ((sizeof($_POST['color']) > 0) ?
-		    "0" :
-		    "null")) :
-		  "null") . ",
+	     " . (array_key_exists('color', $_POST) ? "1" :
+		  (array_key_exists('grayscale', $_POST) ? "0" : "null")) . ",
 	     " . (strlen($_POST['text']) > 0 ?
 		  _mysql_real_escape_string($_POST['text']) : "null") . ",
 	     " . (strlen($_POST['lineart']) > 0 ?

@@ -134,17 +134,17 @@
 	<tr>
 		<td width="20%">Driver Type <font color="red"><b>*</b></font></td>
 		<td width="40%">
-				<input type="radio" name="execution" id="execution-01" value="ghostscript_builtin"> Ghostscript Built-in
+				<input type="radio" name="execution" id="execution-01" value="ghostscript"> Ghostscript Built-in
 				<br>
-				<input type="radio" name="execution" id="execution-02" value="ghostprint_uniprint"> Ghostscript Uniprint
+				<input type="radio" name="execution" id="execution-02" value="uniprint"> Ghostscript Uniprint
 				<br>
 				<input type="radio" name="execution" id="execution-03" value="filter"> Filter
 				<br>
 				<input type="radio" name="execution" id="execution-04" value="cups"> CUPS Raster
 				<br>
-				<input type="radio" name="execution" id="execution-05" value="ijs_plugin"> IJS Plugin
+				<input type="radio" name="execution" id="execution-05" value="ijs"> IJS Plugin
 				<br>
-				<input type="radio" name="execution" id="execution-06" value="openprinting_vector"> OpenPrinting Vector
+				<input type="radio" name="execution" id="execution-06" value="opvp"> OpenPrinting Vector
 				<br>
 				<input type="radio" name="execution" id="execution-07" value="postscript"> Postscript
 		</td>
@@ -158,7 +158,7 @@
 	<tr>
 		<td>Color <font color="red"><b>*</b></font></td>
 		<td>
-				<input type="checkbox" name="color[]" id="color-02" value="0"> Greyscale/Monochrome
+				<input type="checkbox" name="grayscale[]" id="color-02" value="1"> Greyscale/Monochrome
 				<input type="checkbox" name="color[]" id="color-01" value="1"> Color
 				
 		</td>
