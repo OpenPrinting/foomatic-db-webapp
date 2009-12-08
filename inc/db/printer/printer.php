@@ -547,7 +547,7 @@ class Printer
     return true;
   }
 
-  public function removeFromDB($id, DB $db = null) {
+  public function removeFromDB($id, DB $db = null, $completeentry = false) {
     if ($id == null) {
       return false;
     }
@@ -611,7 +611,18 @@ class Printer
     if ($result == null) {
       echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
     }
-	
+
+    if ($completeentry) {
+      // Delete the printer approval data
+      $query = "delete from printer_approval where id=\"$id\";";
+      // Execute the deletion of approval data. This does not delete any
+      // items in other tables
+      $result = $db->query($query);
+      if ($result == null) {
+	echo "[ERROR] While deleting printer approval data...\n".$db->getError()."\n";
+      }
+    }
+
     return true;
   }
 }

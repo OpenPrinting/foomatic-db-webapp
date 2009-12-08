@@ -703,7 +703,7 @@ class Driver
     return true;
   }
 
-  public function removeFromDB($id, DB $db = null) {
+  public function removeFromDB($id, DB $db = null, $completeentry = false) {
     if ($id == null) {
       return false;
     }
@@ -769,6 +769,27 @@ class Driver
       echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
     }
 	
+    if ($completeentry) {
+      // Delete an uploaded tarball
+      $dir = "upload/driver/$id";
+      $pwd = exec("pwd");
+      exec("rm -rf $pwd/$dir",
+         $output = array(), $return_value);
+      if ($return_value != 0) {
+        echo "[ERROR] Could not remove attached tarball. " .
+	    "Error code: $return_value\n";
+      }
+
+      // Delete the driver approval data
+      $query = "delete from driver_approval where id=\"$id\";";
+      // Execute the deletion of approval data. This does not delete any
+      // items in other tables
+      $result = $db->query($query);
+      if ($result == null) {
+	echo "[ERROR] While deleting driver approval data...\n".$db->getError()."\n";
+      }
+    }
+
     return true;
   }
 }

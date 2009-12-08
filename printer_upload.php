@@ -48,7 +48,12 @@ if(isset($_POST['submit'])){
      */
 
     $today = date('Y-m-d');
-    $release = date('Y-m-d', strtotime($_POST['release_date']));
+    if (strtotime($_POST['release_date']) != 0) {
+        $release =
+            "\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
+    } else {
+        $release = "null";
+    }
     $user = $SESSION->getUserName();
     $DB->query("INSERT INTO printer_approval (
 	     id, 
@@ -61,7 +66,7 @@ if(isset($_POST['submit'])){
 	 ) values (
 	     \"" . _mysql_real_escape_string($id) . "\", 
 	     \"" . _mysql_real_escape_string($user) . "\", 
-	     \"" . _mysql_real_escape_string($release) . "\", 
+	     " . _mysql_real_escape_string($release) . ", 
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
 		  "\"" . _mysql_real_escape_string($today) . "\"" :
 		  "null") . ",

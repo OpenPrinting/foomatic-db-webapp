@@ -13,7 +13,7 @@ $options = getopt("p:d:o:");
 if ($options['p']) {
   $id = $options['p'];
   $printer = new Printer();
-  $error = !$printer->removeFromDB($id);
+  $error = !$printer->removeFromDB($id, null, true);
 }
 if ($error) {
   print "[ERROR]: Failed removing printer entry $id from the MySQL database\n";
@@ -23,7 +23,7 @@ if ($error) {
 if ($options['d']) {
   $id = $options['d'];
   $driver = new Driver();
-  $error = !$driver->removeFromDB($id);
+  $error = !$driver->removeFromDB($id, null, true);
 }
 if ($error) {
   print "[ERROR]: Failed removing driver entry $id from the MySQL database\n";
@@ -39,6 +39,5 @@ if ($error) {
   print "[ERROR]: Failed removing option entry $id from the MySQL database\n";
   exit;
 }
-
 
 ?>

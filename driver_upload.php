@@ -83,7 +83,16 @@ if(isset($_POST['submit'])){
         $_POST['license'] = $_POST['licensecustom'];
     }
     if (strlen($_POST['driver_name']) <= 0) {
-        $error = "No driver name entered!";
+	if (strlen($_FILES['payload']['name']) > 0) {
+	    $_POST['driver_name'] =
+		preg_replace("/^(.*?)[\-_\.]\d+\..*$/", "$1", $_FILES['payload']['name']);
+	    $_POST['execution'] = "tarballonly";
+	} else {
+	    $error = "No driver name entered!";
+	}
+    }
+    if (preg_match("/^[A-Za-z0-9_\-]+$/", $_POST['driver_name']) == 0) {
+	$error = "Driver name can only contain letters, numbers, \"-\", and \"_\"!";
     }
     $id = $_POST['driver_name'];
     $res = $DB->query("SELECT id FROM driver WHERE id=\"$id\"");
@@ -92,7 +101,11 @@ if(isset($_POST['submit'])){
 	$error = "Driver already exists in the database!";
     }
     if (!array_key_exists('execution', $_POST)) {
-	$error = "Driver execution style must be set!";
+	if (strlen($_FILES['payload']['name']) > 0) {
+	    $_POST['execution'] = "tarballonly";
+	} else {
+	    $error = "Driver execution style must be set!";
+	}
     }
     if (!array_key_exists('supportlevel', $_POST) and
 	strlen($_POST['supportdescription']) > 0) {
@@ -131,8 +144,8 @@ if(isset($_POST['submit'])){
 		    $_FILES['payload']['error'];
 	    } elseif ($_FILES['payload']['size'] > $_POST['MAX_FILE_SIZE']){
 		$error = "Uploaded file too big: Uploaded size " .
-		    $_FILES['payload']['size'] . "KB, allowed size " .
-		    $_POST['MAX_FILE_SIZE'] . "KB.";
+		    $_FILES['payload']['size'] / 1024 . "KB, allowed size " .
+		    $_POST['MAX_FILE_SIZE'] / 1024 . "KB.";
 	    } else {
 		$error = "Problem with file upload!";
 	    }
@@ -154,7 +167,12 @@ if(isset($_POST['submit'])){
      */
 
     $today = date('Y-m-d');
-    $release = date('Y-m-d', strtotime($_POST['release_date']));
+    if (strtotime($_POST['release_date']) != 0) {
+	$release = 
+	    "\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
+    } else {
+	$release = "null";
+    }
     $user = $SESSION->getUserName();
     $DB->query("INSERT INTO driver_approval (
         id,
@@ -167,7 +185,7 @@ if(isset($_POST['submit'])){
     ) values (
         \"" . _mysql_real_escape_string($id) . "\", 
         \"" . _mysql_real_escape_string($user) . "\", 
-        \"" . _mysql_real_escape_string($release) . "\", 
+        " . _mysql_real_escape_string($release) . ", 
         " . ($SESSION->checkPermission('printer_noqueue') ?
 	    "\"" . _mysql_real_escape_string($today) . "\"" :
 	    "null") . ",
@@ -181,7 +199,7 @@ if(isset($_POST['submit'])){
     /**
      * Insert into driver tables
      */
-
+    
     $DB->query("INSERT INTO driver (id,
              name,
 	     driver_group,
@@ -286,34 +304,34 @@ if(isset($_POST['submit'])){
 
     if (strlen($_POST['supportdescription']) > 0) {
 	$DB->query("INSERT INTO driver_support_contact (
-             driver_id, 
-             url,
-             level,
-             description
-         ) values (
-             \"" . _mysql_real_escape_string($id) . "\", 
-             \"" . _mysql_real_escape_string($_POST['supporturl']) . "\",
-	     " . (array_key_exists('supportlevel', $_POST) ?
-		  "\"" . _mysql_real_escape_string($_POST['supportlevel']) .
-		  "\"" : "null") . ",
-             \"" . _mysql_real_escape_string($_POST['supportdescription']) . "\"
-         )");
+                 driver_id, 
+                 url,
+                 level,
+                 description
+             ) values (
+                 \"" . _mysql_real_escape_string($id) . "\", 
+                 \"" . _mysql_real_escape_string($_POST['supporturl']) . "\",
+	         " . (array_key_exists('supportlevel', $_POST) ?
+		      "\"" . _mysql_real_escape_string($_POST['supportlevel']) .
+		      "\"" : "null") . ",
+                 \"" . _mysql_real_escape_string($_POST['supportdescription']) . "\"
+             )");
 
 	$DB->query("INSERT INTO driver_support_contact_translation (
-             driver_id,
-             url,
-             level,
-             lang,
-             description
-         ) values (
-             \"" . _mysql_real_escape_string($id) . "\", 
-             \"" . _mysql_real_escape_string($_POST['supporturl']) . "\",
-	     " . (array_key_exists('supportlevel', $_POST) ?
-		  "\"" . _mysql_real_escape_string($_POST['supportlevel']) .
-		  "\"" : "null") . ",
-             \"en\", 
-             \"" . _mysql_real_escape_string($_POST['supportdescription']) . "\"
-         )");
+                 driver_id,
+                 url,
+                 level,
+                 lang,
+                 description
+             ) values (
+                 \"" . _mysql_real_escape_string($id) . "\", 
+                 \"" . _mysql_real_escape_string($_POST['supporturl']) . "\",
+	         " . (array_key_exists('supportlevel', $_POST) ?
+		      "\"" . _mysql_real_escape_string($_POST['supportlevel']) .
+		      "\"" : "null") . ",
+                 \"en\", 
+                 \"" . _mysql_real_escape_string($_POST['supportdescription']) . "\"
+             )");
     }
 
     echo "<pre>";
