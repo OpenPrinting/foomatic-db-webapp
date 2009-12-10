@@ -1,5 +1,6 @@
 <?php
-include('inc/common.php');
+include_once('inc/common.php');
+include_once('inc/db/processtarballs.php');
 
 $SESSION->pageLock('driver_upload');
 
@@ -111,6 +112,8 @@ if(isset($_POST['submit'])){
 	strlen($_POST['supportdescription']) > 0) {
 	$error = "Support level must be set!";
     }
+    $tarballfailed = false;
+    $check = "";
     if (strlen($_FILES['payload']['name']) > 0 and strlen($error) == 0) {
 	if (strlen($_FILES['payload']['tmp_name']) > 0 and
 	    $_FILES['payload']['error'] == 0 and
@@ -135,6 +138,23 @@ if(isset($_POST['submit'])){
 		    if ($return_value != 0) {
 			$error = "Problem with file upload, " .
 			    "Setting the file permissions caused error code: $return_value!"; 
+		    } else {
+			$result = processtarball($id, "check");
+			if ($result == -1) {
+			    $tarballfailed = true;
+			    $error = "Could not check integrity of " .
+				$_FILES['payload']['name'] . "\n" .
+				file_get_contents("$pwd/$dir/log.txt");
+			} elseif ($result == 0) {
+			    $tarballfailed = true;
+                            $check = "Integrity check of " .
+				$_FILES['payload']['name'] . " FAILED:\n" .
+				file_get_contents("$pwd/$dir/log.txt");
+			} else {
+			    $tarballfailed = false;
+                            $check = "Integrity check of " .
+				$_FILES['payload']['name'] . " PASSED\n";
+			}
 		    }
 		}
 	    }
@@ -186,13 +206,15 @@ if(isset($_POST['submit'])){
         \"" . _mysql_real_escape_string($id) . "\", 
         \"" . _mysql_real_escape_string($user) . "\", 
         " . _mysql_real_escape_string($release) . ", 
-        " . ($SESSION->checkPermission('printer_noqueue') ?
-	    "\"" . _mysql_real_escape_string($today) . "\"" :
-	    "null") . ",
+        " . (($SESSION->checkPermission('printer_noqueue') and
+	      $tarballfailed == false) ?
+	     "\"" . _mysql_real_escape_string($today) . "\"" :
+	     "null") . ",
         null,
-        " . ($SESSION->checkPermission('printer_noqueue') ?
-	    "\"" . _mysql_real_escape_string($user) . "\"" :
-	    "null") . ",
+        " . (($SESSION->checkPermission('printer_noqueue')  and
+	      $tarballfailed == false) ?
+	     "\"" . _mysql_real_escape_string($user) . "\"" :
+	     "null") . ",
         \"" . _mysql_real_escape_string("TODO: Upload comment") . "\"
     )");
 
@@ -339,6 +361,7 @@ if(isset($_POST['submit'])){
     print_r($SESSION->getUserName());
     print_r($_POST);
     print_r($_FILES);
+    print "$check\n";
     echo "</pre>";
     exit(0);
 

@@ -1,5 +1,5 @@
 <?php
-require_once("db.php");
+require_once("mysqldb.php");
 class Margin
 {
   // Boolean flag to determine if data is present

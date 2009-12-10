@@ -1,6 +1,6 @@
 <?php
 // -*- PHP -*-
-require_once("db.php");
+require_once("mysqldb.php");
 
 class Translation
 {
