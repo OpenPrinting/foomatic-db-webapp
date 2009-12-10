@@ -144,6 +144,7 @@ function processtarball($driver, $op, $nonfree=false) {
 	}
     }
     fclose($lfh);
+    return ($fail == true ? 0 : 1);
 }
 
 ?>
