@@ -143,6 +143,13 @@ function processtarball($driver, $op, $nonfree=false) {
 		   "$file: WARNING - File of unknown type\n");
 	}
     }
+    // Remove uncompressed files of the tarball
+    exec("rm -rf $dir/$UNCOMPRESSEDDIR", $out = array(), $ret_value);
+    if ($ret_value != 0) {
+	fwrite($lfh,
+               "ERROR: Cannot remove \"$UNCOMPRESSEDDIR\" directory!\n");
+    }
+    // Close log file
     fclose($lfh);
     return ($fail == true ? 0 : 1);
 }
