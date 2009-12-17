@@ -49,7 +49,7 @@ class Session {
 	public function startupTasks() {
 		if(isset($_GET['doLogin']) && !empty($_POST) && !$this->loggedIn) {
 			if($this->authenticate($_POST['username'],$_POST['password'])) {
-				header('Location: index.php');
+				header('Location: /account/myuploads');
 				exit;
 			}
 		}
