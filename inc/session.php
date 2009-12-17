@@ -47,6 +47,8 @@ class Session {
 	}
 	
 	public function startupTasks() {
+		//@TODO Need to login and return to the page you logged in from
+		
 		if(isset($_GET['doLogin']) && !empty($_POST) && !$this->loggedIn) {
 			if($this->authenticate($_POST['username'],$_POST['password'])) {
 				header('Location: /account/myuploads');
