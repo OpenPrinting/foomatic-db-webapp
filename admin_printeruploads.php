@@ -9,6 +9,7 @@ $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 $PAGE->addBreadCrumb('Uploads and Statuses');
 
-$SMARTY->display('drivers/mydrivers.tpl');
+
+$SMARTY->display('admin/printeruploads.tpl');
 
 ?>		

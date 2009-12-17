@@ -3,7 +3,9 @@
 include('inc/common.php');
 
 if($SESSION->isloggedIn()){
-	
+		
+		$SMARTY->assign('showTabs', "1");
+		
 		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
 		$auth = $USER->fetchUserRoles();
 		

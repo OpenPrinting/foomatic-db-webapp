@@ -24,6 +24,7 @@
 							{/if}
 							{if $isAdmin }
 							<li><a href="{$BASEURL}admin/queue" >Queue Administration</a></li>
+							<li><a href="{$BASEURL}admin/roleadmin" >Roles Administration</a></li>
 							{/if}
 						</ul>
 						<br>

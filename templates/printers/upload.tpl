@@ -26,12 +26,25 @@
 	<br><br>
 	<table cellpadding="4" style="background: #eee; border: 1px solid #ccc;">
 		<tr bgcolor="#dfdfdf">
+			<td align="right" width="20%" valign="top">Comments:</td> 
+			<td width="45%" colspan=2><textarea id="comments" name="comments" cols="55" rows="8" /></textarea> <p>Comments for Upload. Comment about this upload. If you need someone to approve 
+			your entry (you are not Trusted Uploader or Administrator) you can put some message for the 
+			approver here. This field has the function of a whiteboard for the approval process then. 
+			The approver will enter here what you need to correct in order to get approval, or the reasons 
+			why he rejects your contribution. You can answer to the approver here then ... 
+			If your entry gets automatically approved, please enter a comment here which should 
+			appear in the ChangeLog files of the foomatic-db and foomatic-db-nonfree packages. 
+			The comment does not need to contain your name, the date, or the list of added or 
+			changed files. All this information is added to the overview table for the approvers 
+			and to the ChangeLog files automatically.</p></td>
+		</tr> 
+		<tr bgcolor="#dfdfdf">
 			<td align="right" width="20%">Release Date:</td> 
 			<td width="45%"><input type="text" size="10" tabindex="1" id="datepicker" name="release_date"/> </td>
 			<td width="35%"><p>Future release date</p></td>
 		</tr> 
 		<tr bgcolor="#dfdfdf">
-			<td align="right">Manufacturer:</td> 
+			<td align="right" valign="top">Manufacturer:</td> 
 			<td>
 				<select tabindex="2" name="make">
 					<option value="" selected="selected">--select manufacturer--</option>
@@ -55,7 +68,7 @@
 	                         not listed yet.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right">Model:</td> 
+				<td align="right" valign="top">Model:</td> 
 				<td><input type="text" size="32" tabindex="5" name="model"/></td> 
 				<td><p>Model name for the printer.  Please try
 				 to follow the conventions used for
