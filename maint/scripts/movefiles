@@ -30,8 +30,8 @@
 		- Hopefully no other bugs?
 */
 
-$DEST_ROOT = '/nethome/kseitz/printdriver/dest/';  
-$OLD_ROOT =  '/nethome/kseitz/printdriver/old/';
+$DEST_ROOT = '/srv/www/openprinting/download/printdriver/';
+$OLD_ROOT =  '/srv/www/openprinting/download/printdriver/old/';
 $SRC_ROOT = false;		// set by parameter 1
 
 // ---------------------------
