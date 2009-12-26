@@ -900,11 +900,12 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			    if ($archs{$oldarch} ne $archs{$arch}) {
 				$output .= "      <" . $arch . ">\n";
 				$openedarch=$arch;
+				%pkgsysdone = ();
 			    }
-				next if $onlynewestdrvpkg &&
-				    ($archs{$arch} eq $archs{$oldarch}) &&
-				    (($pkgsys eq $oldpkgsys) ||
-				     $pkgsysdone{$pkgsys});
+			    next if $onlynewestdrvpkg &&
+				($archs{$arch} eq $archs{$oldarch}) &&
+				(($pkgsys eq $oldpkgsys) ||
+				 $pkgsysdone{$pkgsys});
 			    $pkgsysdone{$pkgsys} = 1;
 			    $output .= "        <package file=\"" .
 				$pkg->{'file'} . "\">\n";
@@ -934,32 +935,37 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			    $drlc =~ s/^openprinting-(ppds-|)//;
 			    $output .= "          <repositories>\n";
 			    if ($pkg->{'pkgsys'} =~ /^rpm$/) {
+				$pkg->{'url'} =~
+				  m:^(.+)/[^/]+/([^/]+)-$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}\.$pkg->{'arch'}\.rpm:;
+				my $path = $1;
+				my $pn = $2;
+				$path = ($path !~ m!^(https?|ftp)://! ?
+					 $siteurl : "") . $path;
 				$output .= "            <yum>";
-				$output .= "[openprinting-" . $drlc .
-				    "-driver]\n";
+				$output .= "[" . $pn . "-driver]\n";
 				$output .= "name=OpenPrinting LSB-" .
 				    $pkg->{'lsbver'} .
 				    "-based driver packages of \"" . $d .
 				    "\"\n";
-				$output .= "baseurl=" . $siteurl .
-				    $driverdirurl . "/components/lsb" .
-				    $pkg->{'lsbver'} . "/" . $drlc .
-				    "/RPMS\n";
+				$output .= "baseurl=" . $path . "\n";
 				$output .= "enabled=1\n";
 				$output .= "gpgcheck=0\n";
 				$output .= "</yum>\n";
 				$output .= "            <zypper>";
-				$output .= "zypper sa " . $siteurl .
-				    $driverdirurl . "/components/lsb" .
-				    $pkg->{'lsbver'} . "/" . $drlc .
-				    "/RPMS/ " . $drlc;
+				$output .= "zypper sa " . $path . "/ " .
+				    $drlc;
 				$output .= "</zypper>\n";
 			    }
 			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
+				$pkg->{'url'} =~
+				  m:^(.+)/dists/lsb$pkg->{'lsbver'}/([^/]+)/binary-$pkg->{'arch'}/([^/]+)_$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}_$pkg->{'arch'}\.deb:;
+				my $path = $1;
+				my $rn = $2;
+				$path = ($path !~ m!^(https?|ftp)://! ?
+					 $siteurl : "") . $path;
 				$output .= "            <apt>";
-				$output .= "deb " . $siteurl .
-				    $driverdirurl . "/debian/ lsb" .
-				    $pkg->{'lsbver'} . " " . $drlc;
+				$output .= "deb " . $path . "/ lsb" .
+				    $pkg->{'lsbver'} . " " . $rn;
 				$output .= "</apt>\n";
 			    }
 			    $output .= "          </repositories>\n";
@@ -1213,6 +1219,8 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 					"  Packages for " . $arch :
 					"  Source packages") . "\n" if
 					$archs{$oldarch} ne $archs{$arch};
+			    %pkgsysdone = () if
+				$archs{$oldarch} ne $archs{$arch};
 			    next if $onlynewestdrvpkg &&
 				($archs{$arch} eq $archs{$oldarch}) &&
 				(($pkgsys eq $oldpkgsys) ||
@@ -1246,30 +1254,37 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			    my $drlc = $pkg->{'basename'};
 			    $drlc =~ s/^openprinting-(ppds-|)//;
 			    if ($pkg->{'pkgsys'} =~ /^rpm$/) {
+				$pkg->{'url'} =~
+				  m:^(.+)/[^/]+/([^/]+)-$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}\.$pkg->{'arch'}\.rpm:;
+				my $path = $1;
+				my $pn = $2;
+				$path = ($path !~ m!^(https?|ftp)://! ?
+					 $siteurl : "") . $path;
 				$output .= "        yum:\n";
-				$output .= "          [openprinting-"
-				    . $drlc . "-driver]\n";
+				$output .= "          [" . $pn .
+				    "-driver]\n";
 				$output .= "          name=OpenPrinting " .
 				    "LSB-" . $pkg->{'lsbver'} .
 				    "-based driver packages of \"" . $d .
 				    "\"\n";
-				$output .= "          baseurl=" .
-				    $siteurl . $driverdirurl .
-				    "/components/lsb" . $pkg->{'lsbver'} .
-				    "/" . $drlc . "/RPMS\n";
+				$output .= "          baseurl=" . $path .
+				    "\n";
 				$output .= "          enabled=1\n";
 				$output .= "          gpgcheck=0\n";
 				$output .= "        zypper: ";
-				$output .= "zypper sa " . $siteurl .
-				    $driverdirurl . "/components/lsb" .
-				    $pkg->{'lsbver'} . "/" . $drlc .
-				    "/RPMS/ " . $drlc . "\n";
+				$output .= "zypper sa " . $path . "/ " .
+				    $drlc . "\n";
 			    }
 			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
+				$pkg->{'url'} =~
+				  m:^(.+)/dists/lsb$pkg->{'lsbver'}/([^/]+)/binary-$pkg->{'arch'}/([^/]+)_$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}_$pkg->{'arch'}\.deb:;
+				my $path = $1;
+				my $rn = $2;
+				$path = ($path !~ m!^(https?|ftp)://! ?
+					 $siteurl : "") . $path;
 				$output .= "        apt: ";
-				$output .= "deb " . $siteurl .
-				    $driverdirurl . "/debian/ lsb" .
-				    $pkg->{'lsbver'} . " " . $drlc . "\n";
+				$output .= "deb " . $path . "/ lsb" .
+				    $pkg->{'lsbver'} . " " . $rn . "\n";
 			    }
 			    $oldarch = $arch;
 			    $oldpkgsys = $pkgsys;

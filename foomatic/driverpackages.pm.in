@@ -50,7 +50,8 @@ our %driver_types = ('F' => 'Filter',
 		     'U' => 'Ghostscript Uniprint',
 		     'G' => 'Ghostscript built-in');
 
-our $debsection="main";
+our $debsection="*";
+our $lsexclude="/main/|/contrib/";
 
 our @scopeorder = ('general', 'printer', 'scanner', 'fax', 'gui');
 
@@ -132,7 +133,7 @@ sub listpackagefiles {
     } grep {
         isarchitecture($pkgtype, $_);
     } split(/\s+/,
-	    `cd $driverdir; ls -1 RPMS/*/*.rpm SRPMS/*.rpm debian/dists/*/$debsection/*/*.deb 2>/dev/null`);
+	    `cd $driverdir; ls -1 RPMS/*/*.rpm SRPMS/*.rpm debian/dists/*/$debsection/*/*.deb 2>/dev/null | grep -Ev \"$lsexclude\" 2>/dev/null`);
 }
 
 sub listpackagefilesformask {
@@ -194,7 +195,7 @@ sub listpackagefilesformask {
 	    } grep {
 		isarchitecture($pkgtype, $_);
 	    } split(/\s+/,
-		    `cd $driverdir; ls -1 $files 2>/dev/null`));
+		    `cd $driverdir; ls -1 $files 2>/dev/null | grep -Ev \"$lsexclude\" 2>/dev/null`));
 	}
     }
     return @res;
