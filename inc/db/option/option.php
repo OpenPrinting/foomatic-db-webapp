@@ -231,13 +231,13 @@ class Option
     return $xmlstr;
   }
 
-  public function loadDB($id, DB $db = null) {
+  public function loadDB($id, OPDB $db = null) {
     if ($id == null) {
       return false;
     }
 
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 	
     // Clear any previous data present
@@ -289,9 +289,9 @@ class Option
     return true;
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 	
     if (!$this->loaded) {
@@ -376,13 +376,13 @@ class Option
     return true;
   }
 
-  public function removeFromDB($id, DB $db = null) {
+  public function removeFromDB($id, OPDB $db = null) {
     if ($id == null) {
       return false;
     }
 	
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 	
     $id = mysql_real_escape_string($id);

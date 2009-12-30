@@ -121,13 +121,13 @@ class OptionChoice
     return $xmlstr;
   }
 
-  public function loadDB($option_id, $id, DB $db = null) {
+  public function loadDB($option_id, $id, OPDB $db = null) {
     if ($id == null) {
       return false;
     }
 
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     // Clear any previous data present
@@ -164,9 +164,9 @@ class OptionChoice
     return true;
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     if (!$this->loaded) {

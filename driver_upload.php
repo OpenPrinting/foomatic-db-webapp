@@ -139,7 +139,8 @@ if(isset($_POST['submit'])){
 			$error = "Problem with file upload, " .
 			    "Setting the file permissions caused error code: $return_value!"; 
 		    } else {
-			$result = processtarball($id, "check");
+			$result = processtarball($id, $_POST['execution'],
+						 "check");
 			if ($result == -1) {
 			    $tarballfailed = true;
 			    $error = "Could not check integrity of " .

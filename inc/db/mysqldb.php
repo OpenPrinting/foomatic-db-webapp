@@ -1,5 +1,5 @@
 <?php
-class DB
+class OPDB
 {
   // the actual connection resource
   private $connection;

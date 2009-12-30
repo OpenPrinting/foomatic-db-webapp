@@ -27,7 +27,7 @@ $queryapproval = "select contributor, approved, approver, comment from " .
   "${type}_approval where id=\"$id\";";
 
 # Connect to MySQL database
-$db = DB::getInstance();
+$db = OPDB::getInstance();
 
 $result = $db->query($queryapproval);
 if ($result == null) {

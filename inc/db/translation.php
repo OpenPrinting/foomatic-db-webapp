@@ -92,7 +92,7 @@ class Translation
     return $xmlstr;
   }
 
-  public function loadDB($table = null, $pkeys = null, $field = null, DB $db = null) {
+  public function loadDB($table = null, $pkeys = null, $field = null, OPDB $db = null) {
     if ($table == null || $pkeys == null || $field == null) {
       return false;
     }
@@ -102,7 +102,7 @@ class Translation
     $this->field = $field;
 
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     // Clear any previous data present
@@ -133,9 +133,9 @@ class Translation
     return true;
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     if (!$this->loaded) return false;

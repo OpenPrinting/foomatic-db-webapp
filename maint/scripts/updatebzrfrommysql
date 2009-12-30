@@ -12,8 +12,21 @@ BASE=/srv/www/openprinting-dev
 #FOOMATICDIR=$BASE/foomatic/foomatic-db
 FOOMATICDIR=$BASE/foomatic
 
+if test "$1" = "--ppd-free"; then
+    ppdcommit=free
+fi
+if test "$1" = "--ppd-nonfree"; then
+    ppdcommit=nonfree
+fi
+
 cd $BASE
 for repo in foomatic-db-nonfree foomatic-db; do
+    if test "$ppdcommit" = "free"  -a "$repo" = "foomatic-db-nonfree"; then
+	continue
+    fi
+    if test "$ppdcommit" = "nonfree"  -a "$repo" = "foomatic-db"; then
+	continue
+    fi
     pushed=0;
     while test "$pushed" = "0"; do
         # Import any BZR commit which happened in the meantime into the MySQL
@@ -29,24 +42,24 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	pushd $tmpdir > /dev/null 2>&1
 	bzr branch http://bzr.openprinting.org/foomatic/$repo
 
-	# Remove all XML and PPD files
-	#rm -rf $repo/db/source
-	rm -rf $repo/db/source/printer
-	rm -rf $repo/db/source/driver
-	rm -rf $repo/db/source/opt
-	popd > /dev/null 2>&1
+	if test -z "$ppdcommit"; then
+	    # Remove all XML files
+	    rm -rf $repo/db/source/printer
+	    rm -rf $repo/db/source/driver
+	    rm -rf $repo/db/source/opt
+	    popd > /dev/null 2>&1
 	
-	# Export the current XML files from the MySQL database and also copy
-	# the PPD files
-	if test "$repo" = "foomatic-db-nonfree"; then 
-	    #php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -p $FOOMATICDIR -n
-	    php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -n
+	    # Export the current XML files from the MySQL database
+	    if test "$repo" = "foomatic-db-nonfree"; then 
+		php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -n
+	    else
+		php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -f
+	    fi
 	else
-	    #php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -p $FOOMATICDIR -f
-	    php $BASE/maint/scripts/exporttobzr.php -d $tmpdir -f
+	    # Copy PPD files into the repository
+	    mkdir -p $tmpdir/$repo/db/source
+	    cp -r $2 $tmpdir/$repo/db/source
 	fi
-	#mkdir -p $tmpdir/$repo/db/source
-	#cp -r $FOOMATICDIR/$repo/db/source/PPD $tmpdir/$repo/db/source
 
 	# Look for new files with "bzr status" and add them to the
 	# repository, also generate the entries for the ChangeLog file
@@ -107,14 +120,26 @@ for repo in foomatic-db-nonfree foomatic-db; do
 
 	if test "$changes" = "1"; then
 	    # Add comment texts for ChangeLog
-	    if test "$noadded" = "0"; then
-		echo -en ":\n\t  New entries added to the MySQL database.\n\n" >> $tmpdir/added
-	    fi
-	    if test "$nomodified" = "0"; then
-		echo -en ":\n\t  Entries modified in the MySQL database.\n\n" >> $tmpdir/modified
-	    fi
-	    if test "$noremoved" = "0"; then
-		echo -en ":\n\t  Entries removed from the MySQL database.\n\n" >> $tmpdir/removed
+	    if test -z "$ppdcommit"; then
+		if test "$noadded" = "0"; then
+		    echo -en ":\n\t  New entries added to the MySQL database.\n\n" >> $tmpdir/added
+		fi
+		if test "$nomodified" = "0"; then
+		    echo -en ":\n\t  Entries modified in the MySQL database.\n\n" >> $tmpdir/modified
+		fi
+		if test "$noremoved" = "0"; then
+		    echo -en ":\n\t  Entries removed from the MySQL database.\n\n" >> $tmpdir/removed
+		fi
+	    else
+		if test "$noadded" = "0"; then
+		    echo -en ":\n\t  New PPD files added.\n\n" >> $tmpdir/added
+		fi
+		if test "$nomodified" = "0"; then
+		    echo -en ":\n\t  PPD files modified.\n\n" >> $tmpdir/modified
+		fi
+		if test "$noremoved" = "0"; then
+		    echo -en ":\n\t  PPD files removed.\n\n" >> $tmpdir/removed
+		fi
 	    fi
 
 	    # Put ChangeLog together
@@ -125,7 +150,11 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	    mv -f ChangeLog.new ChangeLog
 
 	    # Commit the changes to the local repository
-	    bzr commit -m "Daily snapshot of `date`"
+            if test -z "$ppdcommit"; then
+                bzr commit -m "Daily snapshot of `date`"
+            else
+                bzr commit -m "PPD files added for driver \"$3\""
+            fi
 
 	    # Push changes up to the server's repository
 	    bzr push bzr+ssh://`whoami`@bzr.linuxfoundation.org/srv/www/bzr/openprinting/foomatic/$repo && pushed=1

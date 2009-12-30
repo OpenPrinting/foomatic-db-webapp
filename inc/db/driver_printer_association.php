@@ -222,13 +222,13 @@ class DriverPrinterAssociation
   }
 
   public function loadDB($driver_id, $printer_id, $for_printer = false,
-			 DB $db = null) {
+			 OPDB $db = null) {
     if ($driver_id == null or $printer_id == null) {
       return false;
     }
 
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     // Clear any previous data present
@@ -267,9 +267,9 @@ class DriverPrinterAssociation
     
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 	
     if ($this->loaded === false) return false;

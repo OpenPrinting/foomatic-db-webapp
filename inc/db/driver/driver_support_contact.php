@@ -86,13 +86,13 @@ class DriverSupportContact
     return $xmlstr;
   }
 
-  public function loadDB($driver_id, $url, $level, DB $db = null) {
+  public function loadDB($driver_id, $url, $level, OPDB $db = null) {
     if ($driver_id == null or $url == null or $level == null) {
       return false;
     }
 
     if ($db == null) {
-       $db = DB::getInstance();
+       $db = OPDB::getInstance();
     }
 
     // Clear any previous data present
@@ -124,9 +124,9 @@ class DriverSupportContact
     return true;
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
  
     if (!$this->loaded) return false;

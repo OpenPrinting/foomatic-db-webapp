@@ -120,7 +120,7 @@ class Margin
   public function loadDB($printer_id = null, $driver_id = null, $db = null) {
     if (!$printer_id and !$driver_id) return null;
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     $printer_id = mysql_escape_string($printer_id);
@@ -179,9 +179,9 @@ class Margin
     }
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 	
     if (!$this->loaded) return false;

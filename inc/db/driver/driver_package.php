@@ -45,9 +45,9 @@ class DriverPackage
     return $xmlstr;
   }
 
-  public function saveDB(DB $db = null) {
+  public function saveDB(OPDB $db = null) {
     if ($db == null) {
-      $db = DB::getInstance();
+      $db = OPDB::getInstance();
     }
 
     if (!$this->loaded) return false;

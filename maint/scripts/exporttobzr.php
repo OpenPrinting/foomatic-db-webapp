@@ -80,7 +80,7 @@ $queryppdlist = "select driver_printer_assoc.ppd from " .
   "where " . $nonfree . "driver_printer_assoc.driver_id=driver.id;";
 
 # Connect to MySQL database
-$db = DB::getInstance();
+$db = OPDB::getInstance();
 
 if ($selection != 'nonfree') {
   # export the printer data
