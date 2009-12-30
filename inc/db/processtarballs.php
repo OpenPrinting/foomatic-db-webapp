@@ -36,7 +36,8 @@ function tarballname($driver) {
 }
 
 function processtarball($driver, $drivertype, $op, $nonfree=false) {
-    global $UPLOADPATH, $SCHEMADIR, $UNCOMPRESSEDDIR, $LOGFILE;
+    global $UPLOADPATH, $SCHEMADIR, $PPDTOXML, $SEARCHPRINTER, $PPDBASEDIR, 
+	$UNCOMPRESSEDDIR, $LOGFILE;
     $pwd = exec("pwd");
     $dir = $pwd . $UPLOADPATH . $driver;
     $lfh = fopen("$dir/$LOGFILE", "w");
@@ -156,6 +157,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 		       "$file: WARNING - XML file of unknown type\n");
 		continue;
 	    }
+	    $result = array();
 	    exec("xmllint --noout --schema $schemadir/$type.xsd " .
 		 "$dir/$UNCOMPRESSEDDIR/$file 2>&1",
 		 $result, $ret_value);
@@ -163,6 +165,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	    fwrite($lfh, "$file: " . ($ret_value == 0 ? "PASS" : "FAIL") .
 		   " -\n  " . implode("\n  ", $result) . "\n");
 	} elseif (preg_match("/\.ppd(|\.gz)$/i", $file)) {
+	    $result = array();
 	    exec("cupstestppd -W filters -W profiles " .
 		 "$dir/$UNCOMPRESSEDDIR/$file 2>&1",
 		 $result, $ret_value);
@@ -203,8 +206,8 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			$need_to_add = false;
 			if (array_key_exists("drivers", $printer)) {
 			    $need_to_add = true;
-			    foreach($printer->drivers as $driver) {
-				if ($driver->data['driver_id'] == $id) {
+			    foreach($printer->drivers as $drv) {
+				if ($drv->data['driver_id'] == $driver) {
 				    $need_to_add = false;
 				}
 			    }
@@ -214,7 +217,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			}
 			if ($need_to_add == true) {
 			    $entry = array();
-			    $entry['driver_id'] = $id;
+			    $entry['driver_id'] = $driver;
 			    $entry['ppd'] = "";
 			    $entry['pcomments'] = "";
 			    $entry['fromprinter'] = 1;
@@ -226,15 +229,15 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 		    }
 		} elseif (preg_match("/<\s*driver\s+id=\\\"driver\/(\S*)\\\"\s*>/",
 				     $xml, $res)) {
-		    $driver = new Driver();
-		    $error = !$driver->loadXMLString($xml);
+		    $drv = new Driver();
+		    $error = !$drv->loadXMLString($xml);
 		    if (!$error) {
 			//    o Determine the driver type
-			$drivertype = $driver->execution;
+			$drivertype = $drv->execution;
 			$driverfree =
-			    ($driver->nonfreesoftware === false ?
+			    ($drv->nonfreesoftware === false ?
 			     true : false);
-			$error = !$driver->saveDB();
+			$error = !$drv->saveDB();
 		    }
 		} elseif (preg_match("/<\s*option\s+type=\\\"\S*\\\"\s+id=\\\"opt\/(\S*)\\\"\s*>/",
 				     $xml, $res)) {
@@ -275,9 +278,9 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 		//      and no duplicates get created.
 		//      Import the generated/modified printer data into the
 		//      MySQL DB.
-		$l = ($drivertype == "postscript" or
-		      $drivertype == "ghostscript" ? "-l" : "");
-		exec("$ppdtoxml -d $id $l -b $ppdbasedir -f $dir -x " .
+		$l = (($drivertype == "postscript" or
+		       $drivertype == "ghostscript") ? "-l" : "");
+		exec("$ppdtoxml -d $driver $l -b $ppdbasedir -f $dir -x " .
 		     "$dir/$UNCOMPRESSEDDIR/$file", 
 		     $out = array(), $ret_value);
 		$ppdlocation = "";
@@ -286,7 +289,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			while (($xmlfile = readdir($dh)) !== false) {
 			    if ($xmlfile == "." or $xmlfile == ".." or
 				!preg_match("/\.xml$/i", $xmlfile)) continue;
-			    $xml = file_get_contents($xmlfile);
+			    $xml = file_get_contents("$dir/$xmlfile");
 			    if (!$xml) {
 				fwrite($lfh,
 				       "ERROR: Cannot read the printer XML file $xmlfile from $file!\n");
@@ -303,6 +306,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 				continue;
 			    }
 			    $printermake = $printer->make;
+			    $result = array();
 			    exec("$searchprinter -m4 -d1 " .
 				 "\"{$printer->make}|{$printer->model}\"",
 				 $result, $ret_value);
@@ -314,14 +318,15 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			    }
 			    $found = false;
 			    foreach($result as $pid) {
+				if (!preg_match("/\S/", $pid)) continue;
 				$printer2 = new Printer();
 				$error = !$printer2->loadDB($pid);
-				if ($error) {
+				if ($error or $printer2->id != $pid) {
 				    fwrite($lfh,
 					   "ERROR: Cannot read database entry for the printer ID \"$pid\" while processing $xmlfile generated from $file!\n");
 				    continue;
 				}
-				$found = $true;
+				$found = true;
 				foreach(array('postscript', 'pdf', 'pcl',
 					      'lips', 'escp', 'escp2',
 					      'hpgl2', 'tiff') as $pdl) {
@@ -349,7 +354,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 					    $printer->autodetect['general'][$component];
 				}
 				if (strlen($printer2->default_driver) == 0)
-				    $printer2->default_driver = $id;
+				    $printer2->default_driver = $driver;
 				if ($printer->drivers != false)
 				    foreach($printer->drivers as $drv) {
 					$drvfound = false;
@@ -364,7 +369,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 					    if ($printer2->drivers == false)
 						$printer2->drivers = array();
 					    $printer2->drivers[sizeof($printer2->drivers)] =
-						new DriverPrinterAssociation($this->id, null, true);
+						new DriverPrinterAssociation($printer2->id, null, true);
 					    $drv2 = $printer2->drivers[sizeof($printer2->drivers)-1];
 					    $drv2->data['driver_id'] =
 						$drv->data['driver_id'];
@@ -419,9 +424,14 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			    $file = substr($file, 0, -3);
 		    }
 		    if ($ret_value == 0) {
-			exec("mv $dir/$UNCOMPRESSEDDIR/$file " .
-			     "$dir/$UNCOMPRESSEDDIR/$ppdlocation",
-			     $out = array(), $ret_value);
+			exec("mkdir -p $dir/$UNCOMPRESSEDDIR/" .
+			     preg_replace(":/[^/]+\.ppd.*$:", "",
+					  $ppdlocation),
+			     $out = array() , $ret_value);
+			if ($ret_value == 0)
+			    exec("mv $dir/$UNCOMPRESSEDDIR/$file " .
+				 "$dir/$UNCOMPRESSEDDIR/$ppdlocation 2>&1",
+				 $out = array(), $ret_value);
 			if ($ret_value == 0) {
 			    $ppdstocheckin = true;
 			    fwrite($lfh,
@@ -436,19 +446,12 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			       "ERROR: Cannot uncompress $file!\n");
 			$fail = true;
 		    }
-			
-		    // - Update foomatic-db or foomatic-db-nonfree repo
-		    // - Copy PPD file to $ppdlocation
-		    // - bzr add $ppdlocation
-		    // Following actions only when all PPDs treated
-		    // edit ChangeLog
-		    // bzr commit
-		    // bzr push
 		}
 	    }
 	}
 	if ($ppdstocheckin == true) {
 	    $f = ($driverfree === true ? "free" : "nonfree");
+	    $result = array();
 	    exec("$pwd/maint/scripts/updatebzrfrommysql --ppd-$f " .
 		 "$dir/$UNCOMPRESSEDDIR/PPD $driver",
 		 $result, $ret_value);
@@ -468,10 +471,11 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	}
     }
     // Remove uncompressed files of the tarball
+    $result = array();
     exec("rm -rf $dir/$UNCOMPRESSEDDIR", $result, $ret_value);
     if ($ret_value != 0) {
 	fwrite($lfh,
-               "ERROR: Cannot remove \"$UNCOMPRESSEDDIR\" directory!\n");
+	       "ERROR: Cannot remove \"$UNCOMPRESSEDDIR\" directory!\n");
     }
     // Close log file
     fclose($lfh);

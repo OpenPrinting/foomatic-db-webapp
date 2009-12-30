@@ -322,7 +322,7 @@ class DriverPrinterAssociation
     // Save the margins data
     if ($this->margins) {
       if (!$this->margins->saveDB($db)) {
-	echo "[ERROR] While saving driver's margin specs...\n".$db->getError()."\n";
+	echo "[ERROR] While saving driver/printer association's margin specs...\n".$db->getError()."\n";
 	return false;
       }
     }
