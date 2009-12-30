@@ -1,5 +1,5 @@
 <?php
-require_once("mysqldb.php");
+require_once("opdb.php");
 require_once("translation.php");
 require_once("option_choice.php");
 require_once("option_constraint.php");

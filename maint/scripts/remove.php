@@ -1,7 +1,7 @@
 <?php
 set_include_path(ini_get('include_path').PATH_SEPARATOR.'inc/db');
 ini_set("memory_limit","128M");
-require_once("mysqldb.php");
+require_once("opdb.php");
 require_once("driver/driver.php");
 require_once("printer/printer.php");
 require_once("option/option.php");

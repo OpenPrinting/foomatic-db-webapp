@@ -1,5 +1,5 @@
 <?php
-include_once("mysqldb.php");
+include_once("opdb.php");
 include_once("translation.php");
 include_once("margin.php");
 

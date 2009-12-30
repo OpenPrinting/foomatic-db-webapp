@@ -1,5 +1,5 @@
 <?php
-require_once("mysqldb.php");
+require_once("opdb.php");
 require_once("translation.php");
 require_once("margin.php");
 require_once("driver_printer_association.php");
