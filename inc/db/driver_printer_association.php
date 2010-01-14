@@ -10,6 +10,7 @@ class DriverPrinterAssociation
 
   public $data;
   public $margins = null;
+  public $translation = null;
 
   public function __construct($id, $data, $is_printer = false) {
     if (!$id && !$data) {
