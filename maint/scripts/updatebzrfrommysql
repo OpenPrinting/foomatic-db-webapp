@@ -59,6 +59,7 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	    # Copy PPD files into the repository
 	    mkdir -p $tmpdir/$repo/db/source
 	    cp -r $2 $tmpdir/$repo/db/source
+	    popd > /dev/null 2>&1
 	fi
 
 	# Look for new files with "bzr status" and add them to the
@@ -132,13 +133,13 @@ for repo in foomatic-db-nonfree foomatic-db; do
 		fi
 	    else
 		if test "$noadded" = "0"; then
-		    echo -en ":\n\t  New PPD files added.\n\n" >> $tmpdir/added
+		    echo -en ":\n\t  New PPD files for driver \"$3\" added.\n\n" >> $tmpdir/added
 		fi
 		if test "$nomodified" = "0"; then
-		    echo -en ":\n\t  PPD files modified.\n\n" >> $tmpdir/modified
+		    echo -en ":\n\t  PPD files for driver \"$3\" modified.\n\n" >> $tmpdir/modified
 		fi
 		if test "$noremoved" = "0"; then
-		    echo -en ":\n\t  PPD files removed.\n\n" >> $tmpdir/removed
+		    echo -en ":\n\t  PPD files for driver \"$3\" removed.\n\n" >> $tmpdir/removed
 		fi
 	    fi
 
