@@ -195,7 +195,9 @@ if(isset($_POST['submit'])){
 	$release = "null";
     }
     $user = $SESSION->getUserName();
-    $DB->query("INSERT INTO driver_approval (
+    $approved = ($SESSION->checkPermission('printer_noqueue') and
+		 $tarballfailed == false);
+	$DB->query("INSERT INTO driver_approval (
         id,
         contributor, 
         showentry,
@@ -207,13 +209,11 @@ if(isset($_POST['submit'])){
         \"" . _mysql_real_escape_string($id) . "\", 
         \"" . _mysql_real_escape_string($user) . "\", 
         " . _mysql_real_escape_string($release) . ", 
-        " . (($SESSION->checkPermission('printer_noqueue') and
-	      $tarballfailed == false) ?
+        " . ($approved ?
 	     "\"" . _mysql_real_escape_string($today) . "\"" :
 	     "null") . ",
         null,
-        " . (($SESSION->checkPermission('printer_noqueue')  and
-	      $tarballfailed == false) ?
+        " . ($approved ?
 	     "\"" . _mysql_real_escape_string($user) . "\"" :
 	     "null") . ",
         \"" . _mysql_real_escape_string("TODO: Upload comment") . "\"
@@ -357,12 +357,39 @@ if(isset($_POST['submit'])){
              )");
     }
 
+    /**
+     * Upload already approved entry
+     */
+
+    $upload = "";
+    if (strlen($_FILES['payload']['name']) > 0 and $approved) {
+	$result = processtarball($id, $_POST['execution'],
+				 "apply",
+				 array_key_exists('nonfreesoftware', $_POST));
+	if ($result == -1) {
+	    $tarballfailed = true;
+	    $upload = "ERROR: Could not add files from " .
+		$_FILES['payload']['name'] . "\n" .
+		file_get_contents("$pwd/$dir/log.txt");
+	} elseif ($result == 0) {
+	    $tarballfailed = true;
+	    $upload = "Adding files of " .
+		$_FILES['payload']['name'] . " FAILED:\n" .
+		file_get_contents("$pwd/$dir/log.txt");
+	} else {
+	    $tarballfailed = false;
+	    $upload = "Adding files of " .
+		$_FILES['payload']['name'] . " PASSED\n";
+	}
+    }
+
     echo "<pre>";
     print "SUCCESS\n";
     print_r($SESSION->getUserName());
     print_r($_POST);
     print_r($_FILES);
     print "$check\n";
+    print "$upload\n";
     echo "</pre>";
     exit(0);
 

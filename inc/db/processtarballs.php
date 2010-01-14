@@ -297,7 +297,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			    }
 			    if (preg_match("/<ppd>([^<]+)<\/ppd>/",
 					   $xml, $res))
-				$ppdlocation = $res[0];
+				$ppdlocation = $res[1];
 			    $printer = new Printer();
 			    $error = !$printer->loadXMLString($xml);
 			    if ($error) {
@@ -401,7 +401,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 				    $fail = true;
 				} else {
 				    fwrite($lfh,
-					   "Added a database entry for the {$printer2->make} {$printer2->model} successfully based on the information from the PPD file $file!\n");
+					   "Added a database entry for the {$printer->make} {$printer->model} successfully based on the information from the PPD file $file!\n");
 				}
 			    }
 			}
@@ -424,13 +424,14 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			    $file = substr($file, 0, -3);
 		    }
 		    if ($ret_value == 0) {
-			exec("mkdir -p $dir/$UNCOMPRESSEDDIR/" .
-			     preg_replace(":/[^/]+\.ppd.*$:", "",
-					  $ppdlocation),
-			     $out = array() , $ret_value);
+			$result = array();
+			exec("mkdir -p $dir/" .
+			     preg_replace(":/[^/]+\.ppd$:", "",
+					  $ppdlocation) . " 2>&1",
+			     $result, $ret_value);
 			if ($ret_value == 0)
 			    exec("mv $dir/$UNCOMPRESSEDDIR/$file " .
-				 "$dir/$UNCOMPRESSEDDIR/$ppdlocation 2>&1",
+				 "$dir/$ppdlocation 2>&1",
 				 $out = array(), $ret_value);
 			if ($ret_value == 0) {
 			    $ppdstocheckin = true;
@@ -453,7 +454,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	    $f = ($driverfree === true ? "free" : "nonfree");
 	    $result = array();
 	    exec("$pwd/maint/scripts/updatebzrfrommysql --ppd-$f " .
-		 "$dir/$UNCOMPRESSEDDIR/PPD $driver",
+		 "$dir/PPD $driver",
 		 $result, $ret_value);
 	    fwrite($lfh,
 		   "Checking new PPD files into the BZR repository\n");
@@ -470,12 +471,25 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	    }
 	}
     }
-    // Remove uncompressed files of the tarball
+    // Remove uncompressed files of the tarball, generated XML files, and
+    // extracted PPD files
     $result = array();
     exec("rm -rf $dir/$UNCOMPRESSEDDIR", $result, $ret_value);
     if ($ret_value != 0) {
 	fwrite($lfh,
 	       "ERROR: Cannot remove \"$UNCOMPRESSEDDIR\" directory!\n");
+    }
+    $result = array();
+    exec("rm -rf $dir/*.xml", $result, $ret_value);
+    if ($ret_value != 0) {
+	fwrite($lfh,
+	       "ERROR: Cannot remove XML files!\n");
+    }
+    $result = array();
+    exec("rm -rf $dir/PPD", $result, $ret_value);
+    if ($ret_value != 0) {
+	fwrite($lfh,
+	       "ERROR: Cannot remove \"PPD\" directory!\n");
     }
     // Close log file
     fclose($lfh);
