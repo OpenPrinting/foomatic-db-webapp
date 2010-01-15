@@ -28,7 +28,9 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	continue
     fi
     pushed=0;
-    while test "$pushed" = "0"; do
+    try=0
+    while test "$pushed" = "0" -a "$try" -lt "10"; do
+	try=$((try + 1))
         # Import any BZR commit which happened in the meantime into the MySQL
         # database
 	$BASE/maint/scripts/updatemysqlfrombzr
@@ -168,5 +170,12 @@ for repo in foomatic-db-nonfree foomatic-db; do
 	popd > /dev/null 2>&1
 
 	rm -rf $tmpdir
+
     done
+
+    if test "$pushed" = "0"; then
+	echo "ERROR: Did not succeed to commit the changes to the BZR repositories!"
+	exit 1;
+    fi
+
 done

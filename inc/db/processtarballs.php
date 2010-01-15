@@ -45,6 +45,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	// Cannot create log file
 	return -1;
     }
+    chmod("$dir/$LOGFILE", 0664);
     $tarball = tarballname($driver);
     if ($tarball === false) {
 	fwrite($lfh,
@@ -451,28 +452,28 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	    }
 	}
 	if ($ppdstocheckin == true) {
-	    $f = ($driverfree === true ? "free" : "nonfree");
+	    // Make PPD tree group-writable
 	    $result = array();
-	    exec("$pwd/maint/scripts/updatebzrfrommysql --ppd-$f " .
-		 "$dir/PPD $driver",
-		 $result, $ret_value);
-	    fwrite($lfh,
-		   "Checking new PPD files into the BZR repository\n");
-	    foreach ($result as $line) {
+	    exec("chmod -R g+rwX $dir/PPD", $result, $ret_value);
+	    if ($ret_value != 0) {
 		fwrite($lfh,
-		       "   $line\n");
+		       "ERROR: Cannot make PPD files group-writable!\n");
 	    }
-	    if ($ret_value == 0) {
+	    // Free or non-free driver?
+	    $f = ($driverfree === true ? "free" : "nonfree");
+	    // Create a simple text file telling that the PPDs are ready
+	    // so that a cron job can commit them to the BZR
+	    if (file_put_contents("$dir/ppdcommit", $f)) {
 		fwrite($lfh,
-		       "   --> SUCCESS\n");
+		       "PPDs of the driver \"$driver\" prepared for committing to the BZR repository!\n");
+		chmod("$dir/ppdcommit", 0664);
 	    } else {
 		fwrite($lfh,
-		       "   --> ERROR: $ret_value\n");
-	    }
+		       "ERROR: Could not write $dir/ppdcommit!\n");
+	    }		
 	}
     }
-    // Remove uncompressed files of the tarball, generated XML files, and
-    // extracted PPD files
+    // Remove uncompressed files of the tarball and generated XML files
     $result = array();
     exec("rm -rf $dir/$UNCOMPRESSEDDIR", $result, $ret_value);
     if ($ret_value != 0) {
@@ -484,12 +485,6 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
     if ($ret_value != 0) {
 	fwrite($lfh,
 	       "ERROR: Cannot remove XML files!\n");
-    }
-    $result = array();
-    exec("rm -rf $dir/PPD", $result, $ret_value);
-    if ($ret_value != 0) {
-	fwrite($lfh,
-	       "ERROR: Cannot remove \"PPD\" directory!\n");
     }
     // Close log file
     fclose($lfh);
