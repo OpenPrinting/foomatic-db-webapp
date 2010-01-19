@@ -39,7 +39,7 @@
 					{if $d.shortdescription}
 						{$d.shortdescription|escape}
 					{else}
-						<em style="color: #CCCCCC">No description available.</em>
+						<!--<em style="color: #CCCCCC">No description available.</em>-->
 					{/if}
 					</small></td>
 			</tr>
