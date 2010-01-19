@@ -13,12 +13,12 @@
 			{if $data[printer].color == ""} Unknown {/if}
 			{$data[printer].mechanism|capitalize:true} Printer
 		<br>
-		Functionality: 
-			{if $data[printer].functionality == "A"} <font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
-			{if $data[printer].functionality == "B"} <font color="green">Mostly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
-			{if $data[printer].functionality == "D"} <font color="orange">Partially</font> <img src="/images/icons/Linuxyes.png"> {/if}
-			{if $data[printer].functionality == ""} <font color="black">Unknown</font> <img src="/images/icons/Linuxyes.png"> <sup>???</sup> {/if}
-			{if $data[printer].functionality == "F"} <font color="red">Paperweight</font> <img src="/images/icons/Linuxno.png"> {/if}
+		This Printer  
+			{if $data[printer].functionality == "A"} <font color="green">Works Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
+			{if $data[printer].functionality == "B"} <font color="green">Works Mostly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
+			{if $data[printer].functionality == "D"} <font color="orange">Works Partially</font> <img src="/images/icons/Linuxyes.png"> {/if}
+			{if $data[printer].functionality == ""} <font color="black">has Unknown Functionality</font> <img src="/images/icons/Linuxyes.png"> <sup>???</sup> {/if}
+			{if $data[printer].functionality == "F"} <font color="red">is a Paperweight</font> <img src="/images/icons/Linuxno.png"> {/if}
 		
 		{if $data[printer].default_driver != ""}
 		<br>
@@ -64,7 +64,7 @@
 
 	{/section}
 
-<!--
+
 	{literal}
 	<script>
 	var idcomments_acct = '55674d13107a5286f1294f678e67e116';
@@ -74,7 +74,7 @@
 	<span id="IDCommentsPostTitle" style="display:none"></span>
 	<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
 	{/literal}
--->
+
 
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}

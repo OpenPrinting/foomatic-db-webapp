@@ -63,7 +63,7 @@
 		<h2>Comments</h2>
 		<div>{$driver.comments|default:"No comments available."}<br /><br /></div>
 
-<!--
+
 		{literal}
 		<script>
 		var idcomments_acct = '55674d13107a5286f1294f678e67e116';
@@ -73,7 +73,7 @@
 		<span id="IDCommentsPostTitle" style="display:none"></span>
 		<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
 		{/literal}
--->	
+
 		<h2>Printer list</h2>
 		<ul>
 			{foreach from=$printers item=p}
