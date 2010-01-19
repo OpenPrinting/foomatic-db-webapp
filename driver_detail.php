@@ -56,14 +56,14 @@ $contact = $resContact->getRow();
 $SMARTY->assign('contact',$contact);
 
 ///srv/www/openprinting/foomatic-db/db/source/driver/*.xml
-$file = '/srv/www/openprinting/foomatic-db/db/source/driver/'.$_GET['driver'].'.xml';
+/*$file = '/srv/www/openprinting/foomatic-db/db/source/driver/'.$_GET['driver'].'.xml';
 if (file_exists($file)) {
     $xml = simplexml_load_file($file);
  	print_r($xml->packages); 
     
 } else {
     $package = 'Failed to open '.$file;
-}
+}*/
 
 $SMARTY->display('drivers/detail.tpl');
 
