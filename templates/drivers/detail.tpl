@@ -63,16 +63,7 @@
 		<h2>Comments</h2>
 		<div>{$driver.comments|default:"No comments available."}<br /><br /></div>
 
-		<div style="background: #eee; border: 1px solid #ccc;">
-			{literal}
-			<script>
-			var idcomments_acct = '55674d13107a5286f1294f678e67e116';
-			var idcomments_post_id;
-			var idcomments_post_url;
-			</script>
-			<script type="text/javascript" src="http://www.intensedebate.com/js/genericLinkWrapperV2.js"></script>
-			{/literal}
-		</div>	
+<!--
 		{literal}
 		<script>
 		var idcomments_acct = '55674d13107a5286f1294f678e67e116';
@@ -82,7 +73,7 @@
 		<span id="IDCommentsPostTitle" style="display:none"></span>
 		<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
 		{/literal}
-	
+-->	
 		<h2>Printer list</h2>
 		<ul>
 			{foreach from=$printers item=p}

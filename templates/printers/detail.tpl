@@ -64,16 +64,7 @@
 
 	{/section}
 
-	<div style="background: #eee; border: 1px solid #ccc;">
-		{literal}
-		<script>
-		var idcomments_acct = '55674d13107a5286f1294f678e67e116';
-		var idcomments_post_id;
-		var idcomments_post_url;
-		</script>
-		<script type="text/javascript" src="http://www.intensedebate.com/js/genericLinkWrapperV2.js"></script>
-		{/literal}
-	</div>	
+<!--
 	{literal}
 	<script>
 	var idcomments_acct = '55674d13107a5286f1294f678e67e116';
@@ -83,7 +74,7 @@
 	<span id="IDCommentsPostTitle" style="display:none"></span>
 	<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
 	{/literal}
-
+-->
 
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
