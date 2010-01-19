@@ -28,8 +28,10 @@
 			{if $driverUrl != ""}
 			<a href="{$driverUrl}">Homepage</a> 
 			{/if}
+			{if $hasPPD == "1"}
 			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=1">view PPD</a> 
-			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a> 
+			<a href="/ppd-o-matic.php?driver={$data[printer].default_driver}&printer={$data[printer].id}&show=0">download PPD</a>
+			{/if} 
 		)
 		{/if}
 		
