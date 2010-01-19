@@ -90,12 +90,12 @@
             </ul>*}
         </div>
 
-        <div class="section">
-        	<h4 class="color_site_1 b_color_site_1">Sponsored by</h4>
-			<div style="text-align: center">
-				<a href="http://www.hp.com"><img src="{$BASEURL}images/hp.png" alt="HP" title="HP" /></a>
+        <!--<div class="section">
+        	<h4 class="color_site_1 b_color_site_1">col title</h4>
+			<div>
+				content here
 			</div>
-        </div>
+        </div>-->
 		
 
 	</div>
