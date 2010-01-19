@@ -6,6 +6,7 @@
 	{if $driver}
 
 		<h1>{$driver.name}</h1>
+		<h2>{$driver.name}</h2>
 		<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
 		This driver is 
 		{if $driver.nonfreesoftware =="1"}
