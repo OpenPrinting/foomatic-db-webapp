@@ -47,9 +47,6 @@
 
 	</p>
 	
-	<h3>Comments</h3>
-	{$data[printer].comments}
-	
 	<h3>Miscellaneous</h3>
 	{if $data[printer].pjl == "1"}
 		Printer supports PJL.<br>
@@ -60,7 +57,33 @@
 	{if $data[printer].contrib_url != ""}
 		Contrib URL: <a href="{$data[printer].contrib_url}">{$data[printer].contrib_url}</a>
 	{/if}
+	
+	<h3>Comments</h3>
+	{$data[printer].comments}
+	
+
 	{/section}
+
+	<div style="background: #eee; border: 1px solid #ccc;">
+		{literal}
+		<script>
+		var idcomments_acct = '55674d13107a5286f1294f678e67e116';
+		var idcomments_post_id;
+		var idcomments_post_url;
+		</script>
+		<script type="text/javascript" src="http://www.intensedebate.com/js/genericLinkWrapperV2.js"></script>
+		{/literal}
+	</div>	
+	{literal}
+	<script>
+	var idcomments_acct = '55674d13107a5286f1294f678e67e116';
+	var idcomments_post_id;
+	var idcomments_post_url;
+	</script>
+	<span id="IDCommentsPostTitle" style="display:none"></span>
+	<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
+	{/literal}
+
 
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
