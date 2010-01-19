@@ -8,10 +8,10 @@
 	{section name=printer loop=$data}
 
 	<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
-		Supports: 
 			{if $data[printer].color == "1"} <b><font color="#6B44B6">C</font><font color="#FFCC00">o</font><font color="#10DC98">l</font><font color="#1CA1C2">o</font><font color="#2866EB">r</font></b> {/if}
 			{if $data[printer].color == "0"} <b>Black &amp; White</b> {/if}
 			{if $data[printer].color == ""} Unknown {/if}
+			{$data[printer].mechanism|capitalize:true} Printer
 		<br>
 		Functionality: 
 			{if $data[printer].functionality == "A"} <font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"> {/if}
