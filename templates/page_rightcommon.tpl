@@ -94,7 +94,8 @@
         	<h4 class="color_site_1 b_color_site_1">Latest Comments</h4>
 			<div>
 				{literal}
-					<script src='http://www.intensedebate.com/widgets/acctComment/164938/5' defer="defer" type='text/javascript'> </script>
+					<!--<script src='http://www.intensedebate.com/widgets/acctComment/164938/5' defer="defer" type='text/javascript'> </script>-->
+					<div id="recentcomments" class="dsq-widget"><script type="text/javascript" src="http://disqus.com/forums/openprintingorg/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div><a href="http://disqus.com/">Powered by Disqus</a>
 				{/literal}
 			</div>
         </div>

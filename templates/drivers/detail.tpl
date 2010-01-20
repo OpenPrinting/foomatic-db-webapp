@@ -81,13 +81,21 @@
 
 
 		{literal}
-		<script>
+		<!--<script>
 		var idcomments_acct = '55674d13107a5286f1294f678e67e116';
 		var idcomments_post_id;
 		var idcomments_post_url;
 		</script>
 		<span id="IDCommentsPostTitle" style="display:none"></span>
 		<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
+		-->
+		<div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    var disqus_developer = true; 
+		</script>
+		<script type="text/javascript" src="http://disqus.com/forums/openprintingorg/embed.js"></script>
+		<noscript><a href="http://disqus.com/forums/openprintingorg/?url=ref">View the discussion thread.</a></noscript>
+		<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 		{/literal}
 
 		<h2>Printer list</h2>
