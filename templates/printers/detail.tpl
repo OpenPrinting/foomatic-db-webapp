@@ -66,17 +66,8 @@
 
 
 	{literal}
-	<!--
 	<script>
 	var idcomments_acct = '55674d13107a5286f1294f678e67e116';
-	var idcomments_post_id;
-	var idcomments_post_url;
-	</script>
-	<span id="IDCommentsPostTitle" style="display:none"></span>
-	<script type='text/javascript' src='http://www.intensedebate.com/js/genericCommentWrapperV2.js'></script>
-	-->
-	<script>
-	var idcomments_acct = '10967c6d0983d6078aba33cf60c9582d';
 	var idcomments_post_id;
 	var idcomments_post_url;
 	</script>

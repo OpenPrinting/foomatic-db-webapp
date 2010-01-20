@@ -90,12 +90,14 @@
             </ul>*}
         </div>
 
-        <!--<div class="section">
-        	<h4 class="color_site_1 b_color_site_1">col title</h4>
+        <div class="section">
+        	<h4 class="color_site_1 b_color_site_1">Latest Comments</h4>
 			<div>
-				content here
+				{literal}
+					<script src='http://www.intensedebate.com/widgets/acctComment/164938/5' defer="defer" type='text/javascript'> </script>
+				{/literal}
 			</div>
-        </div>-->
+        </div>
 		
 
 	</div>
