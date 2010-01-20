@@ -31,7 +31,32 @@
 			</script>
 			{/literal}
 		{/if}
+
+		{if $PAGE->getActiveID() == "printer"}
+		<script type="text/javascript" src="{$BASEURL}javascript/jquery.highlightFade.js"></script>
 		
+			{literal}
+			<script type="text/javascript">
+			function addFormField() {
+				var id = document.getElementById("id").value;
+				$("#divTxt").append("<p id='row" + id + "'><label for='dnameNew" + id + "'>Driver:&nbsp;&nbsp;</label><input type='text' size='20' name='dnameNew[]' id='dnameNew" + id + "'>&nbsp;&nbsp<a href='#' onClick='removeFormField(\"#row" + id + "\"); return false;'>Remove</a><br><label for='dcommentNew" + id + "'>Comment:&nbsp;&nbsp;</label><textarea name='dcommentNew[]' id='dcommentNew" + id + "'></textarea><br><label for='recommendedDriver" + id + "'>Recommended Driver:&nbsp;&nbsp;</label><input type='radio' name='recommendedDriver[]' id='recommendedDriver" + id + "' value='1'><p>");
+				
+				
+				$('#row' + id).highlightFade({
+					speed:1000
+				});
+				
+				id = (id - 1) + 2;
+				document.getElementById("id").value = id;
+			}
+			
+			function removeFormField(id) {
+				$(id).remove();
+			}
+			</script>
+			{/literal}
+		{/if}
+				
 		{if $showTabs == "1"}
 		<script type="text/javascript" src="{$BASEURL}javascript/ui/ui.tabs.js"></script>
 			{literal}
@@ -42,6 +67,8 @@
 			</script>
 			{/literal}
 		{/if}
+		
+		
 		
 	</head>
 

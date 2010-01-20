@@ -174,16 +174,31 @@
 						{foreach from=$drivers item=driver}
 							<option value="{$driver.id}">{$driver.name|escape}</option>
 						{/foreach}	
-					</select>  
-						<br><br> OR 
-					<input type="text" size="16" tabindex="34" name="dname1"/></td> 
+					</select>  OR 
+					</td> 
 				<td><p>A driver known to work. </p></td>
 			</tr> 			
-			<tr bgcolor="#efefef">
-				<td align="right">Driver notes:</td> 
-				<td><textarea cols="35" rows="4" tabindex="35" name="dcomment0"></textarea></td> 
+			<!--<tr bgcolor="#efefef">
+				<td align="right">New Driver:</td> 
+				<td>
+					<br> 
+					<input type="text" size="16" tabindex="34" name="dname1"/><br> 
+					<textarea cols="35" rows="4" tabindex="35" name="dcomment0"></textarea>
+				</td> 
 				<td><p>Comments on using the above driver with this printer.</p></td>
-			</tr> 
+			</tr> -->
+			
+			<tr bgcolor="#efefef">
+				<td align="right" valign="top">
+					New Driver:
+					<p><a href="#" onClick="addFormField(); return false;">Add</a></p>
+				</td> 
+				<td  valign="top">
+				<input type="hidden" id="id" value="1">
+				<div id="divTxt"></div>
+				</td>
+				<td valign="top"><p>Add new driver. Comments on using the new driver with this printer.</p></td>
+			</tr>
 
 			<tr bgcolor="#dfdfdf">
 				<td align="right">Un*x URL:</td> 
