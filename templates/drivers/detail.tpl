@@ -29,9 +29,10 @@
 			{/if}
 		<br>
 		Type: {$driver.execution}<br>
-		{if $contact.description}User Support: <a href="{$contact.url}">{$contact.description}</a> ({$contact.level})<br>{/if}
-		
-		
+		{foreach from=$contacts item=c}
+			{if $c.description}<a href="{$c.url}">{$c.description}</a>
+			({$c.level})<br>{/if}
+		{/foreach}
 		
 		</p>
 		
