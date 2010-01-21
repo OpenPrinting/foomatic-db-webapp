@@ -48,12 +48,12 @@ $printers = $res->toArray('id');
 $SMARTY->assign('printers',$printers);
 
 
-$resContact = $DB->query("SELECT *
-					FROM `driver_support_contact` 
-					WHERE driver_id = '?'", $_GET['driver']);
+$res = $DB->query("SELECT *
+		   FROM `driver_support_contact` 
+		   WHERE driver_id = '?'", $_GET['driver']);
 
-$contact = $resContact->getRow();
-$SMARTY->assign('contact',$contact);
+$contacts = $res->toArray('driver_id');
+$SMARTY->assign('contacts',$contacts);
 
 ///srv/www/openprinting/foomatic-db/db/source/driver/*.xml
 /*$file = '/srv/www/openprinting/foomatic-db/db/source/driver/'.$_GET['driver'].'.xml';
