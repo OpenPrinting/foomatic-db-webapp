@@ -74,7 +74,7 @@ if(isset($_POST['submit'])){
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
 		  "\"" . _mysql_real_escape_string($user) . "\"" :
 		  "null") . ",
-             \"" . _mysql_real_escape_string("TODO: Upload comment") . "\"
+             \"" . _mysql_real_escape_string($_POST['comments']) . "\"
          )");
     /**
      * Insert into printer tables
@@ -141,35 +141,50 @@ if(isset($_POST['submit'])){
 	     null,
 	     \"" . _mysql_real_escape_string($_POST['url']) . "\",
 	     \"" . _mysql_real_escape_string($_POST['func']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['dname0']) . "\",
+	     null,
 	     null,
 	     \"" . _mysql_real_escape_string($_POST['contrib_url']) . "\",
 	     \"" . _mysql_real_escape_string($_POST['notes']) . "\",
 	     0,
 	     \"" . _mysql_real_escape_string($_POST['type']) . "\",
-	     " . ($_POST['color'] == "on" ?
+	     " . ((array_key_exists("color", $_POST) and
+		   $_POST['color'] == "on") ?
 	          "1" : "0") . ",
-	     " . _mysql_real_escape_string($_POST['resolution_x']) . ",
-	     " . _mysql_real_escape_string($_POST['resolution_y']) . ",
-	     " . ($_POST['postscript'] == "on" ?
+	     " . ($_POST['resolution_x'] > 0 ?
+		  _mysql_real_escape_string($_POST['resolution_x']) :
+		  "0") . ",
+	     " . ($_POST['resolution_y'] > 0 ?
+                  _mysql_real_escape_string($_POST['resolution_y']) :
+                  "0") . ",
+	     " . ((array_key_exists("postscript", $_POST) and
+		   $_POST['postscript'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['pdf'] == "on" ?
+	     " . ((array_key_exists("pdf", $_POST) and
+		   $_POST['pdf'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['pcl'] == "on" ?
+	     " . ((array_key_exists("pcl", $_POST) and
+		   $_POST['pcl'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['lips'] == "on" ?
+	     " . ((array_key_exists("lips", $_POST) and
+		   $_POST['lips'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['escp'] == "on" ?
+	     " . ((array_key_exists("escp", $_POST) and
+		   $_POST['escp'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['escp2'] == "on" ?
+	     " . ((array_key_exists("escp2", $_POST) and
+		   $_POST['escp2'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['hpgl2'] == "on" ?
+	     " . ((array_key_exists("hpgl2", $_POST) and
+		   $_POST['hpgl2'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['tiff'] == "on" ?
+	     " . ((array_key_exists("tiff", $_POST) and
+		   $_POST['tiff'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['proprietary'] == "on" ?
+	     " . ((array_key_exists("proprietary", $_POST) and
+		   $_POST['proprietary'] == "on") ?
 	          "1" : "0") . ",
-	     " . ($_POST['pjl'] == "on" ?
+	     " . ((array_key_exists("pjl", $_POST) and
+		   $_POST['pjl'] == "on") ?
 	          "1" : "0") . ",
 	     \"" . _mysql_real_escape_string($_POST['postscript_level']) . "\",
 	     \"" . _mysql_real_escape_string($_POST['pdf_level']) . "\",
@@ -179,7 +194,8 @@ if(isset($_POST['submit'])){
 	     \"" . _mysql_real_escape_string($_POST['escp2_level']) . "\",
 	     \"" . _mysql_real_escape_string($_POST['hpgl2_level']) . "\",
 	     \"" . _mysql_real_escape_string($_POST['tiff_level']) . "\",
-	     " . ($_POST['ascii'] == "on" ?
+	     " . ((array_key_exists("ascii", $_POST) and
+		   $_POST['ascii'] == "on") ?
 	          "\"us-ascii\"" :
 	          "null") . ",
 	     \"" . _mysql_real_escape_string($_POST['general_mdl']) . "\",
@@ -214,49 +230,60 @@ if(isset($_POST['submit'])){
 	     \"" . _mysql_real_escape_string($_POST['notes']) . "\"
          )");
 
-    for ($i = 0; $i < $_POST['dnumber']; $i++) {
-	if ($_POST["dactive$i"] != "on") continue;
-	$driver_id = $_POST["dname$i"];
-	$res = $DB->query("SELECT printer_id FROM driver_printer_assoc WHERE printer_id=\"$id\" AND driver_id=\"$driver_id\"");
-	$row = $res->getRow();
-	if (strlen($row['printer_id']) > 0) {
-	    $DB->query("UPDATE driver_printer_assoc SET
-                pcomments=\"" . _mysql_real_escape_string($_POST["dcomment$i"]) . "\",
-                fromprinter=1
-            WHERE
-                printer_id=\"" . _mysql_real_escape_string($id) . "\" AND
-                driver_id=\"" . _mysql_real_escape_string($driver_id) . "\"");
-	    $DB->query("UPDATE driver_printer_assoc_translation SET
-                pcomments=\"" . _mysql_real_escape_string($_POST["dcomment$i"]) . "\"
-            WHERE
-                lang=\"en\" AND
-                printer_id=\"" . _mysql_real_escape_string($id) . "\" AND
-                driver_id=\"" . _mysql_real_escape_string($driver_id) . "\"");
-	} else {
-	    $DB->query("INSERT INTO driver_printer_assoc (
-	        printer_id,
-	        driver_id,
-	        ppd,
-	        pcomments,
-	        fromprinter 
-	    ) values (
-	        \"" . _mysql_real_escape_string($id) . "\",
-	        \"" . _mysql_real_escape_string($driver_id) . "\",
-	        null,
-	        \"" . _mysql_real_escape_string($_POST["dcomment$i"]) . "\",
-	        1
-            )" );
-            $DB->query("INSERT INTO printer_translation (
-                printer_id,
-                driver_id,
-                lang,
-                pcomments
-            ) values (
-                \"" . _mysql_real_escape_string($id) . "\",
-                \"" . _mysql_real_escape_string($driver_id) . "\",
-                \"en\",
-                \"" . _mysql_real_escape_string($_POST["dcomment$i"]) . "\"
-            )" );
+    if (array_key_exists("dnameNew", $_POST)) {
+	$i = 0;
+	foreach ($_POST["dnameNew"] as $dname) {
+	    if (strlen($dname) != 0) {
+		$driver_id = $dname;
+		$res = $DB->query("SELECT printer_id FROM driver_printer_assoc WHERE printer_id=\"$id\" AND driver_id=\"$driver_id\"");
+		$row = $res->getRow();
+		if (strlen($row['printer_id']) > 0) {
+		    $DB->query("UPDATE driver_printer_assoc SET
+                        pcomments=\"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
+                        fromprinter=1
+                    WHERE
+                        printer_id=\"" . _mysql_real_escape_string($id) . "\" AND
+                        driver_id=\"" . _mysql_real_escape_string($driver_id) . "\"");
+		    $DB->query("UPDATE driver_printer_assoc_translation SET
+                        pcomments=\"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\"
+                    WHERE
+                        lang=\"en\" AND
+                        printer_id=\"" . _mysql_real_escape_string($id) . "\" AND
+                        driver_id=\"" . _mysql_real_escape_string($driver_id) . "\"");
+		} else {
+		    $DB->query("INSERT INTO driver_printer_assoc (
+	                printer_id,
+	                driver_id,
+	                ppd,
+	                pcomments,
+	                fromprinter 
+	            ) values (
+	                \"" . _mysql_real_escape_string($id) . "\",
+	                \"" . _mysql_real_escape_string($driver_id) . "\",
+	                null,
+	                \"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
+	                1
+                    )" );
+		    $DB->query("INSERT INTO driver_printer_assoc_translation (
+                        printer_id,
+                        driver_id,
+                        lang,
+                        pcomments
+                    ) values (
+                        \"" . _mysql_real_escape_string($id) . "\",
+                        \"" . _mysql_real_escape_string($driver_id) . "\",
+                        \"en\",
+                        \"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\"
+                    )" );
+		}
+		if ($_POST["recommendedDriver"][$i] == 1) {
+		    $DB->query("UPDATE printer SET
+                        default_driver=\"" . _mysql_real_escape_string($driver_id) . "\"
+                    WHERE
+                        id=\"" . _mysql_real_escape_string($id) . "\"");
+		}
+	    }
+	    $i ++;
 	}
     }
 
@@ -267,55 +294,6 @@ if(isset($_POST['submit'])){
     echo "</pre>";
     exit(0);
 
-	/* POST Array
-	(
-    [noqueue] => 1
-    [submit] => Add Printer
-    [release_date] => 
-    [make] => 
-    [make_new] => 
-    [model] => 
-    [url] => 
-    [resolution_x] => 
-    [resolution_y] => 
-    [type] => 
-    [refill] => 
-    [postscript_level] => 
-    [ppdurl] => 
-    [pdf_level] => 
-    [lips_level] => 
-    [pcl_level] => 
-    [escp_level] => 
-    [escp2_level] => 
-    [hpgl2_level] => 
-    [tiff_level] => 
-    [func] => F
-    [dnumber] => 1
-    [dactive0] => on
-    [dname0] => 
-    [dname1] => 
-    [dcomment0] => 
-    [contrib_url] => 
-    [notes] => 
-    [general_ieee] => 
-    [general_mfg] => 
-    [general_mdl] => 
-    [general_des] => 
-    [general_cmd] => 
-    [par_ieee] => 
-    [par_mfg] => 
-    [par_mdl] => 
-    [par_des] => 
-    [par_cmd] => 
-    [usb_ieee] => 
-    [usb_mfg] => 
-    [usb_mdl] => 
-    [usb_des] => 
-    [usb_cmd] => 
-    [snmp_des] => 
-	)
-	 */
-	
 }
 
 // Dummy function, will be removed, until problem with mysql_real_escape_string() is solved.
