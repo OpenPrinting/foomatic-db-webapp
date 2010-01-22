@@ -35,12 +35,15 @@ if(isset($_POST['submit'])){
 	$error = "Printer already exists in the database!";
     }
     if (strlen($error) > 0) {
-	echo "<pre>";
+	/*echo "<pre>";
 	print "ERROR: $error\n";
 	print_r($SESSION->getUserName());
         print_r($_POST);
         echo "</pre>";
-	exit(0);
+	exit(0);*/
+	
+		//error
+		header('location: /printers/upload?msg=error&type=exists');
     }
 
     /**
@@ -49,8 +52,8 @@ if(isset($_POST['submit'])){
 
     $today = date('Y-m-d');
     if (strtotime($_POST['release_date']) != 0) {
-        $release =
-            "\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
+        //$release ="\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
+        $release = date('Y-m-d', strtotime($_POST['release_date']));
     } else {
         $release = "null";
     }
@@ -287,18 +290,27 @@ if(isset($_POST['submit'])){
 	}
     }
 
-    echo "<pre>";
-    print "SUCCESS\n";
-    print_r($SESSION->getUserName());
-    print_r($_POST);
-    echo "</pre>";
-    exit(0);
+    //success
+	header('location: /printers/upload?msg=success');
+    
 
 }
 
-// Dummy function, will be removed, until problem with mysql_real_escape_string() is solved.
+
+if(isset($_GET['msg'])){
+	$SMARTY->assign("msg",$_GET['msg']);
+	if(isset($_GET['type'])){
+		$SMARTY->assign("type",$_GET['type']);
+			
+	}		
+}
+
+
+// Use mysql_real_escape_string
 function _mysql_real_escape_string($str) {
-    return $str;
+    //return $str;
+	$str = mysql_real_escape_string($str);
+	return $str; 
 }
 
 function printerIDfromMakeModel($make, $model) {

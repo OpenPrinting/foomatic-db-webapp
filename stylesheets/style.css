@@ -739,3 +739,10 @@ div.error{
 	background: #f7bcbc;
 	border: 1px solid #ff3300;
 }
+div.success{
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding: 8px;
+	background: #DDF8CC;
+	border: 1px solid #80C65A;
+}

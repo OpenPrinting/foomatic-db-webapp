@@ -3,7 +3,24 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h1>Add a New Printer</h1>
+{if $msg=="success"}
+<h1>Add a New Printer</h1>
+<div class="success">
+	The printer specifications have been uploaded to the system!
+</div>	
+<a href="/printers/upload">Add a New Printer</a>
+
+{elseif $msg=="error"}
+<h1>Add a New Printer</h1>
+<div class="error">
+	{if $type=='exists'}
+	Printer already exists in the database!
+	{/if}
+</div>	
+<a href="/printers/upload">Add a New Printer</a>
+
+{else}
+<h1>Add a New Printer</h1>
 
 <p>There are a fair number of things kept in this database about each printer. Unfortunately, this makes for a somewhat long form.</p>
 
@@ -69,7 +86,7 @@
 			</tr> 
 			<tr bgcolor="#efefef">
 				<td align="right" valign="top">Model:</td> 
-				<td><input type="text" size="32" tabindex="5" name="model"/></td> 
+				<td valign="top"><input type="text" size="32" tabindex="5" name="model"/></td> 
 				<td><p>Model name for the printer.  Please try
 				 to follow the conventions used for
 				 other printers in the same
@@ -78,28 +95,28 @@
 				</td>
 			</tr> 
 			<tr bgcolor="#dfdfdf">
-				<td align="right">URL:</td> 
-				<td><input type="text" maxlength="128" size="32" tabindex="6" name="url"/></td> 
+				<td align="right"  valign="top">URL:</td> 
+				<td valign="top"><input type="text" maxlength="128" size="32" tabindex="6" name="url"/></td> 
 				<td><p>Manufacturer's web page for this specific printer.  The maker's home page will 
 				already be linked to, so if you don't know where to find a page about this printer, 
 				leave this blank. And do not forget the "http://" in the beginning of 
 				the address.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right">Resolution (X x Y):</td> 
-				<td><input type="text" size="4" tabindex="7" name="resolution_x"/> x <input type="text" size="4" tabindex="8" name="resolution_y"/></td> 
+				<td align="right" valign="top">Resolution (X x Y):</td> 
+				<td valign="top"><input type="text" size="4" tabindex="7" name="resolution_x"/> x <input type="text" size="4" tabindex="8" name="resolution_y"/></td> 
 				<td><p>Maximum X and Y resolution the printer can do.  Available Unix software may not support 
 				the finest modes; if so, please say so in the notes.</p></td>
 			</tr> 
-			<tr bgcolor="#dfdfdf">
+			<tr bgcolor="#dfdfdf" valign="top">
 				<td align="right">Color:</td> 
 				<td><label><input type="checkbox" tabindex="9" value="on" name="color"/></label></td> 
 				<td><p>Check the box if this printer can do color.  Some printers may not be able to do 
 				so without vendor drivers; say so in the notes if so.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right">Mechanism:</td> 
-				<td>
+				<td align="right" valign="top">Mechanism:</td> 
+				<td valign="top">
 					<select tabindex="10" name="type">
 						<option value="">Unknown/Other</option>
 						<option value="dotmatrix">Dot Matrix</option>
@@ -114,14 +131,14 @@
 				<td><p>What sort of printing mechanism does this printer use?</p></td>
 			</tr> 
 			<tr bgcolor="#dfdfdf">
-				<td align="right">Refill:</td> 
-				<td><input type="text" size="32" tabindex="11" name="refill"/></td> 
+				<td align="right" valign="top">Refill:</td> 
+				<td valign="top"><input type="text" size="32" tabindex="11" name="refill"/></td> 
 				<td><p>A short description of the non-paper consumable(s): cartridge, ribbon, toner, 
 				printhead, etc.  Ballpark refill pricing would be nice, too, if known.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right">Language:</td> 
-				<td><label><input type="checkbox" tabindex="12" value="on" name="postscript"/>PostScript</label> level <input type="text" size="4" tabindex="13" name="postscript_level"/> 
+				<td align="right" valign="top">Language:</td> 
+				<td valign="top"><label><input type="checkbox" tabindex="12" value="on" name="postscript"/>PostScript</label> level <input type="text" size="4" tabindex="13" name="postscript_level"/> 
 				<br/>    
 				URL for manufacturer's PPD <br/>     
 				<input type="text" size="30" tabindex="14" name="ppdurl"/> <br/> 
@@ -137,19 +154,19 @@
 				"Notes:" field if we've forgotten any languages.</p></td>
 			</tr> 
 			<tr bgcolor="#dfdfdf">
-				<td align="right">ASCII:</td> 
-				<td><label><input type="checkbox" tabindex="30" value="on" name="ascii"/></label></td> 
+				<td align="right" valign="top">ASCII:</td> 
+				<td valign="top"><label><input type="checkbox" tabindex="30" value="on" name="ascii"/></label></td> 
 				<td><p>This printer will print text if you just send it plain ascii.  
 				Uncheck for printers that <b>only</b> work with Ghostscript and a driver or the like.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right">PJL:</td> 
-				<td><label><input type="checkbox" tabindex="31" value="on" name="pjl"/></label></td> 
+				<td align="right" valign="top">PJL:</td> 
+				<td valign="top"><label><input type="checkbox" tabindex="31" value="on" name="pjl"/></label></td> 
 				<td><p>Check the box if this printer supports HP's Printer Job Language (PJL).</p></td>
 			</tr> 
 			<tr bgcolor="#dfdfdf">
-				<td align="right">Functionality:</td> 
-				<td>
+				<td align="right" valign="top">Functionality:</td> 
+				<td valign="top">
 					<select tabindex="32" name="func">
 						<option value="A">Perfectly</option>
 						<option value="B">Mostly</option>
@@ -163,9 +180,9 @@
 				choose/enter a driver and/or enter in the "Notes:" field how you made this printer working.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right">
+				<td align="right" valign="top">
 					Driver:</td> 
-				<td>
+				<td valign="top">
 					<input type="hidden" value="1" name="dnumber"/>
 					<input type="hidden" value="on" name="dactive0"/>
 					
@@ -176,7 +193,7 @@
 						{/foreach}	
 					</select>  OR 
 					</td> 
-				<td><p>A driver known to work. </p></td>
+				<td valign="top"><p>A driver known to work. </p></td>
 			</tr> 			
 			<!--<tr bgcolor="#efefef">
 				<td align="right">New Driver:</td> 
@@ -201,8 +218,8 @@
 			</tr>
 
 			<tr bgcolor="#dfdfdf">
-				<td align="right">Un*x URL:</td> 
-				<td><input type="text" size="32" tabindex="36" name="contrib_url"/></td> 
+				<td align="right" valign="top">Un*x URL:</td> 
+				<td valign="top"><input type="text" size="32" tabindex="36" name="contrib_url"/></td> 
 				<td><p>Web address for important info about using this printer with Unix-like 
 					operating systems/free software; website with special tricks, mini-HOWTO, 
 					a user's experience, or whatever else helps to make it going. Do not forget the 
@@ -210,7 +227,7 @@
 			</tr> 
 			<tr bgcolor="#efefef">
 					<td valign="top" align="right">Notes:</td> 
-					<td colspan="2"><p><font size="-1" color="#202020">This is HTML that just gets pasted
+					<td colspan="2" valign="top"><p><font size="-1" color="#202020">This is HTML that just gets pasted
 					into the table; <font color="#000000">watch those &lt;
 					signs!</font> Anything big can be
 					either linked to with the Un*x
@@ -296,6 +313,7 @@
 </form>
 {/if}
 
+{/if}
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
 {include file="page_conclusion.tpl"}
