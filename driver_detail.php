@@ -67,11 +67,14 @@ foreach($packages as $p)
 	$mask .= (strlen($mask) > 0 ? ";" : "") .
 	    (strlen($p['scope']) > 0 ? "({$p['scope']})" : "") .
 	    $p['name'];
-if (strlen($mask) > 0) {
-    $out = array();
-    exec("cd foomatic; ./packageinfo '$mask'", $out, $ret_value);
-    $packagedownloads = $out[0];
+if (strlen($mask) <= 0) {
+    $mask = "{$_GET['driver']};openprinting-{$_GET['driver']};" .
+	"openprinting-ppds-{$_GET['driver']}";
 }
+$out = array();
+exec("cd foomatic; ./packageinfo '$mask'", $out, $ret_value);
+if (sizeof($out) > 0)
+    $packagedownloads = $out[0];
 
 $SMARTY->assign('packagedownloads', $packagedownloads);
 
