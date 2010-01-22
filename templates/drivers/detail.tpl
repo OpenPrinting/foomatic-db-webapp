@@ -33,7 +33,13 @@
 			{if $c.description}<a href="{$c.url}">{$c.description}</a>
 			({$c.level})<br>{/if}
 		{/foreach}
-		
+		{if $packagedownloads != ""}
+		        Downloadable packages: {$packagedownloads}
+			(<font size=-3><a
+			href="http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages">How
+			to install</a></font>)<br>
+		{/if}
+
 		</p>
 		
 		{if $driver.prototype != "" }

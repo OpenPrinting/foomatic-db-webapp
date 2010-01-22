@@ -55,6 +55,26 @@ $res = $DB->query("SELECT *
 $contacts = $res->toArray('driver_id');
 $SMARTY->assign('contacts',$contacts);
 
+$res = $DB->query("SELECT *
+		   FROM `driver_package` 
+		   WHERE driver_id = '?'", $_GET['driver']);
+
+$packages = $res->toArray('driver_id');
+$packagedownloads = "";
+$mask = "";
+foreach($packages as $p)
+    if (strlen($p['name']) > 0)
+	$mask .= (strlen($mask) > 0 ? ";" : "") .
+	    (strlen($p['scope']) > 0 ? "({$p['scope']})" : "") .
+	    $p['name'];
+if (strlen($mask) > 0) {
+    $out = array();
+    exec("cd foomatic; ./packageinfo '$mask'", $out, $ret_value);
+    $packagedownloads = $out[0];
+}
+
+$SMARTY->assign('packagedownloads', $packagedownloads);
+
 ///srv/www/openprinting/foomatic-db/db/source/driver/*.xml
 /*$file = '/srv/www/openprinting/foomatic-db/db/source/driver/'.$_GET['driver'].'.xml';
 if (file_exists($file)) {

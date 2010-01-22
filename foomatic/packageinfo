@@ -1,0 +1,12 @@
+#! /usr/bin/perl
+
+# This script generates HTML code for the download links for packages based
+# on the package name and location masks in the driver_package table of the
+# MySQL database
+
+use strict;
+
+use driverpackages qw/downloadlinkline/;
+
+print downloadlinkline($ARGV[0], "", 1);
+
