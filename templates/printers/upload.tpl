@@ -33,7 +33,7 @@
 
 <h2>Printer Information</h2>
 <br>
-<form action="/printers/upload" method="post">
+<form action="/printers/upload" method="post" onsubmit='return validate_form(this)'>
 	{if $isTrusted || $isAdmin }
 		<input type="hidden" value="1" name="noqueue"/>
 	{/if}	
@@ -43,7 +43,7 @@
 	<br><br>
 	<table cellpadding="4" style="background: #eee; border: 1px solid #ccc;">
 		<tr bgcolor="#dfdfdf">
-			<td align="right" width="20%" valign="top">Comments:</td> 
+			<td align="right" width="20%" valign="top">Comments <font color="red"><b>*</b></font>:</td> 
 			<td width="45%" colspan=2><textarea id="comments" name="comments" cols="55" rows="8" /></textarea> <p>Comments for Upload. Comment about this upload. If you need someone to approve 
 			your entry (you are not Trusted Uploader or Administrator) you can put some message for the 
 			approver here. This field has the function of a whiteboard for the approval process then. 
@@ -61,8 +61,8 @@
 			<td width="35%"><p>Future release date</p></td>
 		</tr> 
 		<tr bgcolor="#dfdfdf">
-			<td align="right" valign="top">Manufacturer:</td> 
-			<td>
+			<td align="right" valign="top">Manufacturer <font color="red"><b>*</b></font>:</td> 
+			<td valign="top">
 				<select tabindex="2" name="make">
 					<option value="" selected="selected">--select manufacturer--</option>
 					{foreach from=$makes item=make}
@@ -85,7 +85,7 @@
 	                         not listed yet.</p></td>
 			</tr> 
 			<tr bgcolor="#efefef">
-				<td align="right" valign="top">Model:</td> 
+				<td align="right" valign="top">Model <font color="red"><b>*</b></font>:</td> 
 				<td valign="top"><input type="text" size="32" tabindex="5" name="model"/></td> 
 				<td><p>Model name for the printer.  Please try
 				 to follow the conventions used for
@@ -311,6 +311,50 @@
 <br>
 <input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>
 </form>
+
+{literal}
+  <script language="javascript" type="text/javascript">
+
+    
+	function validate_required(field,alerttxt)
+	{
+		with (field)
+		{
+			if (value==null||value==""){
+				alert(alerttxt);
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+	}
+		
+	function validate_form(thisform)
+	{
+		with (thisform)
+		{
+			if (validate_required(comments,"Comment is Required!")==false){
+				comments.focus();
+				return false;
+			}
+			if(thisform.make.value == "" && thisform.make_new.value == ""){			
+				if (validate_required(make,"A Manufacturer is Required!")==false){
+					make.focus();
+					return false;
+				}
+			}
+			if (validate_required(model,"Model is Required!")==false){
+				model.focus();
+				return false;
+			}
+	
+		}
+		
+	}
+    </script>
+{/literal}
+
 {/if}
 
 {/if}
