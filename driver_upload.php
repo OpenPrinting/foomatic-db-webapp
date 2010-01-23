@@ -174,13 +174,8 @@ if(isset($_POST['submit'])){
     }
 
     if (strlen($error) > 0) {
-	echo "<pre>";
-	print "ERROR: $error\n";
-	print_r($SESSION->getUserName());
-        print_r($_POST);
-	print_r($_FILES);
-        echo "</pre>";
-	exit(0);
+		$SMARTY->assign('msg','error');
+		$SMARTY->assign('error', $error);
     }
 
     /**
@@ -383,15 +378,7 @@ if(isset($_POST['submit'])){
 	}
     }
 
-    echo "<pre>";
-    print "SUCCESS\n";
-    print_r($SESSION->getUserName());
-    print_r($_POST);
-    print_r($_FILES);
-    print "$check\n";
-    print "$upload\n";
-    echo "</pre>";
-    exit(0);
+		$SMARTY->assign('msg','success');
 
 }
 		
