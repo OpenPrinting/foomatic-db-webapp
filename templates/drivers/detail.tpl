@@ -4,11 +4,29 @@
 	{include file="page_breadcrumbs.tpl"}
 	
 	{if $driver}
-
-		<h1>{$driver.name}</h1>
-		<h2>{$driver.shortdescription}</h2>
+		<p>
+		<table border="0" bgcolor="#d0d0d0" cellpadding="1"
+		       cellspacing="0" width="610px">
+		<tr><td colspan="8">
+		<table border="0" bgcolor="#b0b0b0" cellpadding="5"
+		       cellspacing="0" width="100%">
+		<tr valign="top" bgcolor="#b0b0b0">
+		<td><font size="+2"><b>
+		{if $driver.url}
+		        <a href="{$driver.url}">{$driver.name}</a>
+		{else}
+			{$driver.name}
+		{/if}
+		</b></font></td></tr></table>
+		</td></tr>
+		<!-- obsolete -->
+		<tr valign="top"><td width="5">&nbsp;</td>
+		<td width="600" colspan="6"><b>
+		{$driver.shortdescription}
+		</b></td>
+		<td width="5">&nbsp;</td></tr>
 		
-		<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
+		<tr><td></td><td width="600" colspan="6">
 		This driver is 
 		{if $driver.nonfreesoftware =="1"}
 			<b>non-free</b> 
@@ -25,23 +43,43 @@
 				Grayscale
 			{/if}
 			{if $driver.color == ""}
-				Unkown
+				Unknown
 			{/if}
 		<br>
 		Type: {$driver.execution}<br>
-		{foreach from=$contacts item=c}
-			{if $c.description}<a href="{$c.url}">{$c.description}</a>
-			({$c.level})<br>{/if}
-		{/foreach}
+		</td></tr>
+		{if is_array($contacts) && count($contacts) > 0}
+		    	<tr valign="top"><td width="5">&nbsp;</td>
+			<td width="100">
+		        User&nbsp;support:&nbsp;
+			</td>
+			<td width="500" colspan="5">
+			{foreach from=$contacts item=c}
+				 {if $c.description}<a href="{$c.url}">{$c.description}</a>
+				 ({$c.level})<br>{/if}
+			{/foreach}
+			</td></tr>
+			<td width="5">&nbsp;</td>
+		{/if}
+		<tr><td></td><td width="600" colspan="6">
+		</td></tr>
 		{if $packagedownloads != ""}
-		        Downloadable packages: {$packagedownloads}
-			(<font size=-3><a
+		    	<tr valign="top"><td width="5">&nbsp;</td>
+			<td width="100"><b>
+		        Download:&nbsp;
+			</b></td>
+			<td width="500" colspan="5">
+		        Driver packages: {$packagedownloads}
+			(<font size="-2"><a
 			href="http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages">How
 			to install</a></font>)<br>
+			</td></tr>
+			<td width="5">&nbsp;</td>
 		{/if}
+		<tr><td></td><td width="600" colspan="6">
 
-		</p>
-		
+		</td></tr></table></p>
+
 		{if $driver.prototype != "" }
 			<br>
 			Generic Instructions: 

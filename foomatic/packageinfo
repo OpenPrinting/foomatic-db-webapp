@@ -8,5 +8,5 @@ use strict;
 
 use driverpackages qw/downloadlinkline/;
 
-print downloadlinkline($ARGV[0], "", 1);
+print downloadlinkline($ARGV[0], "", 0);
 
