@@ -14,28 +14,129 @@
 		<td width="2%">&nbsp;</td>
 		<td width="96%"><font size="+2"><b>
 		{if $driver.url}
-		        <a href="{$driver.url}">{$driver.name}</a>
+			<a href="{$driver.url}">{$driver.name|escape}</a>
 		{else}
-			{$driver.name}
+			{$driver.name|escape}
 		{/if}
 		</b></font></td><td width="2%">&nbsp;</td></tr></table>
 		</td></tr>
-		<!-- obsolete -->
-		<tr valign="top"><td width="2%">&nbsp;</td>
-		<td width="96%" colspan="6"><b>
-		{$driver.shortdescription}
-		</b></td>
-		<td width="2%">&nbsp;</td></tr>
-		
+		{if $driver.obsolete|escape}
+			<tr valign="top"><td width="2%">&nbsp;</td>
+			<td width="96%" colspan="6"><b><i>
+			This driver is obsolete.
+			Recommended replacement driver:
+			<a href="{$BASEURL}driver/{$driver.obsolete}/">{$driver.obsolete|escape}</a>
+			</i></b></td>
+			<td width="2%">&nbsp;</td></tr>
+		{/if}
+                {if $driver.shortdescription or $driver.supplier or
+                 (strlen($driver.manufacturersupplied) > 0 and 
+		 $driver.manufacturersupplied != "0") or
+		 (strlen($driver.thirdpartysupplied) > 0 and
+		 $driver.thirdpartysupplied == "0") or
+		 $driver.license or
+		 $driver.licensetext or $driver.licenselink or
+		 strlen($driver.nonfreesoftware) > 0 or
+		 (strlen($driver.patents) > 0 and
+		 $driver.patents != "0")}
+			<tr valign="top"><td width="2%">&nbsp;</td>
+			<td width="96%" colspan="6">
+			{if $driver.shortdescription}
+				<b>{$driver.shortdescription}</b><br>
+			{/if}
+			{if $driver.supplier or
+			(strlen($driver.manufacturersupplied) > 0 and
+                 	$driver.manufacturersupplied != "0")}
+				{if $driver.supplier}
+					Supplier: {$driver.supplier|escape}
+					{if strlen($driver.manufacturersupplied) > 0 and
+					$driver.manufacturersupplied != "0"}
+						(printer manufacturer)
+					{/if}
+				{else}
+					Supplied by printer manufacturer
+				{/if}
+				<br>
+			{/if}
+			{if $driver.license or
+			$driver.licensetext or $driver.licenselink or
+		 	strlen($driver.nonfreesoftware) > 0}
+				{if $driver.license}
+					License: {$driver.license|escape}
+					{if strlen($driver.nonfreesoftware) > 0 and
+					$driver.nonfreesoftware != "0"}
+						(non-free software
+					{else}
+						(free software
+					{/if}
+					{if $driver.licensetext or
+					$driver.licenselink}
+						,
+						{if $driver.licenselink}
+							<a href="{$driver.licenselink}">
+						{else}
+							<a href="{$BASEURL}driver/{$driver.name}/license/">
+						{/if}
+						show license text</a>)
+					{else}
+					)
+					{/if}
+				{else}
+					{if strlen($driver.nonfreesoftware) > 0 and
+					$driver.nonfreesoftware != "0"}
+						This driver is non-free software
+					{else}
+						This driver is free software
+					{/if}
+					{if $driver.licensetext or
+					$driver.licenselink}
+						(
+						{if $driver.licenselink}
+							<a href="{$driver.licenselink}">
+						{else}
+							<a href="{$BASEURL}driver/{$driver.name}/license/">
+						{/if}
+						show license text</a>).
+					{else}
+					.
+					{/if}
+				{/if}
+				<br>
+			{/if}
+			{if strlen($driver.patents) and $driver.patents != "0"}
+				<b>&nbsp;&nbsp;This driver contains algorithms
+				which are (possibly) patented
+				{if $driver.licensetext or
+				$driver.licenselink}
+					(See
+					{if $driver.licenselink}
+						<a href="{$driver.licenselink}">
+					{else}
+						<a href="{$BASEURL}driver/{$driver.name}/license/">
+					{/if}
+					license text</a>).
+				{else}
+					.
+				{/if}
+				</b><br>
+			{/if}
+			</td>
+			<td width="2%">&nbsp;</td></tr>
+		{/if}
+		{if is_array($contacts) && count($contacts) > 0}
+		    	<tr valign="top"><td width="2%"></td>
+			<td width="16%">
+			User support:
+			</td>
+			<td width="80%" colspan="5">
+			{foreach from=$contacts item=c}
+				 {if $c.description}<a href="{$c.url}">{$c.description|escape}</a>
+				 ({$c.level|escape})<br>{/if}
+			{/foreach}
+			</td></tr>
+			<td width="2%"></td>
+		{/if}
 		<tr><td></td><td width="96%" colspan="6">
-		This driver is 
-		{if $driver.nonfreesoftware =="1"}
-			<b>non-free</b> 
-		{else}
-			<b>free</b>
-		{/if}	
-		software <br>
-		{if $driver.supplier}Supplier: {$driver.supplier}<br>{/if}
 		Output: 
 			{if $driver.color == "1"}
 				Color
@@ -47,30 +148,15 @@
 				Unknown
 			{/if}
 		<br>
-		Type: {$driver.execution}<br>
-		</td></tr>
-		{if is_array($contacts) && count($contacts) > 0}
-		    	<tr valign="top"><td width="2%"></td>
-			<td width="16%">
-		        User support:
-			</td>
-			<td width="80%" colspan="5">
-			{foreach from=$contacts item=c}
-				 {if $c.description}<a href="{$c.url}">{$c.description}</a>
-				 ({$c.level})<br>{/if}
-			{/foreach}
-			</td></tr>
-			<td width="2%"></td>
-		{/if}
-		<tr><td></td><td width="96%" colspan="6">
+		Type: {$driver.execution|escape}<br>
 		</td></tr>
 		{if $packagedownloads != ""}
 		    	<tr valign="top"><td width="2%">&nbsp;</td>
 			<td width="16%"><b>
-		        Download:&nbsp;
+			Download:&nbsp;
 			</b></td>
 			<td width="80%" colspan="5">
-		        Driver packages: {$packagedownloads}
+			Driver packages: {$packagedownloads}
 			(<font size="-2"><a
 			href="http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages">How
 			to install</a></font>)<br>
