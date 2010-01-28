@@ -6,27 +6,28 @@
 	{if $driver}
 		<p>
 		<table border="0" bgcolor="#d0d0d0" cellpadding="1"
-		       cellspacing="0" width="610px">
-		<tr><td colspan="8">
-		<table border="0" bgcolor="#b0b0b0" cellpadding="5"
 		       cellspacing="0" width="100%">
-		<tr valign="top" bgcolor="#b0b0b0">
-		<td><font size="+2"><b>
+		<tr><td colspan="8">
+		<table border="0" bgcolor="#b0b0b0" cellpadding="0"
+		       cellspacing="0" width="100%" height="30">
+		<tr valign="center" bgcolor="#b0b0b0">
+		<td width="2%">&nbsp;</td>
+		<td width="96%"><font size="+2"><b>
 		{if $driver.url}
 		        <a href="{$driver.url}">{$driver.name}</a>
 		{else}
 			{$driver.name}
 		{/if}
-		</b></font></td></tr></table>
+		</b></font></td><td width="2%">&nbsp;</td></tr></table>
 		</td></tr>
 		<!-- obsolete -->
-		<tr valign="top"><td width="5">&nbsp;</td>
-		<td width="600" colspan="6"><b>
+		<tr valign="top"><td width="2%">&nbsp;</td>
+		<td width="96%" colspan="6"><b>
 		{$driver.shortdescription}
 		</b></td>
-		<td width="5">&nbsp;</td></tr>
+		<td width="2%">&nbsp;</td></tr>
 		
-		<tr><td></td><td width="600" colspan="6">
+		<tr><td></td><td width="96%" colspan="6">
 		This driver is 
 		{if $driver.nonfreesoftware =="1"}
 			<b>non-free</b> 
@@ -49,34 +50,34 @@
 		Type: {$driver.execution}<br>
 		</td></tr>
 		{if is_array($contacts) && count($contacts) > 0}
-		    	<tr valign="top"><td width="5">&nbsp;</td>
-			<td width="100">
-		        User&nbsp;support:&nbsp;
+		    	<tr valign="top"><td width="2%"></td>
+			<td width="16%">
+		        User support:
 			</td>
-			<td width="500" colspan="5">
+			<td width="80%" colspan="5">
 			{foreach from=$contacts item=c}
 				 {if $c.description}<a href="{$c.url}">{$c.description}</a>
 				 ({$c.level})<br>{/if}
 			{/foreach}
 			</td></tr>
-			<td width="5">&nbsp;</td>
+			<td width="2%"></td>
 		{/if}
-		<tr><td></td><td width="600" colspan="6">
+		<tr><td></td><td width="96%" colspan="6">
 		</td></tr>
 		{if $packagedownloads != ""}
-		    	<tr valign="top"><td width="5">&nbsp;</td>
-			<td width="100"><b>
+		    	<tr valign="top"><td width="2%">&nbsp;</td>
+			<td width="16%"><b>
 		        Download:&nbsp;
 			</b></td>
-			<td width="500" colspan="5">
+			<td width="80%" colspan="5">
 		        Driver packages: {$packagedownloads}
 			(<font size="-2"><a
 			href="http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages">How
 			to install</a></font>)<br>
 			</td></tr>
-			<td width="5">&nbsp;</td>
+			<td width="2%">&nbsp;</td>
 		{/if}
-		<tr><td></td><td width="600" colspan="6">
+		<tr><td></td><td width="96%" colspan="6">
 
 		</td></tr></table></p>
 
