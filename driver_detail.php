@@ -68,13 +68,14 @@ $res = $DB->query("SELECT *
 		   FROM `driver_support_contact` 
 		   WHERE driver_id = '?'", $_GET['driver']);
 
-$contacts = $res->toArray('driver_id');
+$contacts = $res->toArray();
 
 $res = $DB->query("SELECT *
 		   FROM `driver_package` 
 		   WHERE driver_id = '?'", $_GET['driver']);
 
 $packages = $res->toArray('driver_id');
+
 $packagedownloads = "";
 $mask = "";
 foreach($packages as $p)
@@ -90,6 +91,12 @@ $out = array();
 exec("cd foomatic; ./packageinfo '$mask'", $out, $ret_value);
 if (sizeof($out) > 0)
     $packagedownloads = $out[0];
+
+$res = $DB->query("SELECT *
+		   FROM `driver_dependency` 
+		   WHERE driver_id = '?'", $_GET['driver']);
+
+$dependencies = $res->toArray();
 
 $infobox = "<p>" .
     "<table border=\"0\" bgcolor=\"#d0d0d0\" cellpadding=\"1\"" .
@@ -305,6 +312,23 @@ if ($packagedownloads != "") {
 	"(<a href=\"http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages\">" .
 	"How to install</a>)</font><br>" .
 	"</font></td>" .
+	"<td width=\"2%\"></td></tr>";
+}
+if (is_array($dependencies) and count($dependencies) > 0) {
+    $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
+	"<td width=\"16%\"><font size=\"-2\">" .
+	"<b>Dependencies:</b>" .
+	"</font></td>" .
+	"<td width=\"80%\" colspan=\"5\"><font size=\"-2\">" .
+	"To use this driver the following drivers " .
+	"need also to be installed: ";
+    foreach ($dependencies as $d)
+	if (strlen($d['required_driver']) > 0)
+	    $infobox .= "<a href=\"{$CONF->baseURL}driver/" .
+		"{$d['required_driver']}\">{$d['required_driver']}</a>" .
+		" ({$d['version']}), ";
+    $infobox = substr($infobox, 0, -2);
+    $infobox .= "</td>" .
 	"<td width=\"2%\"></td></tr>";
 }
 $infobox .= "</table></p>";
