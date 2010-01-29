@@ -103,7 +103,11 @@ $infobox = "<p>" .
     "cellspacing=\"0\" width=\"100%\">" .
     "<tr><td colspan=\"8\">" .
     "<table border=\"0\" bgcolor=\"#b0b0b0\" cellpadding=\"0\"" .
-    "cellspacing=\"0\" width=\"100%\" height=\"30\">" .
+    "cellspacing=\"0\" width=\"100%\">" .
+    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<td width=\"2%\"></td>" .
+    "<td width=\"96%\"><font size=\"-4\">&nbsp;" .
+    "</font></td><td width=\"2%\"></td></tr>" .
     "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
     "<td width=\"2%\"></td>" .
     "<td width=\"96%\"><font size=\"+2\"><b>";
@@ -112,7 +116,12 @@ if ($driver['url']) {
 } else {
     $infobox .= "{$driver['name']}";
 }
-$infobox .= "</b></font></td><td width=\"2%\"></td></tr></table>" .
+$infobox .= "</b></font></td><td width=\"2%\"></td></tr>" .
+    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<td width=\"2%\"></td>" .
+    "<td width=\"96%\"><font size=\"-4\">&nbsp;" .
+    "</font></td><td width=\"2%\"></td></tr>" .
+    "</table>" .
     "</td></tr>";
 if ($driver['obsolete']) {
     $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
@@ -331,7 +340,11 @@ if (is_array($dependencies) and count($dependencies) > 0) {
     $infobox .= "</td>" .
 	"<td width=\"2%\"></td></tr>";
 }
-$infobox .= "</table></p>";
+$infobox .= "<tr>" .
+    "<td width=\"2%\"></td>" .
+    "<td width=\"96%\" colspan=\"6\"><font size=\"-4\">&nbsp;" .
+    "</font></td><td width=\"2%\"></td></tr>" .
+    "</table></p><p></p>";
 
 $SMARTY->assign('driverinfobox', $infobox);
 
