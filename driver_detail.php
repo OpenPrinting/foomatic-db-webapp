@@ -74,7 +74,7 @@ $res = $DB->query("SELECT *
 		   FROM `driver_package` 
 		   WHERE driver_id = '?'", $_GET['driver']);
 
-$packages = $res->toArray('driver_id');
+$packages = $res->toArray();
 
 $packagedownloads = "";
 $mask = "";
