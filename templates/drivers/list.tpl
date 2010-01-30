@@ -27,13 +27,13 @@
 	
 	<table class="data">
 		<tr>
-			<th /><th>Driver</th><th></th><th>Type</th><th>Description</th>
+			<th /><th>Driver</th><th>Type</th><th>Printers</th><th>Description</th>
 		</tr>
 		{foreach from=$drivers item=d}
 			<tr class="{cycle values="alt,0"}">
 				<td><img src="{$BASEURL}images/icons/download.png" alt="Download {$d.name|escape}" title="Download {$d.name|escape}" /></td>
 				<td><a href="{$BASEURL}driver/{$d.id}/">{$d.name|escape}</a></td>
-				<td>{$d.execution|escape}</td>
+				<td>{$drivertypes[$d.execution]}</td>
 				<td>{$d.printerCount|default:0}</td>
 				<td><small>
 					{if $d.shortdescription}

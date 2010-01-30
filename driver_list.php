@@ -13,6 +13,17 @@ if($SESSION->isloggedIn()){
 		$SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
 }
 
+$drivertypes = array(
+    "ghostscript" => 'Ghostscript&nbsp;built-in',
+    "uniprint" => 'Ghostscript&nbsp;Uniprint',
+    "filter" => 'Filter',
+    "ijs" => 'IJS',
+    "cups" => 'CUPS&nbsp;Raster',
+    "opvp" => 'OpenPrinting&nbsp;Vector',
+    "postscript" => 'PostScript');
+
+$SMARTY->assign("drivertypes",$drivertypes);
+
 $PAGE->setPageTitle('Printer Driver List');
 $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
