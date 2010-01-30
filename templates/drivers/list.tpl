@@ -31,7 +31,13 @@
 		</tr>
 		{foreach from=$drivers item=d}
 			<tr class="{cycle values="alt,0"}">
-				<td><img src="{$BASEURL}images/icons/download.png" alt="Download {$d.name|escape}" title="Download {$d.name|escape}" /></td>
+				<td>
+				{if strlen($d.package) > 0}
+				<img src="{$BASEURL}images/icons/download.png"
+				alt="Download {$d.name|escape}" title="Download
+				{$d.name|escape}" />
+				{/if}
+				</td>
 				<td><a href="{$BASEURL}driver/{$d.id}/">{$d.name|escape}</a></td>
 				<td>{$drivertypes[$d.execution]}</td>
 				<td>{$d.printerCount|default:0}</td>
