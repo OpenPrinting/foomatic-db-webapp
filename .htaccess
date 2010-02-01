@@ -30,6 +30,6 @@ RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^drivers/?$ driver_list.php		[L]
 RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
 RewriteRule ^driver/([^/]*)/?$ driver_detail.php?driver=$1		[L]
-RewriteRule ^driver/([^/]*)/license?$ driver_license.php?driver=$1		[L]
+RewriteRule ^driver/([^/]*)/license/?$ driver_license.php?driver=$1		[L]
 
 RewriteRule ^database/?$ database.php		[L]
