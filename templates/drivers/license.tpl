@@ -2,7 +2,8 @@
 
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
-	
+
+license starter....	
 	{if $driver}
 
 		<h1>{$driver.name}</h1>
