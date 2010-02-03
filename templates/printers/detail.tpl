@@ -82,6 +82,15 @@
 	<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 	{/literal}
 
+	{if count($driverinfoboxes) > 0}
+	    <h3>Drivers</h3>
+	    <p>The following driver(s) are known to drive this printer:</p>
+	    <p>
+	    {foreach from=$driverinfoboxes item=d}
+		{$d}
+	    {/foreach}
+	    </p>
+	{/if}
 
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
