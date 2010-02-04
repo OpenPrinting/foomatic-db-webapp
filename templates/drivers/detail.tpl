@@ -1,9 +1,8 @@
 {include file="page_masthead.tpl"}
 
 <div id="two_col_col_1">
-	{include file="page_breadcrumbs.tpl"}
-	
 	{if $driver}
+		{include file="page_breadcrumbs.tpl"}
 
 		{$driverinfobox}
 
@@ -81,7 +80,7 @@
 		</ul>
 		
 	{else}
-		<h1>Driver not found.</h1>
+		<h1>Driver not found</h1>
 		<p>We're sorry, but the driver ID you provided was not found in our database.</p>
 	{/if}
 </div>

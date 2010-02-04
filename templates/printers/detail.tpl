@@ -1,6 +1,8 @@
 {include file="page_masthead.tpl"}
 
 <div id="two_col_col_1">
+
+{if $data.noentry != "1" or count($driverinfoboxes) > 0}
 	{include file="page_breadcrumbs.tpl"}
 
 	{$printerinfobox}
@@ -56,7 +58,11 @@
 	    {/foreach}
 	    </p>
 	{/if}
-
+{else}
+                <h1>Printer not found</h1>
+                <p>We're sorry, but the printer ID you provided was not found
+		in our database.</p>
+{/if}
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
 {include file="page_conclusion.tpl"}
