@@ -1,6 +1,16 @@
 <?php
 include('inc/common.php');
 
+$printertypes = array(
+    "inkjet" => 'inkjet',
+    "laser" => 'laser',
+    "impact" => 'impact',
+    "braille" => 'braille',
+    "dotmatrix" => 'dot matrix',
+    "led" => 'LED',
+    "sublimation" => 'dye sublimation',
+    "transfer" => 'thermal transfer');
+
 $drivertypes = array(
     "ghostscript" => 'Ghostscript built-in',
     "uniprint" => 'Ghostscript Uniprint',
@@ -31,17 +41,29 @@ if($SESSION->isloggedIn()){
 }
 
 // printer data
-//$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND model='".$_GET['model']."' ");
 $res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND id='".$_GET['id']."' ");
 $makes = array();
+$data = array();
 while($row = $res->getRow()){
-    $data[] = $row;
+    $data = $row;
     $printer_model = $row['model'];
     $printer_id = $row['id'];
     $default_driver = $row['default_driver'];
 }
 $printer_id = $_GET['id'];
 $printer_make = $_GET['manufacturer'];
+if (count($data) == 0) {
+    $printer_model = preg_replace("/_/", " ",
+				  preg_replace("/^[^-]*-/", "", $printer_id));
+    $default_driver = "";
+    $data['url'] = "";
+    $data['color'] = "";
+    $data['mechanism'] = "";
+    $data['res_x'] = "";
+    $data['res_y'] = "";
+    $data['functionality'] = "";
+    $data['noentry'] = "1";
+}
 
 /**
  * Had to place down a few lines to do the db call to refactor model 
@@ -51,7 +73,10 @@ $printer_make = $_GET['manufacturer'];
 $PAGE->setPageTitle('Printer: ' . $_GET['manufacturer'] . ' ' . $printer_model);	
 $PAGE->setActiveID('printer');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
-$PAGE->addBreadCrumb($_GET['manufacturer'] . ' ' . $printer_model);	
+$PAGE->addBreadCrumb($_GET['manufacturer'],
+		     $CONF->baseURL."printers/manufacturer/" .
+		     "{$_GET['manufacturer']}/");
+$PAGE->addBreadCrumb($printer_model);	
 
 /**
  * Get list of drivers which support this printer via driver_printer_assoc
@@ -82,6 +107,9 @@ $resDriverList = $DB->query("
  */
 
 $driverinfoboxes = array();
+$defdrvhomepage = "";
+$defdrvppdlink = "";
+$defdrvpackages = "";
 while ($rowDriver = $resDriverList->getRow()) {
     if ($rowDriver['id']) {
 	$driver_id = $rowDriver['id'];
@@ -133,6 +161,9 @@ while ($rowDriver = $resDriverList->getRow()) {
 	$dependencies = $res->toArray();
 
 	// Build driver info box
+	$drvhomepage = "";
+	$drvpackages = "";
+	$drvppdlink = "";
 	$infobox = "<p>" .
 	    "<table border=\"0\" bgcolor=\"#d0d0d0\" cellpadding=\"1\"" .
 	    "cellspacing=\"0\" width=\"100%\">" .
@@ -149,7 +180,8 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    "<a href=\"{$CONF->baseURL}driver/{$driver['name']}\">" .
 	    "{$driver['name']}</a></b></font><font size=\"-2\">";
 	if ($driver['url']) {
-	    $infobox .= "&nbsp;&nbsp(<a href=\"{$driver['url']}\">" .
+	    $drvhomepage = $driver['url'];
+	    $infobox .= "&nbsp;&nbsp(<a href=\"{$drvhomepage}\">" .
 	    "driver home page</a>)";
 	}
 	$infobox .= "</font></td><td width=\"2%\"></td></tr>" .
@@ -391,20 +423,20 @@ while ($rowDriver = $resDriverList->getRow()) {
 		"</b></font></td>" .
 		"<td width=\"80%\" colspan=\"5\"><font size=\"-2\">";
 	    if ($packagedownloads != "") {
-		$infobox .= "Driver packages: {$packagedownloads}" .
+		$drvpackages = "{$packagedownloads}" .
 		    "<font size=\"-3\">" .
 		    "(<a href=\"http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages\">" .
-		    "How to install</a>)</font><br>";
+		    "How to install</a>)</font>";
+		$infobox .= "Driver packages: " . $drvpackages . "<br>";
 	    }
 	    if ($driver['prototype'] or $driverPrinterAssoc['ppd']) {
-		$infobox .= "PPD file: " .
-		    "<a href=\"{$CONF->baseURL}ppd-o-matic.php?" .
+		$drvppdlink = "<a href=\"{$CONF->baseURL}ppd-o-matic.php?" .
 		    "driver={$driver['id']}&printer={$printer_id}&" .
 		    "show=1\">View PPD</a>, " .
 		    "<a href=\"{$CONF->baseURL}ppd-o-matic.php?" .
 		    "driver={$driver['id']}&printer={$printer_id}&" .
-		    "show=0\">directly download PPD</a>" .
-		    "<br>";
+		    "show=0\">directly download PPD</a>";
+		$infobox .= "PPD file: " . $drvppdlink . "<br>";
 	    }
 	    $infobox .= "</font></td>" .
 		"<td width=\"2%\"></td></tr>";
@@ -438,6 +470,9 @@ while ($rowDriver = $resDriverList->getRow()) {
 			  "<p><b>Recommended driver:</b></p>" .
 			  $infobox .
 			  "<p><b>Other drivers:</b></p>");
+	    $defdrvhomepage = $drvhomepage;
+	    $defdrvppdlink = $drvppdlink;
+	    $defdrvpackages = $drvpackages;
 	} else {
 	    array_push($driverinfoboxes, $infobox);
 	}
@@ -446,84 +481,139 @@ while ($rowDriver = $resDriverList->getRow()) {
 
 $SMARTY->assign('driverinfoboxes', $driverinfoboxes);
 
-
-$driver_id = $default_driver;
-
-$driver_url = "";
-$resDriver = $DB->query("SELECT * FROM driver WHERE id='".$driver_id."' ");
-while($rowDriver = $resDriver->getRow()){
-    if($rowDriver['url']){
-	$driver_url = $rowDriver['url'];
-    }
-    else
-    {
-	$driver_url = "";
-    }
+// Build printer info box
+$printerinfobox = "<p>" .
+    "<table border=\"0\" bgcolor=\"#d0d0d0\" cellpadding=\"1\"" .
+    "cellspacing=\"0\" width=\"100%\">" .
+    "<tr><td colspan=\"4\">" .
+    "<table border=\"0\" bgcolor=\"#b0b0b0\" cellpadding=\"0\"" .
+    "cellspacing=\"0\" width=\"100%\">" .
+    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<td width=\"2%\"></td>" .
+    "<td colspan=\"2\" width=\"96%\"><font size=\"-4\">&nbsp;" .
+    "</font></td><td width=\"2%\"></td></tr>" .
+    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<td width=\"2%\"></td>" .
+    "<td colspan=\"2\" width=\"96%\"><font size=\"+2\"><b>";
+if ($data['url']) {
+    $printerinfobox .= "<a href=\"{$data['url']}\">" .
+	"{$printer_make} {$printer_model}</a>";
+} else {
+    $printerinfobox .= "{$printer_make} {$printer_model}";
 }
-		
-$resDriverAssoc = $DB->query("SELECT COUNT(driver_id) AS cnt FROM driver_printer_assoc WHERE printer_id='".$printer_id."' ");
-while($rowCnt = $resDriverAssoc->getRow()){
-    if($rowCnt['cnt'] > 0){
-	$print_assoc = 1;
-    }
-    else
-    {
-	$print_assoc = 0;
-    }
+$printerinfobox .= "</b></font></td><td width=\"2%\"></td></tr>" .
+    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<td width=\"2%\"></td>" .
+    "<td colspan=\"2\" width=\"96%\"><font size=\"-4\">&nbsp;" .
+    "</font></td><td width=\"2%\"></td></tr>" .
+    "</table>" .
+    "</td></tr>";
+$printerinfobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
+    "<td>";
+if ($data['color'] == "1") {
+    $printerinfobox .= "<font color=\"#6B44B6\">C</font>" .
+	"<font color=\"#FFCC00\">o</font><font color=\"#10DC98\">l</font>" .
+	"<font color=\"#1CA1C2\">o</font><font color=\"#2866EB\">r</font> ";
+} elseif ($data['color'] == "0") {
+    $printerinfobox .= "Black &amp; White ";
 }
-		
-				 
-//Check if there is a PPD file 
-//IF the "ppd" field in the "driver_printer_assoc" table is filled 
-//OR if the "prototype" field in the table "driver" is filled
-		
-$resIsPPDChk1 = $DB->query("SELECT COUNT(driver_id) AS cnt  
-			    FROM driver_printer_assoc  
-			    WHERE printer_id='".$printer_id."' 
-			    AND driver_id = '".$driver_id."'  
-			    AND (ppd <> '' AND ppd IS NOT NULL) ");
-								
-while($rowCnt2 = $resIsPPDChk1->getRow()){
-    if($rowCnt2['cnt'] > 0){
-	$hasPPD = 1;
-    }
-    else
-    {
-	//do next check
-	$resIsPPDChk2 = $DB->query("SELECT COUNT(id) AS cnt 
-				    FROM driver 
-				    WHERE id='".$driver_id."' 
-				    AND (prototype <> ''
-                                    AND prototype IS NOT NULL) ");
-
-	while($rowCnt3 = $resIsPPDChk2->getRow()){
-	    if($rowCnt3['cnt'] > 0){
-		$hasPPD = 1;
-	    }
-	    else
-	    {
-		$hasPPD = 0;
-	    }
+if (strlen($data['mechanism']) > 0) {
+    $printerinfobox .= $printertypes[$data['mechanism']] . " ";
+}
+if (strlen($data['color']) > 0 or strlen($data['mechanism']) > 0) {
+    $printerinfobox .= "printer, ";
+}
+if ($data['res_x'] or $data['res_y']) {
+    $printerinfobox .= "max. ";
+    if ($data['res_x']) {
+	$printerinfobox .= "{$data['res_x']}";
+	if ($data['res_y']) {
+	    $printerinfobox .= "x{$data['res_y']}";
 	}
+    } else {
+	$printerinfobox .= "{$data['res_y']}";
+    }
+    $printerinfobox .= " dpi, ";
+}
+if (strlen($data['functionality']) > 0) {
+    if ($data['functionality'] == "A") {
+	$printerinfobox .= "works <font color=\"green\">Perfectly</font>";
+    } elseif ($data['functionality'] == "B") {
+	$printerinfobox .= "works <font color=\"green\">Mostly</font>";
+    } elseif ($data['functionality'] == "D") {
+	$printerinfobox .= "works <font color=\"orange\">Partially</font>";
+    } elseif ($data['functionality'] == "F") {
+	$printerinfobox .= "this is a <font color=\"red\">Paperweight</font>";
     }
 }
-		
-$SMARTY->assign('manufacturer',$_GET['manufacturer']);
-//$SMARTY->assign('model',urldecode($_GET['model']) );
-$SMARTY->assign('model',$printer_model);
+$printerinfobox = preg_replace("/, $/", "", $printerinfobox);
+$printerinfobox .= "</td><td align=\"right\">";
+if (strlen($data['functionality']) > 0) {
+    if ($data['functionality'] == "A") {
+	$printerinfobox .= "<img src=\"/images/icons/Linuxyes.png\">" .
+	    "<img src=\"/images/icons/Linuxyes.png\">" .
+	    "<img src=\"/images/icons/Linuxyes.png\">";
+    } elseif ($data['functionality'] == "B") {
+	$printerinfobox .= "<img src=\"/images/icons/Linuxyes.png\">" .
+	    "<img src=\"/images/icons/Linuxyes.png\">";
+    } elseif ($data['functionality'] == "D") {
+	$printerinfobox .= "<img src=\"/images/icons/Linuxyes.png\">";
+    } elseif ($data['functionality'] == "F") {
+	$printerinfobox .= "<img src=\"/images/icons/Linuxno.png\">";
+    }
+}
+$printerinfobox .= "</td><td width=\"2%\"></td></tr>";
+if (strlen($default_driver) > 0) {
+    $printerinfobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
+	"<td colspan=\"2\">";
+    $printerinfobox .= "Recommended Driver: " .
+	"<a href=\"{$CONF->baseURL}driver/{$default_driver}\" " .
+	"title=\"{$default_driver}\">{$default_driver}</a>";
+    if (strlen($defdrvhomepage) > 0 or strlen($defdrvppdlink) > 0 or
+	strlen($defdrvpackages) > 0) {
+	$printerinfobox .= " (";
+	if (strlen($defdrvhomepage) > 0) {
+	    $printerinfobox .= "<a href=\"{$defdrvhomepage}\">Home page</a>, ";
+	}
+	if (strlen($defdrvppdlink) > 0) {
+	    $printerinfobox .= "{$defdrvppdlink}, ";
+	}
+	if (strlen($defdrvpackages) > 0) {
+	    $printerinfobox .= "Driver packages: {$defdrvpackages}";
+	}
+	$printerinfobox = preg_replace("/, $/", "", $printerinfobox);
+	$printerinfobox .= ")";
+    }
+    $printerinfobox .= "</td><td width=\"2%\"></td></tr>";
+} elseif (count($driverinfoboxes) > 0) {
+    $printerinfobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
+	"<td colspan=\"2\">" .
+	"See drivers at the bottom of this page." .
+	"</td><td width=\"2%\"></td></tr>";
+}
+if (count($driverinfoboxes) > 0) {
+    $printerinfobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
+	"<td colspan=\"2\">" .
+	"Generic Instructions: " .
+	"<a href=\"/cups-doc.html\">CUPS</a>, " .
+	"<a href=\"/lpd-doc.html\">LPD</a>, " .
+	"<a href=\"/lpd-doc.html\">LPRng</a>, " .
+	"<a href=\"/ppr-doc.html\">PPR</a>, " .
+	"<a href=\"/pdq-doc.html\">PDQ</a>, " .
+	"<a href=\"/direct-doc.html\">no spooler</a>" .
+	"</td><td width=\"2%\"></td></tr>";
+}
+$printerinfobox .= "<tr>" .
+    "<td width=\"2%\"></td>" .
+    "<td width=\"96%\" colspan=\"2\"><font size=\"-4\">&nbsp;" .
+    "</font></td><td width=\"2%\"></td></tr>" .
+    "</table></p><p></p>";
 
+$SMARTY->assign('printerinfobox', $printerinfobox);
+
+$SMARTY->assign('manufacturer',$printer_make);
+$SMARTY->assign('model',$printer_model);
 $SMARTY->assign('data',$data);
-		
-$SMARTY->assign('printer_assoc',$print_assoc);
-if($driver_url != ""){
-    $SMARTY->assign('driverUrl', $driver_url);
-}
-else
-{
-    $SMARTY->assign('driverUrl', "");
-}
-		
-$SMARTY->assign('hasPPD', $hasPPD );
 		
 $SMARTY->display('printers/detail.tpl');
 
