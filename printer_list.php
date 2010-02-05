@@ -30,7 +30,19 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 				
 				
 				// Load manufacturers
-				$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+				$res = $DB->query("
+				    SELECT DISTINCT make
+				    FROM printer LEFT JOIN printer_approval
+				    ON printer.id=printer_approval.id
+				    WHERE (printer_approval.id IS NULL OR
+				    ((printer_approval.rejected IS NULL OR
+				      printer_approval.rejected=0 OR
+				      printer_approval.rejected='') AND
+				     (printer_approval.showentry IS NULL OR
+				      printer_approval.showentry='' OR
+				      printer_approval.showentry=1 OR
+				      printer_approval.showentry<=CAST(NOW() AS DATE))))
+				    ORDER BY make");
 				$makes = array();
 				while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
 				
@@ -46,7 +58,19 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 			}
 		
 			else{
-				$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+				$res = $DB->query("
+				    SELECT DISTINCT make
+				    FROM printer LEFT JOIN printer_approval
+				    ON printer.id=printer_approval.id
+				    WHERE (printer_approval.id IS NULL OR
+				    ((printer_approval.rejected IS NULL OR
+				      printer_approval.rejected=0 OR
+				      printer_approval.rejected='') AND
+				     (printer_approval.showentry IS NULL OR
+				      printer_approval.showentry='' OR
+				      printer_approval.showentry=1 OR
+				      printer_approval.showentry<=CAST(NOW() AS DATE))))
+				    ORDER BY make");
 				$makes = array();
 				while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
 				
@@ -61,16 +85,22 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 	
 	else {
 		// Load manufacturers
-		$res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+		$res = $DB->query("
+				    SELECT DISTINCT make
+				    FROM printer LEFT JOIN printer_approval
+				    ON printer.id=printer_approval.id
+				    WHERE (printer_approval.id IS NULL OR
+				    ((printer_approval.rejected IS NULL OR
+				      printer_approval.rejected=0 OR
+				      printer_approval.rejected='') AND
+				     (printer_approval.showentry IS NULL OR
+				      printer_approval.showentry='' OR
+				      printer_approval.showentry=1 OR
+				      printer_approval.showentry<=CAST(NOW() AS DATE))))
+				    ORDER BY make");
 		$makes = array();
 		while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
 		$SMARTY->assign('makes',$makes);
-		
-		// Load array of models, keyed by makes
-		//$res = $DB->query("SELECT model FROM printer WHERE ORDER BY make, model");
-		//while($r = $res->getRow()) array_push($makes,$r['make']);
-		//$SMARTY->assign('makes',$makes);
-		
 		
 		$SMARTY->display('printers/searchform.tpl');
 	}
