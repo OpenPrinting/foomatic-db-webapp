@@ -7,9 +7,10 @@
 
 	<br>	
 		
-	<h3 style="border-bottom:1px solid #eee;"><font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"></h3>
 	{if $dataPerfectCnt != "0"}
 		
+		<h3 style="border-bottom:1px solid #eee;"><font color="green">Perfectly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"></h3>
+
 		{section name=printerPerfect loop=$dataPerfect}
 			
 				
@@ -17,12 +18,11 @@
 			<a href="{$printerPerfectUrl|replace:" ":"+"}">{$dataPerfect[printerPerfect].model}</a><br />
 	
 		{/section}
-	{else}
-		None
 	{/if}
-	
-	<h3 style="border-bottom:1px solid #eee;"><font color="green">Mostly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"></h3>
+
 	{if $dataMostlyCnt != "0"}
+
+		<h3 style="border-bottom:1px solid #eee;"><font color="green">Mostly</font> <img src="/images/icons/Linuxyes.png"><img src="/images/icons/Linuxyes.png"></h3>
 
 		{section name=printerMostly loop=$dataMostly}
 				
@@ -31,12 +31,11 @@
 			
 	
 		{/section}
-	{else}
-		None
 	{/if}
-	
-	<h3 style="border-bottom:1px solid #eee;"><font color="orange">Partially</font> <img src="/images/icons/Linuxyes.png"></h3>
+
 	{if $dataPartiallyCnt != "0"}
+
+		<h3 style="border-bottom:1px solid #eee;"><font color="orange">Partially</font> <img src="/images/icons/Linuxyes.png"></h3>
 
 		{section name=printerPartially loop=$dataPartially}
 				
@@ -44,25 +43,23 @@
 			<a href="{$printerPartiallyUrl|replace:" ":"+"}">{$dataPartially[printerPartially].model}</a><br />
 		
 		{/section}
-	{else}
-		None
 	{/if}
-		
-	<h3 style="border-bottom:1px solid #eee;"><font color="black">Unknown</font> <img src="/images/icons/Linuxyes.png"> <sup>???</sup></h3>
+
 	{if $dataUnknownCnt != "0"}
+
+		<h3 style="border-bottom:1px solid #eee;"><font color="black">Unknown</font> <img src="/images/icons/Linuxyes.png"> <sup>???</sup></h3>
 
 		{section name=printerUnknown loop=$dataUnknown}
 				
-			{assign var='printerUnknownUrl' value="`$BASEURL`printer/`$data[printerUnknown].make`/`$dataUnknown[printerUnknown].id`"}
+			{assign var='printerUnknownUrl' value="`$BASEURL`printer/`$dataUnknown[printerUnknown].make`/`$dataUnknown[printerUnknown].id`"}
 			<a href="{$printerUnknownUrl|replace:" ":"+"}">{$dataUnknown[printerUnknown].model}</a><br />
 			
 		{/section}
-	{else}
-		None
 	{/if}
-	
-	<h3 style="border-bottom:1px solid #eee;"><font color="red">Paperweight</font> <img src="/images/icons/Linuxno.png"></h3>
+
 	{if $dataPaperweightCnt != "0"}
+
+		<h3 style="border-bottom:1px solid #eee;"><font color="red">Paperweight</font> <img src="/images/icons/Linuxno.png"></h3>
 
 		{section name=printerPaperweight loop=$dataPaperweight}
 				
@@ -71,8 +68,6 @@
 			
 	
 		{/section}
-	{else}
-		None
 	{/if}
 	
 </div>
