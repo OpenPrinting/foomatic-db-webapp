@@ -31,8 +31,6 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
 		    printer.functionality='A' AND
-		    (printer.unverified IS NULL OR printer.unverified=0 OR
-		     printer.unverified='') AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
 		       printer_approval.rejected=0 OR
@@ -54,8 +52,6 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
 		    printer.functionality='B' AND
-		    (printer.unverified IS NULL OR printer.unverified=0 OR
-		     printer.unverified='') AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
 		       printer_approval.rejected=0 OR
@@ -77,8 +73,6 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
 		    printer.functionality='D' AND
-		    (printer.unverified IS NULL OR printer.unverified=0 OR
-		     printer.unverified='') AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
 		       printer_approval.rejected=0 OR
@@ -100,8 +94,6 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
 		    printer.functionality='' AND
-		    (printer.unverified IS NULL OR printer.unverified=0 OR
-		     printer.unverified='') AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
 		       printer_approval.rejected=0 OR
@@ -123,8 +115,6 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
 		    printer.functionality='F' AND
-		    (printer.unverified IS NULL OR printer.unverified=0 OR
-		     printer.unverified='') AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
 		       printer_approval.rejected=0 OR

@@ -8,7 +8,20 @@ $DB = DB::getInstance();
 $array = array();
 if ($_GET['_name'] == 'manufacturer') {
 	
-	$resModel = $DB->query("SELECT id, make, model FROM printer WHERE make = '".$_GET['_value']."' ORDER BY make, model");
+	$resModel = $DB->query("
+            SELECT printer.id AS id, make, model
+            FROM printer LEFT JOIN printer_approval
+            ON printer.id=printer_approval.id
+            WHERE printer.make = '".$_GET['_value']."' AND
+            (printer_approval.id IS NULL OR
+             ((printer_approval.rejected IS NULL OR
+               printer_approval.rejected=0 OR
+               printer_approval.rejected='') AND
+              (printer_approval.showentry IS NULL OR
+               printer_approval.showentry='' OR
+               printer_approval.showentry=1 OR
+               printer_approval.showentry<=CAST(NOW() AS DATE))))
+            ORDER BY make, model");
 	
 	while($rModel = $resModel->getRow()){
 
