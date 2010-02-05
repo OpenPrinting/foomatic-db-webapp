@@ -15,6 +15,12 @@
 		Foomatic</a> packages and no PPD files can be downloaded for
 		this printer.<br></p>
 	{/if}
+	{if strlen($forumurl) > 0 and strlen($forummake) > 0}
+		<h3>Discussion forum</h3>
+		<p>Look for help in our
+		<a href="{$forumurl}">
+		forum for printers from {$forummake}</a>.</p>
+	{/if}
 	{if $data.noentry != "1"}
 		{if $data.pjl == "1" or $data.text == "us-ascii" or
 		$data.contrib_url != ""}	

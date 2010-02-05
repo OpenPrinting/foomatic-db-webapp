@@ -638,6 +638,43 @@ $printerinfobox .= "<tr>" .
 
 $SMARTY->assign('printerinfobox', $printerinfobox);
 
+$forumurl = "http://forums.openprinting.org/list.php?33";
+$forummake = "various manufacturers";
+if (preg_match("/^(brother)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?24";
+    $forummake = "Brother";
+} elseif (preg_match("/^(canon)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?25";
+    $forummake = "Canon";
+} elseif (preg_match("/^(epson)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?26";
+    $forummake = "Epson";
+} elseif (preg_match("/^(apollo|hp)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?20";
+    $forummake = "HP and Apollo";
+} elseif (preg_match("/(konica|minolta|qms)/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?27";
+    $forummake = "Konica Minolta, Minolta, and QMS";
+} elseif (preg_match("/^(kyocera)/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?28";
+    $forummake = "Kyocera and Kyocera-Mita";
+} elseif (preg_match("/^(lexmark|ibm)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?29";
+    $forummake = "Lexmark and IBM";
+} elseif (preg_match("/^(ricoh|gestetner|infoprint|infotec|lanier|nrg|savin)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?30";
+    $forummake = "Ricoh family and OEMs (Gestetner, Infoprint, Infotec, Lanier, NRG, Ricoh, Savin)";
+} elseif (preg_match("/^(samsung)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?31";
+    $forummake = "Samsung";
+} elseif (preg_match("/^(xerox|tektronix)$/i", $printer_make) != 0) {
+    $forumurl = "http://forums.openprinting.org/list.php?32";
+    $forummake = "Xerox and Tektronix";
+}
+
+$SMARTY->assign('forumurl',$forumurl);
+$SMARTY->assign('forummake',$forummake);
+
 $SMARTY->assign('manufacturer',$printer_make);
 $SMARTY->assign('model',$printer_model);
 $SMARTY->assign('data',$data);
