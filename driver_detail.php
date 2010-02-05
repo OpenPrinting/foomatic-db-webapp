@@ -40,9 +40,24 @@ $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');	
 $PAGE->addBreadCrumb($_GET['driver']);	
 
-// Load driver
-$res = $DB->query("SELECT * FROM driver WHERE id = '?'", $_GET['driver']);
-$driver = $res->getRow();
+// Check if the driver is already accepted, released, and not rejected
+$res = $DB->query("
+    SELECT id FROM driver_approval
+    WHERE id='" . $_GET['driver'] . "' AND
+    (approved IS NULL OR approved=0 OR approved='' OR
+     (rejected IS NOT NULL AND rejected!=0 AND rejected!='') OR
+     (showentry IS NOT NULL AND showentry!='' AND showentry!=1 AND
+      showentry>CAST(NOW() AS DATE)))
+");
+$row = $res->getRow();
+if (count($row) == 0) {
+    // Driver data (Load only if the driver is accepted, not rejected, and 
+    // released)
+    $res = $DB->query("SELECT * FROM driver WHERE id = '?'", $_GET['driver']);
+    $driver = $res->getRow();
+} else {
+    $driver = null;
+}
 $SMARTY->assign('driver',$driver);
 
 // Load driver printer assoc
