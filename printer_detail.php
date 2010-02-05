@@ -53,6 +53,7 @@ $res = $DB->query("
     showentry!=1 AND
     showentry>CAST(NOW() AS DATE)))
 ");
+$notreleased = 0;
 $row = $res->getRow();
 if (count($row) == 0) {
     // Printer data (Load only if the printer is not unreleased)
@@ -77,6 +78,7 @@ if (count($row) == 0) {
     }
 } else {
     $data = null;
+    $notreleased = 1;
 }
 $printer_id = $_GET['id'];
 $printer_make = $_GET['manufacturer'];
@@ -92,6 +94,9 @@ if (count($data) == 0) {
     $data['res_y'] = "";
     $data['functionality'] = "";
     $data['noentry'] = "1";
+    if ($notreleased == 1) {
+	$data['notreleased'] = "1";
+    }
 }
 
 /**

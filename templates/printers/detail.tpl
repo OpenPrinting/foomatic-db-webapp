@@ -2,7 +2,8 @@
 
 <div id="two_col_col_1">
 
-{if $data.noentry != "1" or count($driverinfoboxes) > 0}
+{if ($data.noentry != "1" or count($driverinfoboxes) > 0) and
+    $data.notreleased != "1"}
 	{include file="page_breadcrumbs.tpl"}
 
 	{$printerinfobox}
