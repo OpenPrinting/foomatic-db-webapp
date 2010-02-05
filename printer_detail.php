@@ -40,19 +40,46 @@ if($SESSION->isloggedIn()){
     $SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
 }
 
-// printer data
-$res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND id='".$_GET['id']."' ");
-$makes = array();
-$data = array();
-while($row = $res->getRow()){
-    $data = $row;
-    $printer_model = $row['model'];
-    $printer_id = $row['id'];
-    $default_driver = $row['default_driver'];
+// Check whether we can already show this printer or whether it is not
+// yet released. In contrary to drivers we show unapproved printers but
+// add a remark that they are not approved.
+$res = $DB->query("
+    SELECT id FROM printer_approval
+    WHERE id='".$_GET['id']."' AND
+    ((rejected IS NOT NULL AND rejected!=0 AND
+    rejected!='') OR
+    (showentry IS NOT NULL AND
+    showentry!='' AND
+    showentry!=1 AND
+    showentry>CAST(NOW() AS DATE)))
+");
+$row = $res->getRow();
+if (count($row) == 0) {
+    // Printer data (Load only if the printer is not unreleased)
+    $res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND id='".$_GET['id']."' ");
+    $makes = array();
+    $data = array();
+    while($row = $res->getRow()){
+	$data = $row;
+	$printer_model = $row['model'];
+	$printer_id = $row['id'];
+	$default_driver = $row['default_driver'];
+    }
+    // Is the printer entry not yet approved?
+    $res = $DB->query("
+        SELECT id FROM printer_approval
+        WHERE id='".$_GET['id']."' AND
+        (approved IS NULL OR approved=0 OR approved='')
+    ");
+    $row = $res->getRow();
+    if (count($row) > 0) {
+	$data['unverified'] = "1";
+    }
 }
 $printer_id = $_GET['id'];
 $printer_make = $_GET['manufacturer'];
 if (count($data) == 0) {
+    // Printer not in the database or not yet released
     $printer_model = preg_replace("/_/", " ",
 				  preg_replace("/^[^-]*-/", "", $printer_id));
     $default_driver = "";

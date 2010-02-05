@@ -6,7 +6,15 @@
 	{include file="page_breadcrumbs.tpl"}
 
 	{$printerinfobox}
-
+	{if $data.unverified == "1"}
+		<p><b>User-contributed Printer Entry</b><br>
+		This printer entry was contributed by a user but was not
+		yet verified or proofread by the site administrators.
+		Therefore it is not included in the <a
+		href="http://www.openprinting.org/foomatic.html">
+		Foomatic</a> packages and no PPD files can be downloaded for
+		this printer.<br></p>
+	{/if}
 	{if $data.noentry != "1"}
 		{if $data.pjl == "1" or $data.text == "us-ascii" or
 		$data.contrib_url != ""}	
