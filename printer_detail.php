@@ -141,6 +141,7 @@ $resDriverList = $DB->query("
  */
 
 $driverinfoboxes = array();
+$havedefdrv = 0;
 $defdrvhomepage = "";
 $defdrvppdlink = "";
 $defdrvpackages = "";
@@ -509,6 +510,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 			  "<p><b>Recommended driver:</b></p>" .
 			  $infobox .
 			  "<p><b>Other drivers:</b></p>");
+	    $havedefdrv = 1;
 	    $defdrvhomepage = $drvhomepage;
 	    $defdrvppdlink = $drvppdlink;
 	    $defdrvpackages = $drvpackages;
@@ -516,6 +518,10 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    array_push($driverinfoboxes, $infobox);
 	}
     }
+}
+if (count($driverinfoboxes) == 1 and $havedefdrv == 1) {
+    $driverinfoboxes[0] = preg_replace("/<p><b>Other drivers:<\/b><\/p>/", "",
+				       $driverinfoboxes[0]);
 }
 
 $SMARTY->assign('driverinfoboxes', $driverinfoboxes);
