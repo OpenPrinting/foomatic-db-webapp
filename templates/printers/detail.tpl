@@ -13,8 +13,7 @@
 		yet verified or proofread by the site administrators.
 		Therefore it is not included in the <a
 		href="http://www.openprinting.org/foomatic.html">
-		Foomatic</a> packages and no PPD files can be downloaded for
-		this printer.<br></p>
+		Foomatic</a> packages.<br></p>
 	{/if}
 	{if strlen($forumurl) > 0 and strlen($forummake) > 0}
 		<h3>Discussion forum</h3>
