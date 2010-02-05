@@ -7,7 +7,7 @@
 		{$driverinfobox}
 
 		{if $driver.prototype != "" }
-			<br>
+			<p>
 			Generic Instructions: 
 			<a href="/cups-doc.html">CUPS</a>,  
 			<a href="/ppr-doc.html">PPR</a>, 
@@ -21,7 +21,8 @@
 			recommended to use Adobe's PostScript driver. If you still want to use the CUPS driver, 
 			please mark "GUI texts limited to 39 characters" to get an appropriate PPD file.
 			<br><br>
-			
+			</p>
+
 			<div style="border: 1px solid #ddd; background: #f5f5f5; padding: 6px; margin-bottom:10px;">
 			<form enctype="application/x-www-form-urlencoded" action="{$BASEURL}ppd-o-matic.cgi" method="get">
 				<input type="hidden" value="epson" name="driver"/> Select printer: 
@@ -44,11 +45,12 @@
 				</div> 
 			</form>
 			</div>
+			<p>&nbsp;</p>
 		{/if}
 		
 		
 		<h2>Comments</h2>
-		<div>{$driver.comments|default:"No comments available."}<br /><br /></div>
+		<div><p>{$driver.comments|default:"No comments available."}<br /></p></div>
 
 
 		{literal}
@@ -69,6 +71,7 @@
 		<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 		{/literal}
 
+		<p>&nbsp;</p>
 		<h2>Printer list</h2>
 		<ul>
 			{foreach from=$printers item=p}

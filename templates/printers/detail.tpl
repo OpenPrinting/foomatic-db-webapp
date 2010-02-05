@@ -19,6 +19,7 @@
 		{if $data.pjl == "1" or $data.text == "us-ascii" or
 		$data.contrib_url != ""}	
 			<h3>Miscellaneous</h3>
+			<p>
 		{/if}
 		{if $data.pjl == "1"}
 			Printer supports PJL.<br>
@@ -29,9 +30,13 @@
 		{if $data.contrib_url != ""}
 			Contrib URL: <a href="{$data.contrib_url}">{$data.contrib_url}</a>
 		{/if}
+		{if $data.pjl == "1" or $data.text == "us-ascii" or
+		$data.contrib_url != ""}	
+			</p>
+		{/if}
 	
 		<h3>Comments</h3>
-		{$data.comments}
+		<p>{$data.comments}</p>
 	{else}
 		<b>The properties of this printer are not yet entered into the
 		database</b><br>
