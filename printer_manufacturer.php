@@ -26,7 +26,11 @@ if($_GET['manufacturer'] ==""){
 $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 
 		$resPerfect = $DB->query("
-		    SELECT printer.id AS id, make, model, approved
+		    SELECT printer.id AS id, make, model,
+                    (printer_approval.id IS NULL OR
+                     (printer_approval.approved IS NOT NULL AND
+                      printer_approval.approved!=0 AND
+                      printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
@@ -47,7 +51,11 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		}
 
 		$resMostly = $DB->query("
-		    SELECT printer.id AS id, make, model, approved
+		    SELECT printer.id AS id, make, model,
+                    (printer_approval.id IS NULL OR
+                     (printer_approval.approved IS NOT NULL AND
+                      printer_approval.approved!=0 AND
+                      printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
@@ -68,7 +76,11 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		}
 
 		$resPartially = $DB->query("
-		    SELECT printer.id AS id, make, model, approved
+		    SELECT printer.id AS id, make, model,
+                    (printer_approval.id IS NULL OR
+                     (printer_approval.approved IS NOT NULL AND
+                      printer_approval.approved!=0 AND
+                      printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
@@ -89,7 +101,11 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		}
 
 		$resUnknown = $DB->query("
-		    SELECT printer.id AS id, make, model, approved
+		    SELECT printer.id AS id, make, model,
+                    (printer_approval.id IS NULL OR
+                     (printer_approval.approved IS NOT NULL AND
+                      printer_approval.approved!=0 AND
+                      printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
@@ -110,7 +126,11 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		}
 
 		$resPaperweight = $DB->query("
-		    SELECT printer.id AS id, make, model, approved
+		    SELECT printer.id AS id, make, model,
+                    (printer_approval.id IS NULL OR
+                     (printer_approval.approved IS NOT NULL AND
+                      printer_approval.approved!=0 AND
+                      printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
 		    WHERE printer.make='".$_GET['manufacturer']."' AND
