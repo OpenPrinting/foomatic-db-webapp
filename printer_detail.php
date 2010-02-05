@@ -75,6 +75,8 @@ if (count($row) == 0) {
     if (count($row) > 0) {
 	$data['unverified'] = "1";
     }
+} else {
+    $data = null;
 }
 $printer_id = $_GET['id'];
 $printer_make = $_GET['manufacturer'];
@@ -203,9 +205,14 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    "</font></td><td width=\"2%\"></td></tr>" .
 	    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
 	    "<td width=\"2%\"></td>" .
-	    "<td width=\"96%\"><font size=\"+2\"><b>" .
-	    "<a href=\"{$CONF->baseURL}driver/{$driver['name']}\">" .
-	    "{$driver['name']}</a></b></font><font size=\"-2\">";
+	    "<td width=\"96%\"><font size=\"+2\"><b>";
+	if ($driver == null) {
+	    $infobox .= "{$driver_id}";
+	} else {
+	    $infobox .= "<a href=\"{$CONF->baseURL}driver/{$driver['name']}\">".
+		"{$driver['name']}</a>";
+	}
+	$infobox .= "</b></font><font size=\"-2\">";
 	if ($driver['url']) {
 	    $drvhomepage = $driver['url'];
 	    $infobox .= "&nbsp;&nbsp(<a href=\"{$drvhomepage}\">" .
