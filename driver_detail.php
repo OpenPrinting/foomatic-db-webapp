@@ -70,12 +70,23 @@ $SMARTY->assign('driverPrinterAssoc',$driverPrinterAssoc);
 
 // Load printers for this driver
 $res = $DB->query("
-	SELECT p.id, p.make, p.model 
-	FROM driver_printer_assoc dpa
-	JOIN printer p 
-		ON p.id = dpa.printer_id 
-	WHERE dpa.driver_id = '?' 
-	ORDER BY p.make, p.model ", $_GET['driver']);
+        SELECT pr.id AS id, make, model
+	FROM (SELECT p.id, p.make, p.model 
+	      FROM driver_printer_assoc dpa
+	      JOIN printer p 
+		       ON p.id = dpa.printer_id 
+	      WHERE dpa.driver_id = '?') AS pr
+        LEFT JOIN printer_approval
+        ON pr.id=printer_approval.id                           
+        WHERE (printer_approval.id IS NULL OR     
+         ((printer_approval.rejected IS NULL OR         
+           printer_approval.rejected=0 OR   
+           printer_approval.rejected='') AND
+          (printer_approval.showentry IS NULL OR        
+           printer_approval.showentry='' OR 
+           printer_approval.showentry=1 OR  
+           printer_approval.showentry<=CAST(NOW() AS DATE))))       
+	ORDER BY pr.make, pr.model ", $_GET['driver']);
 $printers = $res->toArray('id');
 $SMARTY->assign('printers',$printers);
 
