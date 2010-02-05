@@ -25,7 +25,7 @@
 
 			<div style="border: 1px solid #ddd; background: #f5f5f5; padding: 6px; margin-bottom:10px;">
 			<form enctype="application/x-www-form-urlencoded" action="{$BASEURL}ppd-o-matic.cgi" method="get">
-				<input type="hidden" value="epson" name="driver"/> Select printer: 
+				<input type="hidden" value="{$driver.id}" name="driver"/> Select printer: 
 				<select tabindex="1" name="printer">
 					{foreach from=$printers item=p}	
 						<option value="{$p.id}">{$p.make|escape} {$p.model|escape}</option>
