@@ -952,7 +952,8 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 				$output .= "gpgcheck=0\n";
 				$output .= "</yum>\n";
 				$output .= "            <zypper>";
-				$output .= "zypper sa " . $path . "/ " .
+				$output .= "zypper addrepo -c -t rpm-md -n '"
+				    $drlc . "' " . $path . "/ " .
 				    $drlc;
 				$output .= "</zypper>\n";
 			    }
@@ -1272,7 +1273,8 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 				$output .= "          enabled=1\n";
 				$output .= "          gpgcheck=0\n";
 				$output .= "        zypper: ";
-				$output .= "zypper sa " . $path . "/ " .
+				$output .= "zypper addrepo -c -t rpm-md -n '" .
+				    $drlc . "' " . $path . "/ " .
 				    $drlc . "\n";
 			    }
 			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
