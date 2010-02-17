@@ -15,161 +15,37 @@
         <td>Status Date
         </td>
     </tr>
-	
-    <tr style="background: #f5f5f5;">
-        <td>Make Model etc
+	{foreach from=$dataPrinters item=printer}
+    <tr style="background: {cycle values="#F5F5F5,#EEEEEE"}">
+        <td>{$printer.make} {$printer.model}
         </td>
-        <td>Data
+        <td>{$printer.contributor}
         </td>
-        <td>Data
+        <td>{$printer.submitdate}
         </td>
-        <td>Data
+        <td>{$printer.showentry}
         </td>
-        <td>Data
+        <td>
+        	{if $printer.approved != ""}
+        		Approved
+			{/if}	
+        	{if $printer.rejected != ""}
+        		Rejected
+			{/if}	
         </td>
-        <td>Data
+        <td>{$printer.approver}
         </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
+        <td> 
+			{if $printer.approved != ""}
+        		{$printer.approved}
+			{/if}	
+        	{if $printer.rejected != ""}
+        		{$printer.rejected}
+			{/if}
         </td>
     </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
-    <tr style="background: #f5f5f5;">
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-        <td>Data
-        </td>
-    </tr>
-	<tr style="background: #f5f5f5;">
-		<td colspan="7">Comments here ...</td>
-	</tr>
+	{/foreach}
 
- 
 
 
 </table>
