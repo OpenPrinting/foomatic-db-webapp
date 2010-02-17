@@ -61,23 +61,24 @@ if(isset($_POST['submit'])){
     $DB->query("INSERT INTO printer_approval (
 	     id, 
 	     contributor, 
+             submitted,
 	     showentry,
              approved,
              rejected,
              approver,
              comment
 	 ) values (
-	     \"" . _mysql_real_escape_string($id) . "\", 
-	     \"" . _mysql_real_escape_string($user) . "\", 
-	     " . _mysql_real_escape_string($release) . ", 
+	     \"" . my_mysql_real_escape_string($id) . "\", 
+	     \"" . my_mysql_real_escape_string($user) . "\",
+             \"" . $today . "\",
+	     \"" . $release . "\", 
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
-		  "\"" . _mysql_real_escape_string($today) . "\"" :
-		  "null") . ",
+		  "\"" . $today . "\"" : "null") . ",
              null,
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
-		  "\"" . _mysql_real_escape_string($user) . "\"" :
+		  "\"" . my_mysql_real_escape_string($user) . "\"" :
 		  "null") . ",
-             \"" . _mysql_real_escape_string($_POST['comments']) . "\"
+             \"" . my_mysql_real_escape_string($_POST['comments']) . "\"
          )");
     /**
      * Insert into printer tables
@@ -138,26 +139,26 @@ if(isset($_POST['submit'])){
 	     snmp_description,
 	     snmp_manufacturer
 	 )
-	 values (\"" . _mysql_real_escape_string($id) . "\",
-	     \"" . _mysql_real_escape_string($_POST['make']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['model']) . "\",
+	 values (\"" . my_mysql_real_escape_string($id) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['make']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['model']) . "\",
 	     null,
-	     \"" . _mysql_real_escape_string($_POST['url']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['func']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['url']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['func']) . "\",
 	     null,
 	     null,
-	     \"" . _mysql_real_escape_string($_POST['contrib_url']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['notes']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['contrib_url']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['notes']) . "\",
 	     0,
-	     \"" . _mysql_real_escape_string($_POST['type']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['type']) . "\",
 	     " . ((array_key_exists("color", $_POST) and
 		   $_POST['color'] == "on") ?
 	          "1" : "0") . ",
 	     " . ($_POST['resolution_x'] > 0 ?
-		  _mysql_real_escape_string($_POST['resolution_x']) :
+		  my_mysql_real_escape_string($_POST['resolution_x']) :
 		  "0") . ",
 	     " . ($_POST['resolution_y'] > 0 ?
-                  _mysql_real_escape_string($_POST['resolution_y']) :
+                  my_mysql_real_escape_string($_POST['resolution_y']) :
                   "0") . ",
 	     " . ((array_key_exists("postscript", $_POST) and
 		   $_POST['postscript'] == "on") ?
@@ -189,37 +190,37 @@ if(isset($_POST['submit'])){
 	     " . ((array_key_exists("pjl", $_POST) and
 		   $_POST['pjl'] == "on") ?
 	          "1" : "0") . ",
-	     \"" . _mysql_real_escape_string($_POST['postscript_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['pdf_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['pcl_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['lips_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['escp_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['escp2_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['hpgl2_level']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['tiff_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['postscript_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['pdf_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['pcl_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['lips_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['escp_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['escp2_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['hpgl2_level']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['tiff_level']) . "\",
 	     " . ((array_key_exists("ascii", $_POST) and
 		   $_POST['ascii'] == "on") ?
 	          "\"us-ascii\"" :
 	          "null") . ",
-	     \"" . _mysql_real_escape_string($_POST['general_mdl']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['general_ieee']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['general_cmd']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['general_des']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['general_mfg']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['par_mdl']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['par_ieee']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['par_cmd']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['par_des']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['par_mfg']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['usb_mdl']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['usb_ieee']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['usb_cmd']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['usb_des']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['usb_mfg']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['general_mdl']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['general_ieee']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['general_cmd']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['general_des']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['general_mfg']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['par_mdl']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['par_ieee']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['par_cmd']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['par_des']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['par_mfg']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['usb_mdl']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['usb_ieee']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['usb_cmd']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['usb_des']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['usb_mfg']) . "\",
 	     null,
 	     null,
 	     null,
-	     \"" . _mysql_real_escape_string($_POST['snmp_des']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['snmp_des']) . "\",
 	     null
 	 )");
 	
@@ -228,9 +229,9 @@ if(isset($_POST['submit'])){
 	     lang, 
 	     comments
 	 ) values (
-	     \"" . _mysql_real_escape_string($id) . "\", 
+	     \"" . my_mysql_real_escape_string($id) . "\", 
 	     \"en\", 
-	     \"" . _mysql_real_escape_string($_POST['notes']) . "\"
+	     \"" . my_mysql_real_escape_string($_POST['notes']) . "\"
          )");
 
     if (array_key_exists("dnameNew", $_POST)) {
@@ -242,17 +243,17 @@ if(isset($_POST['submit'])){
 		$row = $res->getRow();
 		if (strlen($row['printer_id']) > 0) {
 		    $DB->query("UPDATE driver_printer_assoc SET
-                        pcomments=\"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
+                        pcomments=\"" . my_mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
                         fromprinter=1
                     WHERE
-                        printer_id=\"" . _mysql_real_escape_string($id) . "\" AND
-                        driver_id=\"" . _mysql_real_escape_string($driver_id) . "\"");
+                        printer_id=\"" . my_mysql_real_escape_string($id) . "\" AND
+                        driver_id=\"" . my_mysql_real_escape_string($driver_id) . "\"");
 		    $DB->query("UPDATE driver_printer_assoc_translation SET
-                        pcomments=\"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\"
+                        pcomments=\"" . my_mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\"
                     WHERE
                         lang=\"en\" AND
-                        printer_id=\"" . _mysql_real_escape_string($id) . "\" AND
-                        driver_id=\"" . _mysql_real_escape_string($driver_id) . "\"");
+                        printer_id=\"" . my_mysql_real_escape_string($id) . "\" AND
+                        driver_id=\"" . my_mysql_real_escape_string($driver_id) . "\"");
 		} else {
 		    $DB->query("INSERT INTO driver_printer_assoc (
 	                printer_id,
@@ -261,10 +262,10 @@ if(isset($_POST['submit'])){
 	                pcomments,
 	                fromprinter 
 	            ) values (
-	                \"" . _mysql_real_escape_string($id) . "\",
-	                \"" . _mysql_real_escape_string($driver_id) . "\",
+	                \"" . my_mysql_real_escape_string($id) . "\",
+	                \"" . my_mysql_real_escape_string($driver_id) . "\",
 	                null,
-	                \"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
+	                \"" . my_mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
 	                1
                     )" );
 		    $DB->query("INSERT INTO driver_printer_assoc_translation (
@@ -273,17 +274,17 @@ if(isset($_POST['submit'])){
                         lang,
                         pcomments
                     ) values (
-                        \"" . _mysql_real_escape_string($id) . "\",
-                        \"" . _mysql_real_escape_string($driver_id) . "\",
+                        \"" . my_mysql_real_escape_string($id) . "\",
+                        \"" . my_mysql_real_escape_string($driver_id) . "\",
                         \"en\",
-                        \"" . _mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\"
+                        \"" . my_mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\"
                     )" );
 		}
 		if ($_POST["recommendedDriver"][$i] == 1) {
 		    $DB->query("UPDATE printer SET
-                        default_driver=\"" . _mysql_real_escape_string($driver_id) . "\"
+                        default_driver=\"" . my_mysql_real_escape_string($driver_id) . "\"
                     WHERE
-                        id=\"" . _mysql_real_escape_string($id) . "\"");
+                        id=\"" . my_mysql_real_escape_string($id) . "\"");
 		}
 	    }
 	    $i ++;
@@ -307,10 +308,11 @@ if(isset($_GET['msg'])){
 
 
 // Use mysql_real_escape_string
-function _mysql_real_escape_string($str) {
+function my_mysql_real_escape_string($str) {
     //return $str;
-	$str = mysql_real_escape_string($str);
-	return $str; 
+    $str = htmlspecialchars($str);
+    $str = addslashes($str);
+    return $str;
 }
 
 function printerIDfromMakeModel($make, $model) {
