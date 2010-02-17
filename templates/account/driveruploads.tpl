@@ -22,7 +22,7 @@
         </td>
         <td>{$driver.contributor}
         </td>
-        <td>{$driver.submitdate}
+        <td>{$driver.submitted}
         </td>
         <td>{$driver.showentry}
         </td>
@@ -45,6 +45,10 @@
 			{/if}
         </td>
     </tr>
+	
+	<tr style="background: #F5F5F5"}">
+		<td colspan="7">{$printer.comment}</td>
+	</tr>
 	{/foreach}
 
 
