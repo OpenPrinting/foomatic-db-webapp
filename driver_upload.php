@@ -179,43 +179,6 @@ if(isset($_POST['submit'])){
     }
 
     /**
-     * Insert into driver_approval table
-     */
-
-    $today = date('Y-m-d');
-    if (strtotime($_POST['release_date']) != 0) {
-	$release = 
-	    "\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
-    } else {
-	$release = "null";
-    }
-    $user = $SESSION->getUserName();
-    $approved = ($SESSION->checkPermission('printer_noqueue') and
-		 $tarballfailed == false);
-	$DB->query("INSERT INTO driver_approval (
-        id,
-        contributor,
-        submitted,
-        showentry,
-        approved,
-        rejected,
-        approver,
-        comment
-    ) values (
-        \"" . my_mysql_real_escape_string($id) . "\", 
-        \"" . my_mysql_real_escape_string($user) . "\", 
-        \"" . $today . "\", 
-        \"" . $release . "\", 
-        " . ($approved ?
-	     "\"" . $today . "\"" : "null") . ",
-        null,
-        " . ($approved ?
-	     "\"" . my_mysql_real_escape_string($user) . "\"" :
-	     "null") . ",
-        \"" . my_mysql_real_escape_string("TODO: Upload comment") . "\"
-    )");
-
-    /**
      * Insert into driver tables
      */
     
@@ -320,6 +283,43 @@ if(isset($_POST['submit'])){
              \"" . my_mysql_real_escape_string($_POST['description']) . "\",
              null
          )");
+
+    /**
+     * Insert into driver_approval table
+     */
+
+    $today = date('Y-m-d');
+    if (strtotime($_POST['release_date']) != 0) {
+	$release = 
+	    "\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
+    } else {
+	$release = "null";
+    }
+    $user = $SESSION->getUserName();
+    $approved = ($SESSION->checkPermission('printer_noqueue') and
+		 $tarballfailed == false);
+	$DB->query("INSERT INTO driver_approval (
+        id,
+        contributor,
+        submitted,
+        showentry,
+        approved,
+        rejected,
+        approver,
+        comment
+    ) values (
+        \"" . my_mysql_real_escape_string($id) . "\", 
+        \"" . my_mysql_real_escape_string($user) . "\", 
+        \"" . $today . "\", 
+        \"" . $release . "\", 
+        " . ($approved ?
+	     "\"" . $today . "\"" : "null") . ",
+        null,
+        " . ($approved ?
+	     "\"" . my_mysql_real_escape_string($user) . "\"" :
+	     "null") . ",
+        \"" . my_mysql_real_escape_string("TODO: Upload comment") . "\"
+    )");
 
     if (strlen($_POST['supportdescription']) > 0) {
 	$DB->query("INSERT INTO driver_support_contact (

@@ -47,40 +47,6 @@ if(isset($_POST['submit'])){
     }
 
     /**
-     * Insert into printer_approval table
-     */
-
-    $today = date('Y-m-d');
-    if (strtotime($_POST['release_date']) != 0) {
-        //$release ="\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
-        $release = date('Y-m-d', strtotime($_POST['release_date']));
-    } else {
-        $release = "null";
-    }
-    $user = $SESSION->getUserName();
-    $DB->query("INSERT INTO printer_approval (
-	     id, 
-	     contributor, 
-             submitted,
-	     showentry,
-             approved,
-             rejected,
-             approver,
-             comment
-	 ) values (
-	     \"" . my_mysql_real_escape_string($id) . "\", 
-	     \"" . my_mysql_real_escape_string($user) . "\",
-             \"" . $today . "\",
-	     \"" . $release . "\", 
-	     " . ($SESSION->checkPermission('printer_noqueue') ?
-		  "\"" . $today . "\"" : "null") . ",
-             null,
-	     " . ($SESSION->checkPermission('printer_noqueue') ?
-		  "\"" . my_mysql_real_escape_string($user) . "\"" :
-		  "null") . ",
-             \"" . my_mysql_real_escape_string($_POST['comments']) . "\"
-         )");
-    /**
      * Insert into printer tables
      */
 
@@ -232,6 +198,41 @@ if(isset($_POST['submit'])){
 	     \"" . my_mysql_real_escape_string($id) . "\", 
 	     \"en\", 
 	     \"" . my_mysql_real_escape_string($_POST['notes']) . "\"
+         )");
+
+    /**
+     * Insert into printer_approval table
+     */
+
+    $today = date('Y-m-d');
+    if (strtotime($_POST['release_date']) != 0) {
+        //$release ="\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
+        $release = date('Y-m-d', strtotime($_POST['release_date']));
+    } else {
+        $release = "null";
+    }
+    $user = $SESSION->getUserName();
+    $DB->query("INSERT INTO printer_approval (
+	     id, 
+	     contributor, 
+             submitted,
+	     showentry,
+             approved,
+             rejected,
+             approver,
+             comment
+	 ) values (
+	     \"" . my_mysql_real_escape_string($id) . "\", 
+	     \"" . my_mysql_real_escape_string($user) . "\",
+             \"" . $today . "\",
+	     \"" . $release . "\", 
+	     " . ($SESSION->checkPermission('printer_noqueue') ?
+		  "\"" . $today . "\"" : "null") . ",
+             null,
+	     " . ($SESSION->checkPermission('printer_noqueue') ?
+		  "\"" . my_mysql_real_escape_string($user) . "\"" :
+		  "null") . ",
+             \"" . my_mysql_real_escape_string($_POST['comments']) . "\"
          )");
 
     if (array_key_exists("dnameNew", $_POST)) {
