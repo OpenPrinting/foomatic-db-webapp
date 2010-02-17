@@ -206,8 +206,7 @@ if(isset($_POST['submit'])){
 
     $today = date('Y-m-d');
     if (strtotime($_POST['release_date']) != 0) {
-        //$release ="\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
-        $release = date('Y-m-d', strtotime($_POST['release_date']));
+        $release ="\"" . date('Y-m-d', strtotime($_POST['release_date'])) . "\"";
     } else {
         $release = "null";
     }
@@ -225,7 +224,7 @@ if(isset($_POST['submit'])){
 	     \"" . my_mysql_real_escape_string($id) . "\", 
 	     \"" . my_mysql_real_escape_string($user) . "\",
              \"" . $today . "\",
-	     \"" . $release . "\", 
+	     " . $release . ", 
 	     " . ($SESSION->checkPermission('printer_noqueue') ?
 		  "\"" . $today . "\"" : "null") . ",
              null,

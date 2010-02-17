@@ -311,7 +311,7 @@ if(isset($_POST['submit'])){
         \"" . my_mysql_real_escape_string($id) . "\", 
         \"" . my_mysql_real_escape_string($user) . "\", 
         \"" . $today . "\", 
-        \"" . $release . "\", 
+        " . $release . ", 
         " . ($approved ?
 	     "\"" . $today . "\"" : "null") . ",
         null,
