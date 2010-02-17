@@ -15,7 +15,7 @@ $sql = $DB->query("SELECT da.*, d.id, d.name
 					WHERE da.contributor = '".$USER->getUserName()."' ");
 $dataDrivers = $sql->toArray('id');
 
-$SMARTY->assign('dataPrinters',$dataPrinters);
+$SMARTY->assign('dataDrivers',$dataDrivers);
 
 $SMARTY->display('account/driveruploads.tpl');
 

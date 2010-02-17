@@ -15,7 +15,7 @@ $sql = $DB->query("SELECT pa.*, p.id, p.make, p.model
 					WHERE pa.contributor = '".$USER->getUserName()."' ");
 $dataPrinters = $sql->toArray('id');
 				
-$SMARTY->assign('dataDrivers',$dataPrinters);
+$SMARTY->assign('dataPrinters',$dataPrinters);
 
 $SMARTY->display('account/printeruploads.tpl');
 
