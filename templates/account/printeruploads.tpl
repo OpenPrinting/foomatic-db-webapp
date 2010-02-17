@@ -21,7 +21,7 @@
         </td>
         <td>{$printer.contributor}
         </td>
-        <td>{$printer.submitdate}
+        <td>{$printer.submitted}
         </td>
         <td>{$printer.showentry}
         </td>
