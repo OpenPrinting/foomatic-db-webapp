@@ -5,9 +5,9 @@
 	
 <h1>Manage Queue</h1>
 
-	<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
+	<!--<p style="border: 1px solid #ccc; background: #eee; padding: 6px; margin-top: 20px; margin-bottom:20px;">
 		2 New Printers 4 New Drivers 10 Printers Pending 2 Drivers Pending
-	</p>
+	</p>-->
 	
 	
 	<div id="tabs">
