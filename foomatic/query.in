@@ -952,7 +952,7 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 				$output .= "gpgcheck=0\n";
 				$output .= "</yum>\n";
 				$output .= "            <zypper>";
-				$output .= "zypper addrepo -c -t rpm-md -n '"
+				$output .= "zypper addrepo -c -t rpm-md -n '" .
 				    $drlc . "' " . $path . "/ " .
 				    $drlc;
 				$output .= "</zypper>\n";
