@@ -44,6 +44,9 @@
 			{/if}
         </td>
     </tr>
+	<tr style="background: #F5F5F5"}">
+		<td colspan="7">{$printer.comment}</td>
+	</tr>
 	{/foreach}
 
 

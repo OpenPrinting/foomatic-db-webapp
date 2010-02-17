@@ -47,7 +47,7 @@
     </tr>
 	
 	<tr style="background: #F5F5F5"}">
-		<td colspan="7">{$printer.comment}</td>
+		<td colspan="7">{$driver.comment}</td>
 	</tr>
 	{/foreach}
 
