@@ -194,24 +194,25 @@ if(isset($_POST['submit'])){
 		 $tarballfailed == false);
 	$DB->query("INSERT INTO driver_approval (
         id,
-        contributor, 
+        contributor,
+        submitted,
         showentry,
         approved,
         rejected,
         approver,
         comment
     ) values (
-        \"" . _mysql_real_escape_string($id) . "\", 
-        \"" . _mysql_real_escape_string($user) . "\", 
-        " . _mysql_real_escape_string($release) . ", 
+        \"" . my_mysql_real_escape_string($id) . "\", 
+        \"" . my_mysql_real_escape_string($user) . "\", 
+        \"" . $today . "\", 
+        \"" . $release . "\", 
         " . ($approved ?
-	     "\"" . _mysql_real_escape_string($today) . "\"" :
-	     "null") . ",
+	     "\"" . $today . "\"" : "null") . ",
         null,
         " . ($approved ?
-	     "\"" . _mysql_real_escape_string($user) . "\"" :
+	     "\"" . my_mysql_real_escape_string($user) . "\"" :
 	     "null") . ",
-        \"" . _mysql_real_escape_string("TODO: Upload comment") . "\"
+        \"" . my_mysql_real_escape_string("TODO: Upload comment") . "\"
     )");
 
     /**
@@ -250,47 +251,47 @@ if(isset($_POST['submit'])){
 	     pdf_prototype,
 	     ppdentry,
 	     comments
-         ) values (\"" . _mysql_real_escape_string($id) . "\",
-	     \"" . _mysql_real_escape_string($id) . "\",
+         ) values (\"" . my_mysql_real_escape_string($id) . "\",
+	     \"" . my_mysql_real_escape_string($id) . "\",
 	     null,
 	     null,
-	     \"" . _mysql_real_escape_string($_POST['obsolete']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['obsolete']) . "\",
 	     null,
-	     \"" . _mysql_real_escape_string($_POST['download_url']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['supplier']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['download_url']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['supplier']) . "\",
 	     " . (array_key_exists('manufacturersupplied', $_POST) ?
 	         "0" : "1") . ",
 	     " . (array_key_exists('manufacturersupplied', $_POST) ?
-		  "\"" . _mysql_real_escape_string($_POST['supplier']) . "\"":
+		  "\"" . my_mysql_real_escape_string($_POST['supplier']) . "\"":
 		  "null") . ",
-	     \"" . _mysql_real_escape_string($_POST['license']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['licensetext']) . "\",
-	     \"" . _mysql_real_escape_string($_POST['licenselink']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['license']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['licensetext']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['licenselink']) . "\",
 	     " . (array_key_exists('nonfreesoftware', $_POST) ?
 	         "1" : "0") . ",
 	     " . (array_key_exists('patents', $_POST) ?
 	         "1" : "0") . ",
-	     \"" . _mysql_real_escape_string($_POST['description']) . "\",
+	     \"" . my_mysql_real_escape_string($_POST['description']) . "\",
 	     " . (strlen($_POST['max_res_x']) > 0 ?
-		  _mysql_real_escape_string($_POST['max_res_x']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['max_res_x']) : "null") . ",
 	     " . (strlen($_POST['max_res_y']) > 0 ?
-		  _mysql_real_escape_string($_POST['max_res_y']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['max_res_y']) : "null") . ",
 	     " . (array_key_exists('color', $_POST) ? "1" :
 		  (array_key_exists('grayscale', $_POST) ? "0" : "null")) . ",
 	     " . (strlen($_POST['text']) > 0 ?
-		  _mysql_real_escape_string($_POST['text']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['text']) : "null") . ",
 	     " . (strlen($_POST['lineart']) > 0 ?
-		  _mysql_real_escape_string($_POST['lineart']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['lineart']) : "null") . ",
 	     " . (strlen($_POST['graphics']) > 0 ?
-		  _mysql_real_escape_string($_POST['graphics']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['graphics']) : "null") . ",
 	     " . (strlen($_POST['photo']) > 0 ?
-		  _mysql_real_escape_string($_POST['photo']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['photo']) : "null") . ",
 	     " . (strlen($_POST['load_time']) > 0 ?
-		  _mysql_real_escape_string($_POST['load_time']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['load_time']) : "null") . ",
 	     " . (strlen($_POST['speed']) > 0 ?
-		  _mysql_real_escape_string($_POST['speed']) : "null") . ",
+		  my_mysql_real_escape_string($_POST['speed']) : "null") . ",
 	     " . (array_key_exists('execution', $_POST) ?
-		  "\"" . _mysql_real_escape_string($_POST['execution']) .
+		  "\"" . my_mysql_real_escape_string($_POST['execution']) .
 		  "\"" : "null") . ",
 	     0,
 	     0,
@@ -310,13 +311,13 @@ if(isset($_POST['submit'])){
              shortdescription,
              comments
          ) values (
-             \"" . _mysql_real_escape_string($id) . "\", 
+             \"" . my_mysql_real_escape_string($id) . "\", 
              \"en\", 
-             \"" . _mysql_real_escape_string($_POST['supplier']) . "\",
-             \"" . _mysql_real_escape_string($_POST['license']) . "\",
-             \"" . _mysql_real_escape_string($_POST['licensetext']) . "\",
-             \"" . _mysql_real_escape_string($_POST['licenselink']) . "\",
-             \"" . _mysql_real_escape_string($_POST['description']) . "\",
+             \"" . my_mysql_real_escape_string($_POST['supplier']) . "\",
+             \"" . my_mysql_real_escape_string($_POST['license']) . "\",
+             \"" . my_mysql_real_escape_string($_POST['licensetext']) . "\",
+             \"" . my_mysql_real_escape_string($_POST['licenselink']) . "\",
+             \"" . my_mysql_real_escape_string($_POST['description']) . "\",
              null
          )");
 
@@ -327,12 +328,12 @@ if(isset($_POST['submit'])){
                  level,
                  description
              ) values (
-                 \"" . _mysql_real_escape_string($id) . "\", 
-                 \"" . _mysql_real_escape_string($_POST['supporturl']) . "\",
+                 \"" . my_mysql_real_escape_string($id) . "\", 
+                 \"" . my_mysql_real_escape_string($_POST['supporturl']) . "\",
 	         " . (array_key_exists('supportlevel', $_POST) ?
-		      "\"" . _mysql_real_escape_string($_POST['supportlevel']) .
+		      "\"" . my_mysql_real_escape_string($_POST['supportlevel']) .
 		      "\"" : "null") . ",
-                 \"" . _mysql_real_escape_string($_POST['supportdescription']) . "\"
+                 \"" . my_mysql_real_escape_string($_POST['supportdescription']) . "\"
              )");
 
 	$DB->query("INSERT INTO driver_support_contact_translation (
@@ -342,13 +343,13 @@ if(isset($_POST['submit'])){
                  lang,
                  description
              ) values (
-                 \"" . _mysql_real_escape_string($id) . "\", 
-                 \"" . _mysql_real_escape_string($_POST['supporturl']) . "\",
+                 \"" . my_mysql_real_escape_string($id) . "\", 
+                 \"" . my_mysql_real_escape_string($_POST['supporturl']) . "\",
 	         " . (array_key_exists('supportlevel', $_POST) ?
-		      "\"" . _mysql_real_escape_string($_POST['supportlevel']) .
+		      "\"" . my_mysql_real_escape_string($_POST['supportlevel']) .
 		      "\"" : "null") . ",
                  \"en\", 
-                 \"" . _mysql_real_escape_string($_POST['supportdescription']) . "\"
+                 \"" . my_mysql_real_escape_string($_POST['supportdescription']) . "\"
              )");
     }
 
@@ -381,9 +382,10 @@ if(isset($_POST['submit'])){
 		$SMARTY->assign('msg','success');
 
 }
-		
-// Dummy function, will be removed, until problem with mysql_real_escape_string() is solved.
-function _mysql_real_escape_string($str) {
+
+function my_mysql_real_escape_string($str) {
+    $str = htmlspecialchars($str);
+    $str = addslashes($str);
     return $str;
 }
 		
