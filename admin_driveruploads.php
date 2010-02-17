@@ -9,6 +9,13 @@ $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 $PAGE->addBreadCrumb('Uploads and Statuses');
 
+$sql = $DB->query("SELECT da.*, d.id, d.name 
+					FROM driver_approval AS da
+					LEFT JOIN driver AS d ON da.id = d.id
+					WHERE da.contributor = '".$USER->getUserName()."' ");
+$dataDrivers = $sql->toArray('id');
+
+$SMARTY->assign('dataDrivers',$dataDrivers);
 
 $SMARTY->display('admin/driveruploads.tpl');
 
