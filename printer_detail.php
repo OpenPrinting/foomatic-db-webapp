@@ -200,7 +200,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 	$drvpackages = "";
 	$drvppdlink = "";
 	$infobox = "<p>" .
-	    "<table border=\"0\" bgcolor=\"#d0d0d0\" cellpadding=\"1\"" .
+	    "<table border=\"0\" bgcolor=\"#f3f3f3\" cellpadding=\"1\"" .
 	    "cellspacing=\"0\" width=\"100%\">" .
 	    "<tr><td colspan=\"8\">" .
 	    "<table border=\"0\" bgcolor=\"#b0b0b0\" cellpadding=\"0\"" .
@@ -528,16 +528,16 @@ $SMARTY->assign('driverinfoboxes', $driverinfoboxes);
 
 // Build printer info box
 $printerinfobox = "<p>" .
-    "<table border=\"0\" bgcolor=\"#d0d0d0\" cellpadding=\"1\"" .
+    "<table border=\"0\" bgcolor=\"#f5f5f5\" cellpadding=\"1\"" .
     "cellspacing=\"0\" width=\"100%\">" .
     "<tr><td colspan=\"4\">" .
-    "<table border=\"0\" bgcolor=\"#b0b0b0\" cellpadding=\"0\"" .
+    "<table border=\"0\" bgcolor=\"#eeeeee\" cellpadding=\"0\"" .
     "cellspacing=\"0\" width=\"100%\">" .
-    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<tr valign=\"center\" bgcolor=\"#eeeeee\">" .
     "<td width=\"2%\"></td>" .
     "<td colspan=\"2\" width=\"96%\"><font size=\"-4\">&nbsp;" .
     "</font></td><td width=\"2%\"></td></tr>" .
-    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<tr valign=\"center\" bgcolor=\"#eeeeee\">" .
     "<td width=\"2%\"></td>" .
     "<td colspan=\"2\" width=\"96%\"><font size=\"+2\"><b>";
 if ($data['url']) {
@@ -547,7 +547,7 @@ if ($data['url']) {
     $printerinfobox .= "{$printer_make} {$printer_model}";
 }
 $printerinfobox .= "</b></font></td><td width=\"2%\"></td></tr>" .
-    "<tr valign=\"center\" bgcolor=\"#b0b0b0\">" .
+    "<tr valign=\"center\" bgcolor=\"#eeeeee\">" .
     "<td width=\"2%\"></td>" .
     "<td colspan=\"2\" width=\"96%\"><font size=\"-4\">&nbsp;" .
     "</font></td><td width=\"2%\"></td></tr>" .
