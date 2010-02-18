@@ -58,7 +58,7 @@ class Session {
 		
 		if(isset($_GET['doLogout'])) {
 			$_SESSION = array();
-			header('Location: /logout');
+			header('Location: /login');
 			exit;
 		}
 	}
