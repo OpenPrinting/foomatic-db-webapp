@@ -37,9 +37,9 @@
 		
 			{literal}
 			<script type="text/javascript">
-			function addFormField() {
+			function addFormField(drselect) {
 				var id = document.getElementById("id").value;
-				$("#divTxt").append("<p id='row" + id + "'><label for='dnameNew" + id + "'>Driver:&nbsp;&nbsp;</label><input type='text' size='20' name='dnameNew[]' id='dnameNew" + id + "'>&nbsp;&nbsp<a href='#' onClick='removeFormField(\"#row" + id + "\"); return false;'>Remove</a><br><label for='dcommentNew" + id + "'>Comment:&nbsp;&nbsp;</label><textarea name='dcommentNew[]' id='dcommentNew" + id + "'></textarea><br><label for='recommendedDriver" + id + "'>Recommended Driver:&nbsp;&nbsp;</label><input type='radio' name='recommendedRadio[]' id='recommendedRadio" + id + "' value='1' onclick='addValue(\"#recommendedDriver" + id + "\");' ><input type='hidden' name='recommendedDriver[]' id='recommendedDriver" + id + "' value='0'><p>");
+				$("#divTxt").append("<p id='row" + id + "'><label for='dnameNew" + id + "'>Driver:&nbsp;&nbsp;</label>" + drselect + " OR <input type='text' size='20' name='dnameNew[]' id='dnameNew" + id + "' />&nbsp;&nbsp;<a href='#' onClick='removeFormField(\"#row" + id + "\"); return false;'>Remove</a><br><label for='dcommentNew" + id + "'>Comment:&nbsp;&nbsp;</label><textarea cols='20' rows='4' name='dcommentNew[]' id='dcommentNew" + id + "'></textarea><br><label for='dppdNew" + id + "'>PPD file URL:&nbsp;&nbsp;</label><input type='text' size='20' name='dppdNew[]' id='dppdNew" + id + "' /><br><label for='recommendedDriver" + id + "'>Recommended Driver:&nbsp;&nbsp;</label><input type='radio' name='recommendedRadio[]' id='recommendedRadio" + id + "' value='1' onclick='addValue(\"#recommendedDriver" + id + "\");' ><input type='hidden' name='recommendedDriver[]' id='recommendedDriver" + id + "' value='0'></p>");
 				
 				
 				$('#row' + id).highlightFade({

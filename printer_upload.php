@@ -244,6 +244,7 @@ if(isset($_POST['submit'])){
 		if (strlen($row['printer_id']) > 0) {
 		    $DB->query("UPDATE driver_printer_assoc SET
                         pcomments=\"" . my_mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
+                        ppd=\"" . my_mysql_real_escape_string($_POST["dppdNew"][$i]) . "\",
                         fromprinter=1
                     WHERE
                         printer_id=\"" . my_mysql_real_escape_string($id) . "\" AND
@@ -264,7 +265,7 @@ if(isset($_POST['submit'])){
 	            ) values (
 	                \"" . my_mysql_real_escape_string($id) . "\",
 	                \"" . my_mysql_real_escape_string($driver_id) . "\",
-	                null,
+	                \"" . my_mysql_real_escape_string($_POST["dppdNew"][$i]) . "\",
 	                \"" . my_mysql_real_escape_string($_POST["dcommentNew"][$i]) . "\",
 	                1
                     )" );
@@ -381,6 +382,16 @@ $SMARTY->assign('scaleSelect', '');
 		
 		$SMARTY->assign("drivers",$rD);
 		
-$SMARTY->display('printers/upload.tpl');
+		$driverselect =
+		    "<input type=\"hidden\" value=\"1\" name=\"dnumber\"/>" .
+		    "<input type=\"hidden\" value=\"on\" name=\"dactive0\"/>" .
+		    "<select tabindex=\"33\" name=\"dname0\">" .
+		    "<option value=\"\" selected=\"selected\">No driver</option>";
+		foreach ($rD as $d) $driverselect .= "<option value=\"{$d['id']}\">{$d['name']}</option>";
+		$driverselect .= "</select>";
+
+		$SMARTY->assign("driverselect",$driverselect);
+
+		$SMARTY->display('printers/upload.tpl');
 	
 ?>

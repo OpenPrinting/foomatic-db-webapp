@@ -34,6 +34,7 @@
 <h2>Printer Information</h2>
 <br>
 <form action="/printers/upload" method="post" onsubmit='return validate_form(this)'>
+
 	{if $isTrusted || $isAdmin }
 		<input type="hidden" value="1" name="noqueue"/>
 	{/if}	
@@ -172,42 +173,21 @@
 			</tr> 
 			<tr bgcolor="#dfdfdf">
 				<td align="right" valign="top">
-					Driver:</td> 
-				<td valign="top">
-					<input type="hidden" value="1" name="dnumber"/>
-					<input type="hidden" value="on" name="dactive0"/>
-					
-					<select tabindex="33" name="dname0">
-						<option value="" selected="selected">No driver</option>
-						{foreach from=$drivers item=driver}
-							<option value="{$driver.id}">{$driver.name|escape}</option>
-						{/foreach}	
-					</select>  OR 
-					</td> 
-				<td valign="top"><p>A driver known to work. </p></td>
-			</tr> 			
-			<!--<tr bgcolor="#dfdfdf">
-				<td align="right">New Driver:</td> 
-				<td>
-					<br> 
-					<input type="text" size="16" tabindex="34" name="dname1"/><br> 
-					<textarea cols="35" rows="4" tabindex="35" name="dcomment0"></textarea>
-					URL for manufacturer's PPD <br/>     
-					<input type="text" size="30" tabindex="14" name="ppdurl"/> <br/> 
-				</td> 
-				<td><p>Comments on using the above driver with this printer.</p></td>
-			</tr> -->
-			
-			<tr bgcolor="#dfdfdf">
-				<td align="right" valign="top">
-					New Driver:
-					<p><a href="#" onClick="addFormField(); return false;">Add</a></p>
+					Drivers:
+					<p><a href="#" onClick="addFormField('{$driverselect|escape}'); return false;">Add</a></p>
 				</td> 
 				<td  valign="top">
 				<input type="hidden" id="id" value="1">
 				<div id="divTxt"></div>
 				</td>
-				<td valign="top"><p>Add new driver. Comments on using the new driver with this printer.</p></td>
+				<td valign="top"><p>Drivers with which this
+					printer is known to work. Comments on
+					using the drivers with this
+					printer. If you have a PPD file which
+					works with this printer and this
+					driver, make it available and supply
+					the URL here. Choose the driver which
+					works best as recommended driver.</p></td>
 			</tr>
 
 			<tr bgcolor="#efefef">
