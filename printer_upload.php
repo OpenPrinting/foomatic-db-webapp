@@ -237,8 +237,13 @@ if(isset($_POST['submit'])){
     if (array_key_exists("dnameNew", $_POST)) {
 	$i = 0;
 	foreach ($_POST["dnameNew"] as $dname) {
+	    $driver_id = "";
 	    if (strlen($dname) != 0) {
 		$driver_id = $dname;
+	    } else {
+	        $driver_id = $_POST["dsnameNew"][$i];
+	    }
+	    if (strlen($driver_id) != 0) {
 		$res = $DB->query("SELECT printer_id FROM driver_printer_assoc WHERE printer_id=\"$id\" AND driver_id=\"$driver_id\"");
 		$row = $res->getRow();
 		if (strlen($row['printer_id']) > 0) {
@@ -383,15 +388,10 @@ $SMARTY->assign('scaleSelect', '');
 		$SMARTY->assign("drivers",$rD);
 		
 		$driverselect =
-		    "<input type=\"hidden\" value=\"1\" name=\"dnumber\"/>" .
-		    "<input type=\"hidden\" value=\"on\" name=\"dactive0\"/>" .
-		    "<select tabindex=\"33\" name=\"dname0\">" .
+		    "<select tabindex=\"33\" name=\"dsnameNew[]\" id=\"dsnameNew###\">" .
 		    "<option value=\"\" selected=\"selected\">No driver</option>";
 		foreach ($rD as $d) $driverselect .= "<option value=\"{$d['id']}\">{$d['name']}</option>";
 		$driverselect .= "</select> OR ";
-
-		// Comment out this line to let the driver drop-down appear
-		$driverselect = "";
 
 		$SMARTY->assign("driverselect",$driverselect);
 
