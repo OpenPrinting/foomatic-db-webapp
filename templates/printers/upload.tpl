@@ -55,7 +55,7 @@
 			changed files. All this information is added to the overview table for the approvers 
 			and to the ChangeLog files automatically.</p></td>
 		</tr> 
-		<tr bgcolor="#dfdfdf">
+		<tr bgcolor="#efefef">
 			<td align="right" width="20%">Release Date:</td> 
 			<td width="45%"><input type="text" size="10" tabindex="1" id="datepicker" name="release_date"/> </td>
 			<td width="35%"><p>Future release date</p></td>
@@ -68,7 +68,7 @@
 					{foreach from=$makes item=make}
 						<option value="{$make|escape}">{$make|escape}</option>
 					{foreachelse}
-						<option value="0">None Avail</option>
+						<option value="0">None Available</option>
 					{/foreach}
 
 					</select>  
@@ -129,19 +129,10 @@
 					</select>
 				</td> 
 				<td><p>What sort of printing mechanism does this printer use?</p></td>
-			</tr> 
+			</tr>
 			<tr bgcolor="#dfdfdf">
-				<td align="right" valign="top">Refill:</td> 
-				<td valign="top"><input type="text" size="32" tabindex="11" name="refill"/></td> 
-				<td><p>A short description of the non-paper consumable(s): cartridge, ribbon, toner, 
-				printhead, etc.  Ballpark refill pricing would be nice, too, if known.</p></td>
-			</tr> 
-			<tr bgcolor="#efefef">
 				<td align="right" valign="top">Language:</td> 
-				<td valign="top"><label><input type="checkbox" tabindex="12" value="on" name="postscript"/>PostScript</label> level <input type="text" size="4" tabindex="13" name="postscript_level"/> 
-				<br/>    
-				URL for manufacturer's PPD <br/>     
-				<input type="text" size="30" tabindex="14" name="ppdurl"/> <br/> 
+				<td valign="top"><label><input type="checkbox" tabindex="12" value="on" name="postscript"/>PostScript</label> level <input type="text" size="4" tabindex="13" name="postscript_level"/> <br/>
 				<label><input type="checkbox" tabindex="15" value="on" name="pdf"/>PDF</label> level <input type="text" size="4" tabindex="16" name="pdf_level"/> <br/>  
 				<label><input type="checkbox" tabindex="17" value="on" name="lips"/>LIPS</label> level <input type="text" size="4" tabindex="18" name="lips_level"/> <br/>
 				<label><input type="checkbox" tabindex="19" value="on" name="pcl"/>PCL</label> level <input type="text" size="4" tabindex="20" name="pcl_level"/> <br/> 
@@ -153,18 +144,18 @@
 				<td><p>The printer control language spoken by this printer, and level or version if known.  Mail us and add a remark in the 
 				"Notes:" field if we've forgotten any languages.</p></td>
 			</tr> 
-			<tr bgcolor="#dfdfdf">
+			<tr bgcolor="#efefef">
 				<td align="right" valign="top">ASCII:</td> 
 				<td valign="top"><label><input type="checkbox" tabindex="30" value="on" name="ascii"/></label></td> 
 				<td><p>This printer will print text if you just send it plain ascii.  
 				Uncheck for printers that <b>only</b> work with Ghostscript and a driver or the like.</p></td>
 			</tr> 
-			<tr bgcolor="#efefef">
+			<tr bgcolor="#dfdfdf">
 				<td align="right" valign="top">PJL:</td> 
 				<td valign="top"><label><input type="checkbox" tabindex="31" value="on" name="pjl"/></label></td> 
 				<td><p>Check the box if this printer supports HP's Printer Job Language (PJL).</p></td>
 			</tr> 
-			<tr bgcolor="#dfdfdf">
+			<tr bgcolor="#efefef">
 				<td align="right" valign="top">Functionality:</td> 
 				<td valign="top">
 					<select tabindex="32" name="func">
@@ -179,7 +170,7 @@
 				means it prints, but major things are missing.<br/>If you choose a non-Paperweight rating, 
 				choose/enter a driver and/or enter in the "Notes:" field how you made this printer working.</p></td>
 			</tr> 
-			<tr bgcolor="#efefef">
+			<tr bgcolor="#dfdfdf">
 				<td align="right" valign="top">
 					Driver:</td> 
 				<td valign="top">
@@ -195,17 +186,19 @@
 					</td> 
 				<td valign="top"><p>A driver known to work. </p></td>
 			</tr> 			
-			<!--<tr bgcolor="#efefef">
+			<!--<tr bgcolor="#dfdfdf">
 				<td align="right">New Driver:</td> 
 				<td>
 					<br> 
 					<input type="text" size="16" tabindex="34" name="dname1"/><br> 
 					<textarea cols="35" rows="4" tabindex="35" name="dcomment0"></textarea>
+					URL for manufacturer's PPD <br/>     
+					<input type="text" size="30" tabindex="14" name="ppdurl"/> <br/> 
 				</td> 
 				<td><p>Comments on using the above driver with this printer.</p></td>
 			</tr> -->
 			
-			<tr bgcolor="#efefef">
+			<tr bgcolor="#dfdfdf">
 				<td align="right" valign="top">
 					New Driver:
 					<p><a href="#" onClick="addFormField(); return false;">Add</a></p>
@@ -217,7 +210,7 @@
 				<td valign="top"><p>Add new driver. Comments on using the new driver with this printer.</p></td>
 			</tr>
 
-			<tr bgcolor="#dfdfdf">
+			<tr bgcolor="#efefef">
 				<td align="right" valign="top">Un*x URL:</td> 
 				<td valign="top"><input type="text" size="32" tabindex="36" name="contrib_url"/></td> 
 				<td><p>Web address for important info about using this printer with Unix-like 
@@ -225,7 +218,7 @@
 					a user's experience, or whatever else helps to make it going. Do not forget the 
 					"http://" in the beginning of the address.</p></td>
 			</tr> 
-			<tr bgcolor="#efefef">
+			<tr bgcolor="#dfdfdf">
 					<td valign="top" align="right">Notes:</td> 
 					<td colspan="2" valign="top"><p><font size="-1" color="#202020">This is HTML that just gets pasted
 					into the table; <font color="#000000">watch those &lt;
@@ -236,11 +229,11 @@
 					served page.</font></p>
 					</td>
 				</tr> 
-				<tr bgcolor="#efefef">
+				<tr bgcolor="#dfdfdf">
 					<td> </td> 
 					<td colspan="2"><textarea cols="50" rows="10" tabindex="37" name="notes"/></textarea></td>
 				</tr> 
-				<tr bgcolor="#dfdfdf">
+				<tr bgcolor="#efefef">
 					<td valign="top" align="right">Auto-detect:</td> 
 					<td colspan="2"><p><font size="-1">Auto-detection info for this printer (if you 
 					have the possibility to connect your printer in different ways, 
@@ -279,7 +272,7 @@
 						"General" section, if they are blank, or if they do not exist in your observed 
 						auto-detection data.</font></p></td>
 				</tr> 
-				<tr bgcolor="#dfdfdf">
+				<tr bgcolor="#efefef">
 					<td> </td> 
 					<td colspan="2">
 						<dl><dt><b>General (Parallel and USB)</b><br/>IEEE-1284 Device ID String</dt> 
