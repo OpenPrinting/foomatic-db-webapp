@@ -10,6 +10,20 @@
 $BASE="/srv/www/openprinting";
 $UPLOADPATH="/upload/driver";
 $LOGFILE="log.txt";
+$LOCKFILE="/var/lock/commitppdstobzr";
+
+# Use a lock file to make sure that never more than one instance of this
+# program is running
+if (file_exists($LOCKFILE)) {
+    # Another instance of this program is still running, so exit silently here
+    exit(0);
+}
+$pid = getmypid();
+if (file_put_contents($LOCKFILE, $pid, LOCK_EX) === false) {
+    # Do not run the program if the log file cannot be created.
+    fwrite(STDERR, "ERROR: Cannot create lock file for commitppdstobzr, process ID $pid!\n");
+    exit(1);
+}
 
 $dir = $BASE . $UPLOADPATH;
 if (is_dir($dir)) {
@@ -62,5 +76,14 @@ if (is_dir($dir)) {
 	closedir($dh);
     }
 }
+
+# Remove the lock file
+if (unlink($LOCKFILE) === false) {
+    # Report if the lock file could not get removed
+    fwrite(STDERR, "ERROR: Cannot remove lock file of commitppdstobzr, process ID $pid!\n");
+    exit(1);
+}
+
+exit(0);
 
 ?>
