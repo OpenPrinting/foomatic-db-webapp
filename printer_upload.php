@@ -388,7 +388,10 @@ $SMARTY->assign('scaleSelect', '');
 		    "<select tabindex=\"33\" name=\"dname0\">" .
 		    "<option value=\"\" selected=\"selected\">No driver</option>";
 		foreach ($rD as $d) $driverselect .= "<option value=\"{$d['id']}\">{$d['name']}</option>";
-		$driverselect .= "</select>";
+		$driverselect .= "</select> OR ";
+
+		// Comment out this line to let the driver drop-down appear
+		$driverselect = "";
 
 		$SMARTY->assign("driverselect",$driverselect);
 
