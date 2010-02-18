@@ -170,314 +170,345 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
     }
 
     # List entries
-    for my $p (@printers) {
-	if (my $pr = $db->get_printer($p)) {
-	    my $id = $pr->{'id'};
-	    $make = $pr->{'make'};
-	    $model = $pr->{'model'};
-	    if ($format eq "xml") {
-		# XML output
-		if ($moreinfo) {
-		    $output .= "  <printer id=\"printer/" .
-			$id . "\">\n";
-		    $output .= "    <id>$id</id>\n";
-		    $output .= "    <make>$make</make>\n";
-		    $output .= "    <model>$model</model>\n";
-		    if (!$pr->{"noxmlentry"}) {
-			$output .= "    <functionality>" .
-			    $pr->{"functionality"} . "</functionality>\n";
-		    }
-		    $output .= "    <driver>" .
-			$pr->{"driver"} . "</driver>\n" if
-			defined($pr->{"driver"});
-		    if (defined($pr->{"drivers"})) {
-			$output .= "    <drivers>\n";
-			foreach my $dr (@{$pr->{"drivers"}}) {
-			    $output .= "      <driver>" .
-				$dr->{'id'} . "</driver>\n";
+    if (($#printers < 50) || $moreinfo) {
+	for my $p (@printers) {
+	    if (my $pr = $db->get_printer($p)) {
+		my $id = $pr->{'id'};
+		$make = $pr->{'make'};
+		$model = $pr->{'model'};
+		if ($format eq "xml") {
+		    # XML output
+		    if ($moreinfo) {
+			$output .= "  <printer id=\"printer/" .
+			    $id . "\">\n";
+			$output .= "    <id>$id</id>\n";
+			$output .= "    <make>$make</make>\n";
+			$output .= "    <model>$model</model>\n";
+			if (!$pr->{"noxmlentry"}) {
+			    $output .= "    <functionality>" .
+				$pr->{"functionality"} . "</functionality>\n";
 			}
-			$output .= "    </drivers>\n";
-		    }
-		    if (defined($pr->{"general_ieee"}) ||
-			defined($pr->{"general_mfg"}) ||
-			defined($pr->{"general_mdl"}) ||
-			defined($pr->{"general_des"}) ||
-			defined($pr->{"general_cmd"}) ||
-			defined($pr->{"par_ieee"}) ||
-			defined($pr->{"par_mfg"}) ||
-			defined($pr->{"par_mdl"}) ||
-			defined($pr->{"par_des"}) ||
-			defined($pr->{"par_cmd"}) ||
-			defined($pr->{"usb_ieee"}) ||
-			defined($pr->{"usb_mfg"}) ||
-			defined($pr->{"usb_mdl"}) ||
-			defined($pr->{"usb_des"}) ||
-			defined($pr->{"usb_cmd"}) ||
-			defined($pr->{"snmp_ieee"}) ||
-			defined($pr->{"snmp_mfg"}) ||
-			defined($pr->{"snmp_mdl"}) ||
-			defined($pr->{"snmp_des"}) ||
-			defined($pr->{"snmp_cmd"})) {
-			$output .= "    <autodetect>\n";
+			$output .= "    <driver>" .
+			    $pr->{"driver"} . "</driver>\n" if
+			    defined($pr->{"driver"});
+			if (defined($pr->{"drivers"})) {
+			    $output .= "    <drivers>\n";
+			    foreach my $dr (@{$pr->{"drivers"}}) {
+				$output .= "      <driver>" .
+				    $dr->{'id'} . "</driver>\n";
+			    }
+			    $output .= "    </drivers>\n";
+			}
 			if (defined($pr->{"general_ieee"}) ||
 			    defined($pr->{"general_mfg"}) ||
 			    defined($pr->{"general_mdl"}) ||
 			    defined($pr->{"general_des"}) ||
-			    defined($pr->{"general_cmd"})) {
-			    $output .= "      <general>\n";
-			    $output .= "        <ieee1284>" .
-				$pr->{"general_ieee"} . "</ieee1284>\n" if
-				defined($pr->{"general_ieee"});
-			    $output .= "        <manufacturer>" .
-				$pr->{"general_mfg"} .
-				"</manufacturer>\n" if
-				defined($pr->{"general_mfg"});
-			    $output .= "        <model>" .
-				$pr->{"general_mdl"} . "</model>\n" if
-				defined($pr->{"general_mdl"});
-			    $output .= "        <description>" .
-				$pr->{"general_des"} .
-				"</description>\n" if
-				defined($pr->{"general_des"});
-			    $output .= "        <commandset>" .
-				$pr->{"general_cmd"} . "</commandset>\n" if
-				defined($pr->{"general_cmd"});
-			    $output .= "      </general>\n";
-			}
-			if (defined($pr->{"par_ieee"}) ||
+			    defined($pr->{"general_cmd"}) ||
+			    defined($pr->{"par_ieee"}) ||
 			    defined($pr->{"par_mfg"}) ||
 			    defined($pr->{"par_mdl"}) ||
 			    defined($pr->{"par_des"}) ||
-			    defined($pr->{"par_cmd"})) {
-			    $output .= "      <parallel>\n";
-			    $output .= "        <ieee1284>" .
-				$pr->{"par_ieee"} . "</ieee1284>\n" if
-				defined($pr->{"par_ieee"});
-			    $output .= "        <manufacturer>" .
-				$pr->{"par_mfg"} .
-				"</manufacturer>\n" if
-				defined($pr->{"par_mfg"});
-			    $output .= "        <model>" .
-				$pr->{"par_mdl"} . "</model>\n" if
-				defined($pr->{"par_mdl"});
-			    $output .= "        <description>" .
-				$pr->{"par_des"} .
-				"</description>\n" if
-				defined($pr->{"par_des"});
-			    $output .= "        <commandset>" .
-				$pr->{"par_cmd"} . "</commandset>\n" if
-				defined($pr->{"par_cmd"});
-			    $output .= "      </parallel>\n";
-			}
-			if (defined($pr->{"usb_ieee"}) ||
+			    defined($pr->{"par_cmd"}) ||
+			    defined($pr->{"usb_ieee"}) ||
 			    defined($pr->{"usb_mfg"}) ||
 			    defined($pr->{"usb_mdl"}) ||
 			    defined($pr->{"usb_des"}) ||
-			    defined($pr->{"usb_cmd"})) {
-			    $output .= "      <usb>\n";
-			    $output .= "        <ieee1284>" .
-				$pr->{"usb_ieee"} . "</ieee1284>\n" if
-				defined($pr->{"usb_ieee"});
-			    $output .= "        <manufacturer>" .
-				$pr->{"usb_mfg"} .
-				"</manufacturer>\n" if
-				defined($pr->{"usb_mfg"});
-			    $output .= "        <model>" .
-				$pr->{"usb_mdl"} . "</model>\n" if
-				defined($pr->{"usb_mdl"});
-			    $output .= "        <description>" .
-				$pr->{"usb_des"} .
-				"</description>\n" if
-				defined($pr->{"usb_des"});
-			    $output .= "        <commandset>" .
-				$pr->{"usb_cmd"} . "</commandset>\n" if
-				defined($pr->{"usb_cmd"});
-			    $output .= "      </usb>\n";
-			}
-			if (defined($pr->{"snmp_ieee"}) ||
+			    defined($pr->{"usb_cmd"}) ||
+			    defined($pr->{"snmp_ieee"}) ||
 			    defined($pr->{"snmp_mfg"}) ||
 			    defined($pr->{"snmp_mdl"}) ||
 			    defined($pr->{"snmp_des"}) ||
 			    defined($pr->{"snmp_cmd"})) {
-			    $output .= "      <snmp>\n";
-			    $output .= "        <ieee1284>" .
-				$pr->{"snmp_ieee"} . "</ieee1284>\n" if
-				defined($pr->{"snmp_ieee"});
-			    $output .= "        <manufacturer>" .
-				$pr->{"snmp_mfg"} .
-				"</manufacturer>\n" if
-				defined($pr->{"snmp_mfg"});
-			    $output .= "        <model>" .
-				$pr->{"snmp_mdl"} . "</model>\n" if
-				defined($pr->{"snmp_mdl"});
-			    $output .= "        <description>" .
-				$pr->{"snmp_des"} .
-				"</description>\n" if
-				defined($pr->{"snmp_des"});
-			    $output .= "        <commandset>" .
-				$pr->{"snmp_cmd"} . "</commandset>\n" if
-				defined($pr->{"snmp_cmd"});
-			    $output .= "      </snmp>\n";
+			    $output .= "    <autodetect>\n";
+			    if (defined($pr->{"general_ieee"}) ||
+				defined($pr->{"general_mfg"}) ||
+				defined($pr->{"general_mdl"}) ||
+				defined($pr->{"general_des"}) ||
+				defined($pr->{"general_cmd"})) {
+				$output .= "      <general>\n";
+				$output .= "        <ieee1284>" .
+				    $pr->{"general_ieee"} . "</ieee1284>\n" if
+				    defined($pr->{"general_ieee"});
+				$output .= "        <manufacturer>" .
+				    $pr->{"general_mfg"} .
+				    "</manufacturer>\n" if
+				    defined($pr->{"general_mfg"});
+				$output .= "        <model>" .
+				    $pr->{"general_mdl"} . "</model>\n" if
+				    defined($pr->{"general_mdl"});
+				$output .= "        <description>" .
+				    $pr->{"general_des"} .
+				    "</description>\n" if
+				    defined($pr->{"general_des"});
+				$output .= "        <commandset>" .
+				    $pr->{"general_cmd"} . "</commandset>\n" if
+				    defined($pr->{"general_cmd"});
+				    $output .= "      </general>\n";
+			    }
+			    if (defined($pr->{"par_ieee"}) ||
+				defined($pr->{"par_mfg"}) ||
+				defined($pr->{"par_mdl"}) ||
+				defined($pr->{"par_des"}) ||
+				defined($pr->{"par_cmd"})) {
+				$output .= "      <parallel>\n";
+				$output .= "        <ieee1284>" .
+				    $pr->{"par_ieee"} . "</ieee1284>\n" if
+				    defined($pr->{"par_ieee"});
+				$output .= "        <manufacturer>" .
+				    $pr->{"par_mfg"} .
+				    "</manufacturer>\n" if
+				    defined($pr->{"par_mfg"});
+				$output .= "        <model>" .
+				$pr->{"par_mdl"} . "</model>\n" if
+				defined($pr->{"par_mdl"});
+				$output .= "        <description>" .
+				    $pr->{"par_des"} .
+				    "</description>\n" if
+				    defined($pr->{"par_des"});
+				$output .= "        <commandset>" .
+				    $pr->{"par_cmd"} . "</commandset>\n" if
+				    defined($pr->{"par_cmd"});
+				$output .= "      </parallel>\n";
+			    }
+			    if (defined($pr->{"usb_ieee"}) ||
+				defined($pr->{"usb_mfg"}) ||
+				defined($pr->{"usb_mdl"}) ||
+				defined($pr->{"usb_des"}) ||
+				defined($pr->{"usb_cmd"})) {
+				$output .= "      <usb>\n";
+				$output .= "        <ieee1284>" .
+				    $pr->{"usb_ieee"} . "</ieee1284>\n" if
+				    defined($pr->{"usb_ieee"});
+				$output .= "        <manufacturer>" .
+				    $pr->{"usb_mfg"} .
+				    "</manufacturer>\n" if
+				    defined($pr->{"usb_mfg"});
+				$output .= "        <model>" .
+				    $pr->{"usb_mdl"} . "</model>\n" if
+				    defined($pr->{"usb_mdl"});
+				$output .= "        <description>" .
+				    $pr->{"usb_des"} .
+				    "</description>\n" if
+				    defined($pr->{"usb_des"});
+				$output .= "        <commandset>" .
+				    $pr->{"usb_cmd"} . "</commandset>\n" if
+				    defined($pr->{"usb_cmd"});
+				$output .= "      </usb>\n";
+			    }
+			    if (defined($pr->{"snmp_ieee"}) ||
+				defined($pr->{"snmp_mfg"}) ||
+				defined($pr->{"snmp_mdl"}) ||
+				defined($pr->{"snmp_des"}) ||
+				defined($pr->{"snmp_cmd"})) {
+				$output .= "      <snmp>\n";
+				$output .= "        <ieee1284>" .
+				    $pr->{"snmp_ieee"} . "</ieee1284>\n" if
+				    defined($pr->{"snmp_ieee"});
+				$output .= "        <manufacturer>" .
+				    $pr->{"snmp_mfg"} .
+				    "</manufacturer>\n" if
+				    defined($pr->{"snmp_mfg"});
+				$output .= "        <model>" .
+				    $pr->{"snmp_mdl"} . "</model>\n" if
+				    defined($pr->{"snmp_mdl"});
+				$output .= "        <description>" .
+				    $pr->{"snmp_des"} .
+				    "</description>\n" if
+				    defined($pr->{"snmp_des"});
+				$output .= "        <commandset>" .
+				    $pr->{"snmp_cmd"} . "</commandset>\n" if
+				    defined($pr->{"snmp_cmd"});
+				$output .= "      </snmp>\n";
+			    }
+			    $output .= "    </autodetect>\n";
 			}
-			$output .= "    </autodetect>\n";
+			$output .= "  </printer>\n";
+		    } else {
+			$output .= "  <printer>\n" .
+			    "    <id>$id</id>\n" .
+			    "    <make>$make</make>\n" .
+			    "    <model>$model</model>\n" .
+			    "  </printer>\n";
 		    }
-		    $output .= "  </printer>\n";
 		} else {
+		    # Simple text output
+		    if ($moreinfo) {
+			$output .= $id . "\n";
+			$output .= "  Manufacturer: $make\n";
+			$output .= "  Model: $model\n";
+			if (!$pr->{"noxmlentry"}) {
+			    $output .= "  Works: " .
+				($pr->{"functionality"} eq "A"
+				 ? "Perfectly"
+				 : ($pr->{"functionality"} eq "B"
+				    ? "Mostly"
+				    : ($pr->{"functionality"} eq "D"
+				       ? "Partially"
+				       : ($pr->{"functionality"} eq "F"
+					  ? "Paperweight"
+					  : "")))) . "\n";
+			}
+			$output .= "  Recommended driver: " .
+			    $pr->{"driver"} . "\n" if
+			    defined($pr->{"driver"});
+			if (defined($pr->{"drivers"})) {
+			    $output .= "  Drivers:\n";
+			    foreach my $dr (@{$pr->{"drivers"}}) {
+				$output .= "    " .
+				    $dr->{'id'} . "\n";
+			    }
+			}
+			if (defined($pr->{"general_ieee"}) ||
+			    defined($pr->{"general_mfg"}) ||
+			    defined($pr->{"general_mdl"}) ||
+			    defined($pr->{"general_des"}) ||
+			    defined($pr->{"general_cmd"}) ||
+			    defined($pr->{"par_ieee"}) ||
+			    defined($pr->{"par_mfg"}) ||
+			    defined($pr->{"par_mdl"}) ||
+			    defined($pr->{"par_des"}) ||
+			    defined($pr->{"par_cmd"}) ||
+			    defined($pr->{"usb_ieee"}) ||
+			    defined($pr->{"usb_mfg"}) ||
+			    defined($pr->{"usb_mdl"}) ||
+			    defined($pr->{"usb_des"}) ||
+			    defined($pr->{"usb_cmd"}) ||
+			    defined($pr->{"snmp_ieee"}) ||
+			    defined($pr->{"snmp_mfg"}) ||
+			    defined($pr->{"snmp_mdl"}) ||
+			    defined($pr->{"snmp_des"}) ||
+			    defined($pr->{"snmp_cmd"})) {
+			    $output .= "  Autodetection data\n";
+			    if (defined($pr->{"general_ieee"}) ||
+				defined($pr->{"general_mfg"}) ||
+				defined($pr->{"general_mdl"}) ||
+				defined($pr->{"general_des"}) ||
+				defined($pr->{"general_cmd"})) {
+				$output .= "    General\n";
+				$output .= "      IEEE-1284 Device ID: " .
+				    $pr->{"general_ieee"} . "\n" if
+				    defined($pr->{"general_ieee"});
+				$output .= "      Manufacturer: " .
+				    $pr->{"general_mfg"} .
+				    "\n" if
+				    defined($pr->{"general_mfg"});
+				$output .= "      Model: " .
+				    $pr->{"general_mdl"} . "\n" if
+				    defined($pr->{"general_mdl"});
+				$output .= "      Description: " .
+				    $pr->{"general_des"} .
+				    "\n" if
+				    defined($pr->{"general_des"});
+				$output .= "      Command Set: " .
+				    $pr->{"general_cmd"} . "\n" if
+				    defined($pr->{"general_cmd"});
+			    }
+			    if (defined($pr->{"par_ieee"}) ||
+				defined($pr->{"par_mfg"}) ||
+				defined($pr->{"par_mdl"}) ||
+				defined($pr->{"par_des"}) ||
+				defined($pr->{"par_cmd"})) {
+				$output .= "    Parallel port\n";
+				$output .= "      IEEE-1284 Device ID: " .
+				    $pr->{"par_ieee"} . "\n" if
+				    defined($pr->{"par_ieee"});
+				$output .= "      Manufacturer: " .
+				    $pr->{"par_mfg"} .
+				    "\n" if
+				    defined($pr->{"par_mfg"});
+				$output .= "      Model:" .
+				    $pr->{"par_mdl"} . "\n" if
+				    defined($pr->{"par_mdl"});
+				$output .= "      Description: " .
+				    $pr->{"par_des"} .
+				    "\n" if
+				    defined($pr->{"par_des"});
+				$output .= "      Command Set:" .
+				    $pr->{"par_cmd"} . "\n" if
+				    defined($pr->{"par_cmd"});
+			    }
+			    if (defined($pr->{"usb_ieee"}) ||
+				defined($pr->{"usb_mfg"}) ||
+				defined($pr->{"usb_mdl"}) ||
+				defined($pr->{"usb_des"}) ||
+				defined($pr->{"usb_cmd"})) {
+				$output .= "    USB\n";
+				$output .= "      IEEE-1284 Device ID: " .
+				    $pr->{"usb_ieee"} . "\n" if
+				    defined($pr->{"usb_ieee"});
+				$output .= "      Manufacturer: " .
+				    $pr->{"usb_mfg"} .
+				    "\n" if
+				    defined($pr->{"usb_mfg"});
+				$output .= "      Model:" .
+				    $pr->{"usb_mdl"} . "\n" if
+				    defined($pr->{"usb_mdl"});
+				$output .= "      Description: " .
+				    $pr->{"usb_des"} .
+				    "\n" if
+				    defined($pr->{"usb_des"});
+				$output .= "      Command Set:" .
+				    $pr->{"usb_cmd"} . "\n" if
+				    defined($pr->{"usb_cmd"});
+			    }
+			    if (defined($pr->{"snmp_ieee"}) ||
+				defined($pr->{"snmp_mfg"}) ||
+				defined($pr->{"snmp_mdl"}) ||
+				defined($pr->{"snmp_des"}) ||
+				defined($pr->{"snmp_cmd"})) {
+				$output .= "    SNMP\n";
+				$output .= "      IEEE-1284 Device ID: " .
+				    $pr->{"snmp_ieee"} . "\n" if
+				    defined($pr->{"snmp_ieee"});
+				$output .= "      Manufacturer: " .
+				    $pr->{"snmp_mfg"} .
+				    "\n" if
+				    defined($pr->{"snmp_mfg"});
+				$output .= "      Model:" .
+				    $pr->{"snmp_mdl"} . "\n" if
+				    defined($pr->{"snmp_mdl"});
+				$output .= "      Description: " .
+				    $pr->{"snmp_des"} .
+				    "\n" if
+				    defined($pr->{"snmp_des"});
+				$output .= "      Command Set:" .
+				    $pr->{"snmp_cmd"} . "\n" if
+				    defined($pr->{"snmp_cmd"});
+			    }
+			}
+		    } else {
+			$output .= "$id|$make|$model\n";
+		    }
+		}
+	    }
+	}
+    } else {
+	my $over;
+	if ($db->{'dbh'}) {
+	    # Quick overview without driver lists
+	    $over = $db->get_overview_from_sql_db(0, 1);
+	} else {
+	    # No quick overview available for XML database
+	    $over = $db->get_overview();
+	}
+	for my $p (@printers) {
+	    for my $pr (@{$over}) {
+		next if ($pr->{'id'} ne $p);
+		my $id = $pr->{'id'};
+		$make = $pr->{'make'};
+		$model = $pr->{'model'};
+		if ($format eq "xml") {
+		    # XML output
 		    $output .= "  <printer>\n" .
 			"    <id>$id</id>\n" .
 			"    <make>$make</make>\n" .
 			"    <model>$model</model>\n" .
 			"  </printer>\n";
-		}
-	    } else {
-		# Simple text output
-		if ($moreinfo) {
-		    $output .= $id . "\n";
-		    $output .= "  Manufacturer: $make\n";
-		    $output .= "  Model: $model\n";
-		    if (!$pr->{"noxmlentry"}) {
-			$output .= "  Works: " .
-			    ($pr->{"functionality"} eq "A"
-			     ? "Perfectly"
-			     : ($pr->{"functionality"} eq "B"
-				? "Mostly"
-				: ($pr->{"functionality"} eq "D"
-				   ? "Partially"
-				   : ($pr->{"functionality"} eq "F"
-				      ? "Paperweight"
-				      : "")))) . "\n";
-		    }
-		    $output .= "  Recommended driver: " .
-			$pr->{"driver"} . "\n" if
-			defined($pr->{"driver"});
-		    if (defined($pr->{"drivers"})) {
-			$output .= "  Drivers:\n";
-			foreach my $dr (@{$pr->{"drivers"}}) {
-			    $output .= "    " .
-				$dr->{'id'} . "\n";
-			}
-		    }
-		    if (defined($pr->{"general_ieee"}) ||
-			defined($pr->{"general_mfg"}) ||
-			defined($pr->{"general_mdl"}) ||
-			defined($pr->{"general_des"}) ||
-			defined($pr->{"general_cmd"}) ||
-			defined($pr->{"par_ieee"}) ||
-			defined($pr->{"par_mfg"}) ||
-			defined($pr->{"par_mdl"}) ||
-			defined($pr->{"par_des"}) ||
-			defined($pr->{"par_cmd"}) ||
-			defined($pr->{"usb_ieee"}) ||
-			defined($pr->{"usb_mfg"}) ||
-			defined($pr->{"usb_mdl"}) ||
-			defined($pr->{"usb_des"}) ||
-			defined($pr->{"usb_cmd"}) ||
-			defined($pr->{"snmp_ieee"}) ||
-			defined($pr->{"snmp_mfg"}) ||
-			defined($pr->{"snmp_mdl"}) ||
-			defined($pr->{"snmp_des"}) ||
-			defined($pr->{"snmp_cmd"})) {
-			$output .= "  Autodetection data\n";
-			if (defined($pr->{"general_ieee"}) ||
-			    defined($pr->{"general_mfg"}) ||
-			    defined($pr->{"general_mdl"}) ||
-			    defined($pr->{"general_des"}) ||
-			    defined($pr->{"general_cmd"})) {
-			    $output .= "    General\n";
-			    $output .= "      IEEE-1284 Device ID: " .
-				$pr->{"general_ieee"} . "\n" if
-				defined($pr->{"general_ieee"});
-			    $output .= "      Manufacturer: " .
-				$pr->{"general_mfg"} .
-				"\n" if
-				defined($pr->{"general_mfg"});
-			    $output .= "      Model: " .
-				$pr->{"general_mdl"} . "\n" if
-				defined($pr->{"general_mdl"});
-			    $output .= "      Description: " .
-				$pr->{"general_des"} .
-				"\n" if
-				defined($pr->{"general_des"});
-			    $output .= "      Command Set: " .
-				$pr->{"general_cmd"} . "\n" if
-				defined($pr->{"general_cmd"});
-			}
-			if (defined($pr->{"par_ieee"}) ||
-			    defined($pr->{"par_mfg"}) ||
-			    defined($pr->{"par_mdl"}) ||
-			    defined($pr->{"par_des"}) ||
-			    defined($pr->{"par_cmd"})) {
-			    $output .= "    Parallel port\n";
-			    $output .= "      IEEE-1284 Device ID: " .
-				$pr->{"par_ieee"} . "\n" if
-				defined($pr->{"par_ieee"});
-			    $output .= "      Manufacturer: " .
-				$pr->{"par_mfg"} .
-				"\n" if
-				defined($pr->{"par_mfg"});
-			    $output .= "      Model:" .
-				$pr->{"par_mdl"} . "\n" if
-				defined($pr->{"par_mdl"});
-			    $output .= "      Description: " .
-				$pr->{"par_des"} .
-				"\n" if
-				defined($pr->{"par_des"});
-			    $output .= "      Command Set:" .
-				    $pr->{"par_cmd"} . "\n" if
-				    defined($pr->{"par_cmd"});
-			}
-			if (defined($pr->{"usb_ieee"}) ||
-			    defined($pr->{"usb_mfg"}) ||
-			    defined($pr->{"usb_mdl"}) ||
-			    defined($pr->{"usb_des"}) ||
-			    defined($pr->{"usb_cmd"})) {
-			    $output .= "    USB\n";
-			    $output .= "      IEEE-1284 Device ID: " .
-				$pr->{"usb_ieee"} . "\n" if
-				defined($pr->{"usb_ieee"});
-			    $output .= "      Manufacturer: " .
-				$pr->{"usb_mfg"} .
-				"\n" if
-				defined($pr->{"usb_mfg"});
-			    $output .= "      Model:" .
-				$pr->{"usb_mdl"} . "\n" if
-				defined($pr->{"usb_mdl"});
-			    $output .= "      Description: " .
-				$pr->{"usb_des"} .
-				"\n" if
-				defined($pr->{"usb_des"});
-			    $output .= "      Command Set:" .
-				$pr->{"usb_cmd"} . "\n" if
-				defined($pr->{"usb_cmd"});
-			}
-			if (defined($pr->{"snmp_ieee"}) ||
-			    defined($pr->{"snmp_mfg"}) ||
-			    defined($pr->{"snmp_mdl"}) ||
-			    defined($pr->{"snmp_des"}) ||
-			    defined($pr->{"snmp_cmd"})) {
-			    $output .= "    SNMP\n";
-			    $output .= "      IEEE-1284 Device ID: " .
-				$pr->{"snmp_ieee"} . "\n" if
-				defined($pr->{"snmp_ieee"});
-			    $output .= "      Manufacturer: " .
-				$pr->{"snmp_mfg"} .
-				"\n" if
-				defined($pr->{"snmp_mfg"});
-			    $output .= "      Model:" .
-				$pr->{"snmp_mdl"} . "\n" if
-				defined($pr->{"snmp_mdl"});
-			    $output .= "      Description: " .
-				$pr->{"snmp_des"} .
-				"\n" if
-				defined($pr->{"snmp_des"});
-			    $output .= "      Command Set:" .
-				$pr->{"snmp_cmd"} . "\n" if
-				defined($pr->{"snmp_cmd"});
-			}
-		    }
 		} else {
+		    # Simple text output
 		    $output .= "$id|$make|$model\n";
 		}
+		last;
 	    }
 	}
     }
