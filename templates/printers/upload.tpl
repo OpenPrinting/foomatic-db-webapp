@@ -24,9 +24,9 @@
 
 <p>There are a fair number of things kept in this database about each printer. Unfortunately, this makes for a somewhat long form.</p>
 
-<p>Please take a few minutes and fill out anything you can. Note that your printer entry is only useful if the reader can see how he gets the printer to work (driver, where to get the driver if it is not yet listed at OpenPrinting, to which printer is yours compatible, special tricks, ...) or if he gets the message that this model definitely does not work. If you get red warning/error messages, read them and try to fix the problems. Use "Save Anyway" only if you are absolutely sure that you have done it the right way.</p>
+<p>Please take a few minutes and fill out anything you can. Note that your printer entry is only useful if the reader can see how he gets the printer to work (driver, where to get the driver if it is not yet listed at OpenPrinting, to which printer is yours compatible, special tricks, ...) or if he gets the message that this model definitely does not work.</p>
 
-<p>Note that if you make a mistake you can edit everything at any time after submitting. So do not create another printer entry if you are not content. Simply correct your entry where needed.</p>
+<!--<p>Note that if you make a mistake you can edit everything at any time after submitting. So do not create another printer entry if you are not content. Simply correct your entry where needed.</p>-->
 <br>	
 
 {if $isLoggedIn == "1" }
@@ -44,8 +44,8 @@
 	<br><br>
 	<table cellpadding="4" style="background: #eee; border: 1px solid #ccc;">
 		<tr bgcolor="#dfdfdf">
-			<td align="right" width="20%" valign="top">Comments <font color="red"><b>*</b></font>:</td> 
-			<td width="45%" colspan=2><textarea id="comments" name="comments" cols="55" rows="8" /></textarea> <p>Comments for Upload. Comment about this upload. If you need someone to approve 
+			<td align="right" width="20%" valign="top">Comments:</td> 
+			<td width="45%" colspan=2><textarea id="comments" name="comments" cols="55" rows="8" /></textarea> <p>Comment about this upload. If you need someone to approve 
 			your entry (you are not Trusted Uploader or Administrator) you can put some message for the 
 			approver here. This field has the function of a whiteboard for the approval process then. 
 			The approver will enter here what you need to correct in order to get approval, or the reasons 
@@ -319,10 +319,6 @@
 	{
 		with (thisform)
 		{
-			if (validate_required(comments,"Comment is Required!")==false){
-				comments.focus();
-				return false;
-			}
 			if(thisform.make.value == "" && thisform.make_new.value == ""){			
 				if (validate_required(make,"A Manufacturer is Required!")==false){
 					make.focus();
