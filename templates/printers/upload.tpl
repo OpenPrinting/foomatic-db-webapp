@@ -219,38 +219,50 @@
 					have the possibility to connect your printer in different ways, 
 					try all to gather as much auto-detection info as possible), 
 					do not fill this in if you are not able to get this data from 
-					the actual printer:</font></p><p><font size="-1"><b>Parallel port:</b> 
-					Parport probe information for this printer. These should be exactly the 
-					contents of the lines from /proc/parport/#/autoprobe (kernel 2.2.x) or 
-					/proc/sys/dev/parport/parport#/autoprobe* (kernel 2.4.x and 2.6.x). 
-					"#" is the parallel port number; ie typically 0, "*" can be nothing or a 
-					number.  Remove the leading MODEL:, MANUFACTURER:, DESCRIPTION:, 
-					and COMMAND SET:, and also remove the ending semicolon.  
-					If you had <tt>MODEL: Stylus Color 670;</tt>, for example, 
-					you'd put <tt>Stylus Color 670</tt> in the MODEL field here.</font></p>
-					<p><font size="-1"><b>USB:</b> 
-					Download the "<a href="/download/printing/getusbprinterid.pl">getusbprinterid.pl</a>" 
-					Perl script, make it executable ("chmod a+rx getusbprinterid.pl"), 
-					and then run (as "root") "./getusbprinterid.pl /dev/usb/lp0" 
-					(or "/dev/usblp0", "/dev/usb/lp1", or whatever the USB device 
-					file to access your printer is). If your printer is configured 
-					with <a href="http://hpoj.sf.net/">HPOJ</a> use the "ptal-devid" command. 
-					You will get the so-called device ID string as output. Cut and paste this into 
-					the "IEEE-1284 Device ID String" field. Take care that all is on one line in the field. 
-					Put also the elements of the IEEE string into the appropriate fields "MANUFACTURER/MFG", 
-					"MODEL/MDL", ...</font></p><p><font size="-1"><b>Network printer:</b> 
-					Auto-detection is done via SNMP (Simple Network Management Protocol). 
-					Download and install <a href="http://www.ibr.cs.tu-bs.de/projects/scli/">SCLI</a> 
-					and run "scli -c 'show printer info' &lt;host name of the printer&gt;". 
-					Look for a "Description:" field in the output. Copy and paste its contents into the 
-					"Description" field below.</font></p>
+					the actual printer:</font></p><p><font size="-1"><b>Parallel port:</b>
+					If you have CUPS running on your machine, simply try to run
+					/usr/lib/cups/backend/parallel (run it as root if you do not get sufficient
+					output) in a terminal window. Look for an output line corresponding to your
+					printer. It should contain a string like this:<br>
+
+					<tt>
+					MFG:Hewlett-Packard;CMD:PJL,BIDI-ECP,PCLXL,PCL,PDF,PJL,POSTSCRIPT;MDL:HP 
+					Color LaserJet CM3530 MFP;CLS:PRINTER;DES:Hewlett-Packard Color LaserJet CM3530 MFP;
+					</tt><br>
+
+					Please insert the complete string into the IEEE-1284 Device ID String
+					field, preferably via copy and paste. Take care that all is on one line in the field.
+					Put also the elements of the IEEE string into the appropriate fields "MANUFACTURER/MFG",
+					"MODEL/MDL", ... (without the semicolon in the end).<br>
+					Alternatively, you can also get this information directly from the Linux kernel.
+					You find it in the files /proc/parport/#/autoprobe (kernel 2.2.x) or
+					/proc/sys/dev/parport/parport#/autoprobe* (kernel 2.4.x and 2.6.x). "#" is the parallel
+					port number; ie typically 0, "*" can be nothing or a number. Remove the leading MODEL:,
+					MANUFACTURER:, DESCRIPTION:, and COMMAND SET:, and also remove the ending semicolon.
+					If you had <tt>MODEL:Stylus Color 670;</tt>, for example, you'd put <tt>Stylus Color 
+					670</tt> in the MODEL field here.</font></p>
+					<p><font size="-1"><b>USB:</b>
+					If you have CUPS on your system, proceed as for the parallel port but run
+					/usr/lib/cups/backend/usb. If your printer is configured with HPLIP run the command
+					/usr/lib/cups/backend/hp.<br>
+					Alternatively download the 
+					"<a href="/download/printing/getusbprinterid.pl">getusbprinterid.pl</a>" Perl script,
+					make it executable ("chmod a+rx getusbprinterid.pl"), and then run (as "root") 
+					"./getusbprinterid.pl /dev/usb/lp0" (or "/dev/usblp0", "/dev/usb/lp1", or whatever
+					the USB device file to access your printer is). Proceed as described for the parallel
+					port with this output.</font></p><p><font size="-1"><b>Network printer:</b>
+					Auto-detection is done via SNMP (Simple Network Management Protocol) or DNS-SD. Run
+					/usr/lib/cups/backend/snmp and /usr/lib/cups/backend/dnssd if you are using CUPS. Put
+					the first string appearing in double quotes ("...") into the "Description" field.<br>
+					Alternatively, you can also use "snmpwalk". Look for a "Description:" field in the
+					output. Copy and paste its contents into the "Description" field below.</font></p>
 					<p><font size="-1">
-						In most cases the IEEE-1284 auto-detection data is the same for USB 
-						and parallel port. So usually you should put this data into the "General" 
-						section below. If you see any deviations, enter them in the "Parallel Port" and 
-						"USB" sections. Leave fields blank if they are identical to the entry in the 
-						"General" section, if they are blank, or if they do not exist in your observed 
-						auto-detection data.</font></p></td>
+					In most cases the IEEE-1284 auto-detection data is the same for USB 
+					and parallel port. So usually you should put this data into the "General" 
+					section below. If you see any deviations, enter them in the "Parallel Port" and 
+					"USB" sections. Leave fields blank if they are identical to the entry in the 
+					"General" section, if they are blank, or if they do not exist in your observed 
+					auto-detection data.</font></p></td>
 				</tr> 
 				<tr bgcolor="#efefef">
 					<td> </td> 
