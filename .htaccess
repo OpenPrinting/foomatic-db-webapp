@@ -14,6 +14,7 @@ RewriteRule ^show_printer.cgi    /printer/%1/%1-%2 [L,R=301]
 RewriteCond %{QUERY_STRING} ^make=(.*)$
 RewriteRule ^printer_list.cgi    /printers/manufacturer/%1 [L,R=301]
 
+RewriteRule ^printer_list.cgi    /printers [L,R=301]
 RewriteRule ^edit_printer.cgi    /printers/upload [L,R=301]
 ######################################################
 
