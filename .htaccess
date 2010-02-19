@@ -16,13 +16,13 @@ RewriteRule ^show_license.cgi /driver/%1/license? [L,R=301]
 RewriteCond %{QUERY_STRING} driver=([\w\d_:-]+)&?
 RewriteRule ^execution.cgi /driver/%1? [L,R=301]
 
-RewriteCond %{QUERY_STRING} recnum=([\w\d_:]+)-([\w\d_:]+)&?
+RewriteCond %{QUERY_STRING} recnum=([\w\d_:]+)-([\w\d_:-]+)&?
 RewriteRule ^show_printer.cgi /printer/%1/%1-%2? [L,R=301]
 
-RewriteCond %{QUERY_STRING} id=printer:([\w\d_:]+)-([\w\d_:]+)&?
+RewriteCond %{QUERY_STRING} id=printer:([\w\d_:]+)-([\w\d_:-]+)&?
 RewriteRule ^edit.cgi /printer/%1/%1-%2? [L,R=301]
 
-RewriteCond %{QUERY_STRING} id=printer:([\w\d_:]+)-([\w\d_:]+)&?
+RewriteCond %{QUERY_STRING} id=printer:([\w\d_:]+)-([\w\d_:-]+)&?
 RewriteRule ^wikish_history.cgi /printer/%1/%1-%2? [L,R=301]
 
 RewriteRule edit_printer.cgi/?$ /printers/upload? [L,R=301]
@@ -31,7 +31,7 @@ RewriteCond %{QUERY_STRING} make=([\w\d_:+\/-]+)&?
 RewriteRule ^printer_list.cgi /printers/manufacturer/%1? [L,R=301]
 
 RewriteCond %{QUERY_STRING} filename=([\w\d_:+\/-]+)&?
-RewriteRule ^download.cgi /download/%1? [L,R=301]
+RewriteRule ^download.cgi /download/files/%1? [L,R=301]
 
 RewriteRule ^printer_list.cgi/?$ /printers? [L,R=301]
 RewriteRule ^driver_list.cgi/?$ /drivers? [L,R=301]
