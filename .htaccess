@@ -2,6 +2,25 @@ RewriteEngine On
 
 ErrorDocument 404 /404.php
 
+######################################################
+# Redirect Legacy OpenPrinting
+######################################################
+RewriteCond %{QUERY_STRING} ^driver=(.*)$
+RewriteRule ^show_driver.cgi    /driver/%1 [L,R=301]
+
+RewriteCond %{QUERY_STRING} ^recnum=(.+)-(.+)$
+RewriteRule ^show_printer.cgi    /printer/%1/%1-%2 [L,R=301]
+
+RewriteCond %{QUERY_STRING} ^make=(.*)$
+RewriteRule ^printer_list.cgi    /printers/manufacturer/%1 [L,R=301]
+
+RewriteRule ^edit_printer.cgi    /printers/upload [L,R=301]
+######################################################
+
+######################################################
+# Main App OpenPrinting
+######################################################
+
 RewriteRule ^home/?$ index.php		[L]
 RewriteRule ^login/?$ login.php		[L]
 RewriteRule ^logout/?$ login.php?doLogout		[L]
