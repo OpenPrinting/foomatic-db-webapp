@@ -5,8 +5,6 @@
 
 	<h1>Printer Listings</h1>
 	
-	<p>Introduction text goes here.</p>
-		
 	<p>Please choose a printer manufacturer to search for. If you know the specific printer model you would like to view, 
 		select the model number from the list as well. Otherwise, choose the "show all" option and all printers made by the 
 		selected manufacturer will be listed on your screen.</p>
