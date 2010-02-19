@@ -46,6 +46,8 @@ RewriteRule ^forums.cgi/? http://forums.openprinting.org/ [L,R=301]
 # Main App OpenPrinting
 ######################################################
 
+RewriteRule ^$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting [L,R=301]
+
 RewriteRule ^home/?$ index.php		[L]
 RewriteRule ^login/?$ login.php		[L]
 RewriteRule ^logout/?$ login.php?doLogout		[L]
@@ -74,3 +76,73 @@ RewriteRule ^driver/([^/]*)/?$ driver_detail.php?driver=$1		[L]
 RewriteRule ^driver/([^/]*)/license/?$ driver_license.php?driver=$1		[L]
 
 RewriteRule ^database/?$ database.php		[L]
+
+######################################################
+# Ancient Legacy Redirects
+######################################################
+RewriteRule ^cgi-bin/mailman/(.*) http://lists.linux-foundation.org/mailman/$1 [L,R=301]
+RewriteRule ^pipermail/(.*) http://lists.linux-foundation.org/pipermail/$1 [L,R=301]
+RewriteRule ^till/(.*) http://dev.linuxfoundation.org/~till/$1 [L,R=301]
+RewriteRule ^till http://dev.linuxfoundation.org/~till/ [L,R=301]
+
+RewriteRule ^macosx[/]?(index.html|lindex.html|old.index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx [L,R=301]
+RewriteRule ^macosx/downloads[/]?(index.html)?$ /download/printdriver/macosx/ [L,R=301]
+
+RewriteRule ^macosx/foomatic[/]?(index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/foomatic [L,R=301]
+RewriteRule ^macosx/hl1250[/]?((old)?SupportedPrinters.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hl1250#Printers [L,R=301]
+RewriteRule ^macosx/hl1250[/]?(index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hl1250 [L,R=301]
+
+RewriteRule ^macosx/hpijs[/]?(SupportedPrinters.html|oldSupPrn.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs#Printers [L,R=301]
+RewriteRule ^macosx/hpijs[/]?(.html|3.html|index.html|1.3index.html|1.4.1index.html|1.5_index.html|1.5index.html|1.5SupportedPrinters.html|1SupPrn.html|2.0.2index.html|2hpijs.html|oldIndex.html|shmindex.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs [L,R=301]
+
+RewriteRule ^macosx/hpijs/USB.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs-usb [L,R=301]
+
+RewriteRule ^macosx/imagewriter/SupportedPrinters.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/imagewriter#Printers [L,R=301]
+RewriteRule ^macosx/imagewriter[/]?(index.html|old_index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/imagewriter [L,R=301]
+
+RewriteRule ^macosx/ljet4/SupportedPrinters.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs#Printers  [L,R=301]
+RewriteRule ^macosx/ljet4[/]?(index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs  [L,R=301]
+
+RewriteRule ^macosx/pnm2ppa/SupportedPrinters.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/pnm2ppa#Printers [L,R=301]
+RewriteRule ^macosx/pnm2ppa[/]?(index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/pnm2ppa [L,R=301]
+
+RewriteRule ^macosx/pslevel1/SupportedPrinters.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/pslevel1#Printers [L,R=301]
+RewriteRule ^macosx/pslevel1[/]?(index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/pslevel1#Printers [L,R=301]
+
+RewriteRule ^macosx/pxlmono/SupportedPrinters.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs#Printers [L,R=301]
+RewriteRule ^macosx/pxlmono[/]?(index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/hpijs [L,R=301]
+
+RewriteRule ^macosx/samsung-gdi/SupportedPrinters.html$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/samsung-gdi#Printers [L,R=301]
+RewriteRule ^macosx/samsung-gdi[/]?(.html|index.html)?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/macosx/samsung-gdi [L,R=301]
+
+
+RewriteRule ^about.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/databaseintro [L,R=301]
+RewriteRule ^articles.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/articles [L,R=301]
+RewriteRule ^beh.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/backenderrorhandler [L,R=301]
+RewriteRule ^consultants.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/consulting [L,R=301]
+RewriteRule ^contribute.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/howtocontribute [L,R=301]
+RewriteRule ^cups-doc.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/cupsdocumentation [L,R=301]
+RewriteRule ^CUPS-Filter-Chart.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/cups-filter-chart [L,R=301]
+RewriteRule ^database.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/databaseintro [L,R=301]
+RewriteRule ^direct-doc.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/nospoolerdocumentation [L,R=301]
+RewriteRule ^foomatic-about.html/?$ http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/aboutfoomatic [L,R=301]
+RewriteRule ^foomatic.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/foomatic [L,R=301]
+RewriteRule ^gswrapper.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/foomaticgswrapper [L,R=301]
+RewriteRule ^linux-kongress-tutorial-2002.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/linuxkongresstutorial2002 [L,R=301]
+RewriteRule ^linuxworld-2001.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/linuxWorld2001 [L,R=301]
+RewriteRule ^lpd-doc.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/lpddocumentation [L,R=301]
+RewriteRule ^lpd-must-die.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/lpdmustdie [L,R=301]
+RewriteRule ^pdq-doc.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/pdqdocumentation [L,R=301]
+RewriteRule ^ppd-doc.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/ppddocumentation [L,R=301]
+RewriteRule ^ppr-doc.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/pprdocumentation [L,R=301]
+RewriteRule ^printing-summit-2001.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/printingsummit2001 [L,R=301]
+RewriteRule ^projects.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/projects [L,R=301]
+RewriteRule ^suggested.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/suggestedprinters [L,R=301]
+RewriteRule ^summit.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/printingsummit2000 [L,R=301]
+RewriteRule ^tutorial.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/cupsprintingtutorial [L,R=301]
+RewriteRule ^vendors.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/linuxsupportbyprintervendors [L,R=301]
+RewriteRule ^indexfaq.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/indexfaq [L,R=301]
+RewriteRule ^indexdoc.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/documentation [L,R=301]
+
+#Alias /ijs /srv/www/linuxprinting.org/ijs [L,R=301]
+#Alias /kpfeifle /srv/www/linuxprinting.org/kpfeifle [L,R=301]
