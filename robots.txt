@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /cache/
+Disallow: /foomatic/
+Disallow: /images/
+Disallow: /inc/
+Disallow: /javascript/
+Disallow: /maint/
+Disallow: /modules/
+Disallow: /templates/
+Disallow: /templates_c/
+Disallow: /stylesheets/
