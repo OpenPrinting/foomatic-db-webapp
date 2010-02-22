@@ -990,7 +990,7 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			    }
 			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
 				$pkg->{'url'} =~
-				  m:^(.+)/dists/lsb$pkg->{'lsbver'}/([^/]+)/binary-$pkg->{'arch'}/([^/]+)_$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}_$pkg->{'arch'}\.deb:;
+				  m:^(.+)/dists/lsb$pkg->{'lsbver'}/([^/]+)/binary-[^/]+/([^/]+)_$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}_$pkg->{'arch'}\.deb:;
 				my $path = $1;
 				my $rn = $2;
 				$path = ($path !~ m!^(https?|ftp)://! ?
@@ -1310,7 +1310,7 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			    }
 			    if ($pkg->{'pkgsys'} =~ /^deb$/) {
 				$pkg->{'url'} =~
-				  m:^(.+)/dists/lsb$pkg->{'lsbver'}/([^/]+)/binary-$pkg->{'arch'}/([^/]+)_$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}_$pkg->{'arch'}\.deb:;
+				  m:^(.+)/dists/lsb$pkg->{'lsbver'}/([^/]+)/binary-[^/]+/([^/]+)_$pkg->{'version'}-$pkg->{'release'}lsb$pkg->{'lsbver'}_$pkg->{'arch'}\.deb:;
 				my $path = $1;
 				my $rn = $2;
 				$path = ($path !~ m!^(https?|ftp)://! ?
