@@ -20,7 +20,7 @@ if ($_GET['format'] == "xml") {
 
 $querycmdline = "cd foomatic; ./query";
 foreach($_GET as $k => $v) {
-  $querycmdline .= " $k='$v'";
+  $querycmdline .= " " . urldecode($k) . "='" . urldecode($v) . "'";
 }
 
 passthru($querycmdline);
