@@ -2,6 +2,8 @@ RewriteEngine On
 
 ErrorDocument 404 /404.php
 
+AddType application/x-httpd-php .php .phtml .php3 .cgi
+
 # The order of the rewrites is significant
 
 ######################################################
@@ -36,7 +38,7 @@ RewriteRule ^download.cgi /download/files/%1? [L,R=301]
 RewriteRule ^printer_list.cgi/?$ /printers? [L,R=301]
 RewriteRule ^driver_list.cgi/?$ /drivers? [L,R=301]
 
-RewriteRule ^query.cgi/?$ /query.php               [L,R=301]
+#RewriteRule ^query.cgi/?$ /query.php               [L,R=301]
 RewriteRule ^ppd-o-matic.cgi/?$ /ppd-o-matic.php               [L,R=301]
 
 RewriteRule ^forums.cgi/? http://forums.openprinting.org/ [L,R=301]
