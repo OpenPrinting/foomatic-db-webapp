@@ -146,5 +146,6 @@ RewriteRule ^vendors.html/?$  http://www.linuxfoundation.org/collaborate/workgro
 RewriteRule ^indexfaq.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/indexfaq [L,R=301]
 RewriteRule ^indexdoc.html/?$  http://www.linuxfoundation.org/collaborate/workgroups/openprinting/database/documentation [L,R=301]
 
-RewriteRule ^ijs /download/ijs [L,R=301]
-RewriteRule ^kpfeifle /download/kpfeifle [L,R=301]
+RewriteRule ^ijs(.*) /download/ijs$1 [L,R=301]
+RewriteRule ^kpfeifle(.*) /download/kpfeifle$1 [L,R=301]
+
