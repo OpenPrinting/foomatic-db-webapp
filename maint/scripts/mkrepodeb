@@ -3,9 +3,7 @@
 # Auto conversion of a single 32-bit or 64-bit x86 RPM to DEB and indexing
 # of the DEB repository
 # Needed to be installed (script runs only on x86_64/amd64):
-# fakeroot, alien, linux32, ia32-libs, apt-ftparchive
-
-## NEED TO CALL INDEXING AT END OF UPLOAD SCRIPT
+# fakeroot, alien, linux32 (util-linux), ia32-libs, apt-utils
 
 maindir=/srv/www/openprinting/download/printdriver
 
