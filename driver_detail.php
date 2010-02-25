@@ -71,9 +71,9 @@ $SMARTY->assign('driverPrinterAssoc',$driverPrinterAssoc);
 // Load printers for this driver
 $res = $DB->query("
         SELECT pr.id AS id, make, model
-	FROM (SELECT p.id, p.make, p.model 
+	FROM (SELECT dpa.printer_id AS id, p.make, p.model 
 	      FROM driver_printer_assoc dpa
-	      JOIN printer p 
+	      LEFT JOIN printer p 
 		       ON p.id = dpa.printer_id 
 	      WHERE dpa.driver_id = '?') AS pr
         LEFT JOIN printer_approval
@@ -86,8 +86,22 @@ $res = $DB->query("
            printer_approval.showentry='' OR 
            printer_approval.showentry=1 OR  
            printer_approval.showentry<=CAST(NOW() AS DATE))))       
-	ORDER BY pr.make, pr.model ", $_GET['driver']);
+	ORDER BY pr.id, pr.make, pr.model ", $_GET['driver']);
 $printers = $res->toArray('id');
+// For unregistered printers (only mentioned in driver's printer list)
+// make and model name are empty. Derive make and model name from the
+// printer ID in such a case.
+foreach($printers as $pr) {
+  if (strlen($pr['make']) == 0) {
+    $matches = array();
+    if (preg_match("/^([^\-]+)\-(.*)$/", $pr['id'], $matches) != 0) {
+      $printers[$pr['id']]['make'] =
+	preg_replace("/_+/", " ", $matches[1]);
+      $printers[$pr['id']]['model'] =
+	preg_replace("/_+/", " ", preg_replace("/plus\b/", "+", $matches[2]));
+    }
+  }
+}
 $SMARTY->assign('printers',$printers);
 
 $res = $DB->query("SELECT *
