@@ -4,7 +4,7 @@ CREATE TABLE margin
 	printer_id VARCHAR(50),
 	margin_type ENUM('general', 'exception') NOT NULL,
 	pagesize VARCHAR(50),
-	margin_unit ENUM('pt', 'inches', 'mm', 'cm'),
+	margin_unit ENUM('pt', 'in', 'mm', 'cm'),
 	margin_absolute BOOL DEFAULT FALSE,
 	margin_top FLOAT,
 	margin_left FLOAT,
