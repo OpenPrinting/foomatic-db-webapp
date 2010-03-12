@@ -9,7 +9,7 @@
 # foomatic-db and foomatic-db-nonfree.
 
 # Declare vars
-BASE=/srv/www/openprinting-dev
+BASE=/srv/www/openprinting
 # Work directory for Foomatic-based backend scripts
 WORKDIR=$BASE/foomatic
 
