@@ -31,26 +31,52 @@ echo "Importing changes between revision $oldrev and $rev from $repodir ..." 1>&
 op=:
 for f in `cd $repodir; bzr status -r $oldrev..$rev`; do
     if [ "$f" = "added:" ]; then
-	op="php $scriptdir/xmltomysql.php"
+	op0=:
+	op1="php $scriptdir/xmltomysql.php"
 	echo "Adding" 1>&2
     elif [ "$f" = "modified:" ]; then
-	op="php $scriptdir/xmltomysql.php"
+	op0=:
+	op1="php $scriptdir/xmltomysql.php"
 	echo "Updating" 1>&2
     elif [ "$f" = "removed:" ]; then
+	op0="php $scriptdir/remove.php"
+	op1=:
 	echo "Removing" 1>&2
-	op="php $scriptdir/remove.php"
+    elif [ "$f" = "renamed:" ]; then
+	op0="php $scriptdir/remove.php"
+	op1="php $scriptdir/xmltomysql.php"
+	echo "Renaming" 1>&2
     elif [ "$f" = "unknown:" ]; then
 	echo "Ignoring" 1>&2
-	op=:
+	op0=:
+	op1=:
     elif `echo $f | egrep -q '^db/source/printer/.*\.xml$'`; then
-	echo "  $f" 1>&2
-	$op -p $repodir/$f
+	/bin/echo -en "  $f " 1>&2
+	if [ -f $repodir/$f ]; then
+	    echo "" 1>&2
+	    $op1 -p $repodir/$f
+	else
+	    echo "X" 1>&2
+	    $op0 -p $repodir/$f
+	fi
     elif `echo $f | egrep -q '^db/source/driver/.*\.xml$'`; then
-	echo "  $f" 1>&2
-	$op -d $repodir/$f
+	/bin/echo -en "  $f " 1>&2
+	if [ -f $repodir/$f ]; then
+	    echo "" 1>&2
+	    $op1 -d $repodir/$f
+	else
+	    echo "X" 1>&2
+	    $op0 -d $repodir/$f
+	fi
     elif `echo $f | egrep -q '^db/source/opt/.*\.xml$'`; then
-	echo "  $f" 1>&2
-	$op -o $repodir/$f
+	/bin/echo -en "  $f" 1>&2
+	if [ -f $repodir/$f ]; then
+	    echo "" 1>&2
+	    $op1 -o $repodir/$f
+	else
+	    echo "X" 1>&2
+	    $op0 -o $repodir/$f
+	fi
     fi
 done
 echo "Done" 1>&2

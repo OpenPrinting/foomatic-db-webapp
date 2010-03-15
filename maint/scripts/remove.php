@@ -11,7 +11,7 @@ $CONF = new SiteConfig();
 $options = getopt("p:d:o:");
 
 if ($options['p']) {
-  $id = $options['p'];
+  $id = clean($options['p']);
   $printer = new Printer();
   $error = !$printer->removeFromDB($id, null, true);
 }
@@ -21,7 +21,7 @@ if ($error) {
 }
 
 if ($options['d']) {
-  $id = $options['d'];
+  $id = clean($options['d']);
   $driver = new Driver();
   $error = !$driver->removeFromDB($id, null, true);
 }
@@ -31,13 +31,19 @@ if ($error) {
 }
 
 if ($options['o']) {
-  $id = $options['o'];
+  $id = clean($options['o']);
   $option = new Option();
   $error = !$option->removeFromDB($id);
 }
 if ($error) {
   print "[ERROR]: Failed removing option entry $id from the MySQL database\n";
   exit;
+}
+
+function clean($id) {
+  $id = preg_replace(":^(.*/)([^/]+)$:", "$2", $id);
+  $id = preg_replace(":\.xml$:", "", $id);
+  return $id;
 }
 
 ?>
