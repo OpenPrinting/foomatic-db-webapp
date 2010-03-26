@@ -6,7 +6,7 @@ CREATE TABLE options
 	longname VARCHAR(50),
 	execution ENUM('substitution', 'postscript', 'pjl', 'composite', 'forced_composite') NOT NULL,
 	required BOOL DEFAULT FALSE,
-	prototype VARCHAR(65535),
+	prototype TEXT,
 	option_spot VARCHAR(10),
 	option_order VARCHAR(10),
 	option_section VARCHAR(50),
