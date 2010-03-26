@@ -28,8 +28,8 @@ CREATE TABLE driver
 	execution ENUM('ghostscript','ijs','cups','opvp','uniprint','filter','postscript') NOT NULL,
 	no_pjl BOOL NOT NULL,
 	no_pageaccounting BOOL NOT NULL,
-	prototype VARCHAR(1024),
-	pdf_prototype VARCHAR(1024),
+	prototype VARCHAR(65536),
+	pdf_prototype VARCHAR(65536),
 	ppdentry TEXT,
 	comments TEXT,
 	CONSTRAINT pkey PRIMARY KEY(id)

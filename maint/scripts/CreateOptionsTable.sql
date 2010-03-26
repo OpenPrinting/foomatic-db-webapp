@@ -6,7 +6,7 @@ CREATE TABLE options
 	longname VARCHAR(50),
 	execution ENUM('substitution', 'postscript', 'pjl', 'composite', 'forced_composite') NOT NULL,
 	required BOOL DEFAULT FALSE,
-	prototype VARCHAR(1024),
+	prototype VARCHAR(65536),
 	option_spot VARCHAR(10),
 	option_order VARCHAR(10),
 	option_section VARCHAR(50),
@@ -16,7 +16,7 @@ CREATE TABLE options
 	min_value INT DEFAULT NULL,
 	shortname_false VARCHAR(50),
 	maxlength INT UNSIGNED DEFAULT NULL,
-	allowed_chars TINYTEXT,
-	allowed_regexp TINYTEXT,
+	allowed_chars TEXT,
+	allowed_regexp TEXT,
 	CONSTRAINT pkey PRIMARY KEY(id)
 ) ENGINE=InnoDB;
