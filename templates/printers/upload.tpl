@@ -97,7 +97,7 @@
 			</tr> 
 			<tr bgcolor="#dfdfdf">
 				<td align="right"  valign="top">URL:</td> 
-				<td valign="top"><input type="text" maxlength="128" size="32" tabindex="6" name="url"/></td> 
+				<td valign="top"><input type="text" size="32" tabindex="6" name="url"/></td> 
 				<td><p>Manufacturer's web page for this specific printer.  The maker's home page will 
 				already be linked to, so if you don't know where to find a page about this printer, 
 				leave this blank. And do not forget the "http://" in the beginning of 
