@@ -166,21 +166,30 @@ sub listpackagefilesformask {
             }
 	}
 	if ($path =~ m!^(https?|ftp)\://!) {
-	    my $dirhtml = Foomatic::DB::getpage(undef, $path, 1);
-	    if ($dirhtml) {
-		$files =~ s/\?/[^\\\">]/sg;
-		$files =~ s/\*/[^\\\">]*?/sg;
-		$files =~ s/(\.rpm) +/$1\|/sg;
-		$files =~ s/(\.deb) +/$1\|/sg;
-		push(@res, map {
-		    $_ = ($scope ? "($scope)" : "") . $path . $_;
-		} grep {
-		    islsbversion($lsbversion, $_);
-		} grep {
-		    ispkgsys($pkgsys, $_);
-		} grep {
-		    isarchitecture($pkgtype, $_);
-		} ($dirhtml =~ /href=\"?(?![\?\&\/])($files)\"?/g));
+	    if ($files =~ /[\?\*]/) {
+		my $dirhtml = Foomatic::DB::getpage(undef, $path, 1);
+		if ($dirhtml) {
+		    $files =~ s/\?/[^\\\">]/sg;
+		    $files =~ s/\*/[^\\\">]*?/sg;
+		    $files =~ s/(\.rpm) +/$1\|/sg;
+		    $files =~ s/(\.deb) +/$1\|/sg;
+		    push(@res, map {
+			$_ = ($scope ? "($scope)" : "") . $path . $_;
+			 } grep {
+			     islsbversion($lsbversion, $_);
+			 } grep {
+			     ispkgsys($pkgsys, $_);
+			 } grep {
+			     isarchitecture($pkgtype, $_);
+			 } ($dirhtml =~ /href=\"?(?![\?\&\/])($files)\"?/g));
+		}
+	    } else {
+		if (islsbversion($lsbversion, $files) &&
+		    ispkgsys($pkgsys, $files) &&
+		    isarchitecture($pkgtype, $files)) {
+		    push(@res,
+			 $_ = ($scope ? "($scope)" : "") . $path . $files);
+		}
 	    }
 	} else {
 	    push(@res, map {
