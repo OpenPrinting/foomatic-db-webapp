@@ -188,7 +188,7 @@ sub listpackagefilesformask {
 		    ispkgsys($pkgsys, $files) &&
 		    isarchitecture($pkgtype, $files)) {
 		    push(@res,
-			 $_ = ($scope ? "($scope)" : "") . $path . $files);
+			 ($scope ? "($scope)" : "") . $path . $files);
 		}
 	    }
 	} else {
