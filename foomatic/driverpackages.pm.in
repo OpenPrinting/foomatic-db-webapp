@@ -51,7 +51,8 @@ our %driver_types = ('F' => 'Filter',
 		     'G' => 'Ghostscript built-in');
 
 our $debsection="*";
-our $lsexclude="/main/|/contrib/";
+#our $lsexclude="/main/|/contrib/";
+our $lsexclude="xxxyyyzzz";
 
 our @scopeorder = ('general', 'printer', 'scanner', 'fax', 'gui');
 
@@ -133,7 +134,7 @@ sub listpackagefiles {
     } grep {
         isarchitecture($pkgtype, $_);
     } split(/\s+/,
-	    `cd $driverdir; ls -1 RPMS/*/*.rpm SRPMS/*.rpm debian/dists/*/$debsection/*/*.deb 2>/dev/null | grep -Ev \"$lsexclude\" 2>/dev/null`);
+	    `cd $driverdir; ls -1 components/*/*/RPMS/*/*.rpm SRPMS/*.rpm debian/dists/*/$debsection/*/*.deb 2>/dev/null | grep -Ev \"$lsexclude\" 2>/dev/null`);
 }
 
 sub listpackagefilesformask {
@@ -159,9 +160,10 @@ sub listpackagefilesformask {
             if ($p =~ /\.deb$/) {
 		        $files = "debian/dists/*/$debsection/*/$p";
             } elsif ($p =~ /\.rpm$/) {
-                $files = "RPMS/*/$p SRPMS/$p";
+                $files = "components/*/*/RPMS/*/$p SRPMS/$p";
             } else {
-                $files = "RPMS/*/${p}-[0-9]*.rpm SRPMS/${p}-[0-9]*.rpm " .
+                $files = "components/*/*/RPMS/*/${p}-[0-9]*.rpm " .
+		    "SRPMS/${p}-[0-9]*.rpm " .
                     "debian/dists/*/$debsection/*/${p}[_-][0-9]*.deb";
             }
 	}
