@@ -57,7 +57,9 @@ if [ $# = 1 ]; then
     fakeroot alien -ckg $file || exit
     d=`echo $file | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
     cd $d
-    perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
+    if [ "$arch" != "noarch" ]; then
+	perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
+    fi
     perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\#\1/' debian/rules
 
     case $arch in

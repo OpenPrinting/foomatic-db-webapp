@@ -566,9 +566,9 @@ Group:          Applications/System
 BuildRequires:  lsb-build-cc, lsb-build-c++, lsb-appchk
 BuildRequires:  perl, gzip, cupsddk
 
-Requires:       lsb >= $lsbver
-
-Source0:        $tarballname
+" .
+($platform ne "noarch" ? "Requires:       lsb >= $lsbver\n\n" : "") .
+"Source0:        $tarballname
 " .
 ($readmeneeded ?
 "Source1:        $readmename\n" : "") .
@@ -702,7 +702,11 @@ if ($platform eq "noarch") {
 } elsif ($platform eq "x86_64") {
     $debianplatform = "-aamd64";
 }
-sysrun("cd $tmpdir/$dir && perl -p -i -e 's/^(\\s*Depends:\\s*).*\$/\\1lsb (>= $lsbver)/' debian/control && perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\\#\\1/' debian/rules && dpkg-buildpackage $debianplatform -rfakeroot") or
+sysrun("cd $tmpdir/$dir && " .
+    ($platform ne "noarch" ?
+     "perl -p -i -e 's/^(\\s*Depends:\\s*).*\$/\\1lsb (>= $lsbver)/' debian/control && " : "") .
+    "perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\\#\\1/' debian/rules && " .
+    "dpkg-buildpackage $debianplatform -rfakeroot") or
    _die("Cannot buid binary Debian package from $tmpdir/$dir/!\n");
 my $binarydebpackage = `cd $tmpdir && ls -1 *.deb`;
 sysrun("mkdir -p $rpmdir/DEBS/$platform/ && mv $tmpdir/*.deb $rpmdir/DEBS/$platform/") or

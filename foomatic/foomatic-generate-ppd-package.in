@@ -271,8 +271,6 @@ Group:          Applications/System
 BuildRequires:  lsb-build-cc, lsb-build-c++, lsb-appchk
 BuildRequires:  perl, gzip, cupsddk
 
-Requires:       lsb >= $lsbver
-
 Source0:        $tarballname
 Source1:        $readmename
 Source2:        $copyingname
@@ -396,8 +394,7 @@ $progname -h
 		    XML files in the database are searched for PPDs linked with
 		    this driver.
  -l <LSB version> : LSB version for which the packages should be generated.
-		    This affects the release number and the versioned
-		    "Requires:" for the "lsb" package.
+		    This affects the release number.
  -k		  : With this option set the source files of the previous
 		    build are used. The upstream version number does not
 		    change and the release number is incremented by 1. This
