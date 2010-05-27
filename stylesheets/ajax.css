@@ -11,3 +11,65 @@
 	padding:2px;
 	display:none;
 }
+
+.prev {
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ width: 64px;
+ height: 22px;
+ color: #3a82a3; 
+ font-weight: bold;
+ text-align: center;
+ line-height: 20px;
+ background: url(../images/layout/pager-nav-bg-left.png) no-repeat left center;
+}
+
+.next {
+ position: absolute;
+ top: 0px;
+ left: 250px;
+ width: 64px;
+ height: 22px;
+ color: #3a82a3; 
+ font-weight: bold;
+ text-align: center;
+ line-height: 20px;
+ background: url(../images/layout/pager-nav-bg-right.png) no-repeat right center;
+}
+
+.pagerbody {
+  position: absolute;
+  top: 0px;
+  left: 64px;
+  width: 186px;
+  height: 20px;
+  text-align: center;
+  color: #7ba0b7; 
+  padding: 8;
+  border-top: 1px solid #aed0ea;
+  border-bottom: 1px solid #aed0ea;
+}
+
+.buttonbox {
+   position: relative; 
+   width: 400px; 
+   height: 23px; 
+}
+
+.seccount {
+ color: #598095;
+ font-weight: bold;
+}
+
+.totalcount {
+ color: #598095;
+ font-weight: bold;
+}
+
+.totalbox {
+  position:absolute; 
+  top: 0px; 
+  right: 0px;
+  color: #7ba0b7; 
+}

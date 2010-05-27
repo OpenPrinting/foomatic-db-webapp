@@ -45,7 +45,35 @@ class UserRole {
 		}	
 		return false;
 	}
-	
+  
+  //****************************************************
+  public function getSomeMembers($limit,$offset) {
+		if($this->isValid) {
+			$DB = DB::getInstance();
+      $res = $DB->query("SELECT ua.uid , wu. name, wu.lastlogin, wu.block FROM web_roles_userassign ua LEFT JOIN web_user wu ON ua.uid = wu.username  WHERE ua.roleID = '?' ORDER BY ua.uid LIMIT ? OFFSET ?", $this->roleID, $limit, $offset);
+			$members = array();
+			while($r = $res->getRow()) {
+				array_push($members,$r);
+			}
+			return $members;
+		}	
+		return false;
+	}
+  
+  public function countMembers() {
+		if($this->isValid) {
+			$DB = DB::getInstance();
+      $res = $DB->query("SELECT count(*) as num FROM web_roles_userassign WHERE roleID = '?' ", $this->roleID);
+      $r = $res->getRow();
+      $membertotal = $r['num'];
+      
+			return $membertotal;
+		}	
+		return false;
+	}
+	//********************************************************
+  
+  
 	// Returns array( privName => array(privName, title, value)
 	public function getPermissions($keyByName = true) {
 		$DB = DB::getInstance();

@@ -60,7 +60,7 @@
 
 			 	$("input[name^='recommendedDriver']").val("0");
 				$(""+id+"").val('1');
-					//alert(id + " " + $(""+id+"").val());
+        //alert(id + " " + $(""+id+"").val());
 									
 			}
 			function subtrValue(){
@@ -76,9 +76,18 @@
 		<script type="text/javascript" src="{$BASEURL}javascript/ui/ui.tabs.js"></script>
 			{literal}
 			<script type="text/javascript">
+        var offset = 1;
 				$(function(){
-					$("#tabs").tabs();
-				});
+          $("#tabs").tabs({
+            load: function(event, ui) { 
+              $('a', ui.panel).click(function() { 
+                $(ui.panel).load(this.href); 
+                return; 
+              }); 
+            } 
+          });
+        });
+        
 			</script>
 			{/literal}
 		{/if}

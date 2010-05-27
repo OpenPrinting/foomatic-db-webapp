@@ -13,7 +13,7 @@
 		{if $UPLOAD_ALLOWED}
 			<h2>Upload a driver tarball</h2>
 			<p>To upload your driver or check the status of one of your previous uploads, please visit  
-				<a href="{$BASEURL}drivers/mydrivers">uploads &amp; statuses</a>.
+				<a href="{$BASEURL}account/myuploads">uploads &amp; statuses</a>.
 			</p>	
 		{else}
 			<p><strong>Driver developers/printer manufacturers:</strong> you may upload printer drivers directly through 

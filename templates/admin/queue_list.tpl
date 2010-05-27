@@ -15,14 +15,6 @@
 				<li><a href="{$BASEURL}admin_printeruploads.php">Manage Printers</a></li>
 				<li><a href="{$BASEURL}admin_driveruploads.php">Manage Drivers</a></li>
 			</ul>
-			<div id="tabs-1">
-
-			</div>
-
-			<div id="tabs-2">
-			
-			</div>
-
 	</div>
 
 	<br><br>

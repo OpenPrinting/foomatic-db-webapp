@@ -1,7 +1,22 @@
 <?php
+//First try to get referring uri
+if (isset($_SERVER['HTTP_REFERER'])) {
+    $referrer = $_SERVER['HTTP_REFERER'];
+}
+else
+{
+  $referrer = " ";
+}
+
 include('inc/common.php');
 
-if($SESSION->isLoggedIn()) header('Location: /account/myuploads');
+//set referrer url
+$SESSION->setReferrer($referrer);
+
+if($SESSION->isLoggedIn()) 
+{
+  header('Location: /account/myuploads');
+}
 
 $PAGE->setActiveID('home');
 $PAGE->setPageTitle('Login');

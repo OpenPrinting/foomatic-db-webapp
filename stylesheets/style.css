@@ -47,7 +47,7 @@ p{margin:0 0 10px 0; font-size:13px; color:#4d4d4d; line-height:20px;}
 /* End hide from IE-mac */
 
 a:link { color:#336699; }
-a:visited { color:#7F9FB4; }
+a:visited { color:#7F9FB4; } 
 a:hover, a:focus { color:#003F69; text-decoration: underline; }
 
 
@@ -699,7 +699,7 @@ a:link{
 	/*text-decoration:none;*/
 }
 a:visited{
-	color:#7f9fb4;
+	color:#003f69;  /* original color: #7f9fb4; */
 	text-decoration:none;
 }
 a:hover{
@@ -745,4 +745,51 @@ div.success{
 	padding: 8px;
 	background: #DDF8CC;
 	border: 1px solid #80C65A;
+}
+
+
+/* Edit Roles Members style */
+.members {
+  position: relative;
+  border-top: 4px solid #cccccc;
+  border-bottom: 2px solid #cccccc;
+  background-color: #eeeeee;
+  margin-top: 25px;
+  padding-top: 15px;
+}
+
+.members h2 {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  padding: 0px 4px 0px 4px;
+  background-color: #ffffff;
+}
+
+#remove {
+  position: absolute;
+  top: 18px;
+  right: 4px;
+}
+
+.memberlist {
+  position: relative;
+  margin: 10px 0px 10px 0px;
+  border-top: 4px double #cccccc;
+}
+
+.memberlist table {
+ border-collapse:collapse;
+ border-bottom: 4px double #cccccc;
+}
+
+.memberlist table th {
+ text-align: left;
+ border-bottom: 1px solid #cccccc;
+}
+
+#paginate {
+  border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+  text-align: center;
 }

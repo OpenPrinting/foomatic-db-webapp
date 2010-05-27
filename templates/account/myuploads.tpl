@@ -4,7 +4,14 @@
 	{include file="page_breadcrumbs.tpl"}
 
 	<h1>My Uploads</h1>
-	<br><br>
+	
+  {if $isUploader || $isTrustedUploader || $isAdmin }
+      <a href="{$BASEURL}drivers/upload" >Upload New Driver</a>
+  {/if}&nbsp;&nbsp;
+  {if $isTrusted || $isAdmin }
+      <a href="{$BASEURL}printers/upload" >Upload New Printer</a>
+	{/if}
+  <br/>
 	<div id="tabs">
 			<ul>
 				<li><a href="{$BASEURL}account_printeruploads.php">Printers</a></li>

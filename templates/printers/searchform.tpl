@@ -70,10 +70,15 @@
 	
 
 	<h2>Add a new printer</h2>
-	<p>If you have experience with a printer that is not listed here, please contribute to our 
-		database by filling out the <a href="/printers/upload">add new printer form</a> on this site.
-		If you cannot find what you are looking for please send an email to:<br><br> openprinting [at] linuxfoundation [dot] org
-	</p>
+  {* 05-23-2010 PCN Added logic to toggle message for loggedin and not loggedin users *}
+  {if $isLoggedIn == "1"}
+    <p>If you have experience with a printer that is not listed here, please contribute to our 
+      database by filling out the <a href="/printers/upload">add new printer form</a> on this site.
+      If you cannot find what you are looking for please send an email to:<br><br> openprinting [at] linuxfoundation [dot] org
+    </p>
+    { else }
+    <p> You are not currently logged in. In order to add a new printer please <a href = "http://localhost:8088/login">login here</a> </p>
+  { /if }
 	
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
