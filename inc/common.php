@@ -2,7 +2,7 @@
 
 // REMOVE BEFORE GOING LIVE
 //exec('rm /srv/www/lptest/templates_c/*');
-include('/var/www/php_libs/class.phpmailer.php');
+include('/srv/www/php_libs/class.phpmailer.php');
 include('inc/siteconf.php');
 include('inc/db.php');
 include('inc/smarty/Smarty.class.php');
