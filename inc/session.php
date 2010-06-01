@@ -100,12 +100,7 @@ class Session {
           $res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Uploader'");
           if($r = $res->getRow()) {
            $id = $r['roleID'];
-           echo $id;
           } 
-          else
-          {
-            echo "NO default Uploader role, please fix me";
-          }
           
           $role = new UserRole($id);
           $role->addMember($this->user->getUserName());
