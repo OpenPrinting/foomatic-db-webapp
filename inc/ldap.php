@@ -50,7 +50,14 @@ class LDAP {
 				$d = array();
 				$d['userName'] = $info[0][$CONF->ldapUsernameField][0];
 				$d['fullName'] = $info[0]['cn'][0];
-				$d['firstName'] = $info[0]['givenName'][0];
+				
+				if(isset($info[0]['givenName'][0]) && $info[0]['givenName'][0] != ""){
+					$d['firstName'] = $info[0]['cn'][0];
+				}
+				else{
+					$d['firstName'] = $info[0]['givenName'][0];
+				}
+					
 				$d['lastName'] = $info[0]['sn'][0];
 				$d['email'] = $info[0][$CONF->ldapMailField][0];
 				return $d;
