@@ -17,22 +17,21 @@ class User {
 		if($userName) {
 			// Fetch some data from LDAP, eh?
 			$ldap = new LDAP(); // anon bind is ok
-			$usr = $userName;
-			unset($ldap);
-      
+			$usr = $ldap->getUser($userName);
+			unset($ldap);      
 			if($usr) {
 				$this->firstName = $usr['firstName'];
-      	$this->lastName = $usr['lastName'];
+				$this->lastName = $usr['lastName'];
 				$this->fullName = $usr['fullName'];
 				$this->userName = $usr['userName'];
 				$this->email = $usr['email'];
 				$this->valid = true;
-      }
-      else 
-      {
-				// What do we even do if we fail?
-			}
+      	}
+      	else 
+      	{
+			// What do we even do if we fail?
 		}
+	  }
 	}
 
 	public function isValid() { 
