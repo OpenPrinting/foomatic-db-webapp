@@ -40,26 +40,26 @@ class SiteConfig {
   //Set pagination for assigned role users
   public $role_pagesize = 10;
   
-  //Set email connection and messages
-  public $mailhost = " ";
-  public $mailusername = ' ';
-  public $mailpassword = ' ';
+  //Set email connection and messages SMTP
+  public $mailhost = "localhost";
+  public $mailusername = '';
+  public $mailpassword = '';
   
   //driver upload mail configuration
-  public $mailsendaddress_driver =" ";
+  public $mailsendaddress_driver ="openprinting@linuxfoundation.org";
   
-  public $mailfrom_driver =" ";
-  public $mailfromname_driver = " ";
+  public $mailfrom_driver ="openprinting@linuxfoundation.org";
+  public $mailfromname_driver = "OpenPrinting";
   
   public $mailsubject_driver = "Driver Uploaded to Openprinting";
   public $mailbody_driver = "Driver upload test Test .";
   
   
   //printer upload mail configuration
-  public $mailsendaddress_printer =" ";
+  public $mailsendaddress_printer ="openprinting@linuxfoundation.org";
   
-  public $mailfrom_printer =" ";
-  public $mailfromname_printer = " ";
+  public $mailfrom_printer ="openprinting@linuxfoundation.org";
+  public $mailfromname_printer = "OpenPrinting";
   
   public $mailsubject_printer = "Printer Uploaded to Openprinting";
   public $mailbody_printer = "Printer upload test Test .";
