@@ -48,6 +48,7 @@ class LDAP {
 			
 			if($info['count'] > 0) {
 				$d = array();
+				die("<pre>".print_r($info)."</pre>");
 				$d['userName'] = $info[0][$CONF->ldapUsernameField][0];
 				$d['fullName'] = $info[0]['cn'][0];
 				
