@@ -31,7 +31,7 @@ class SiteConfig {
 	public $ldapBaseDN = 'dc=freestandards,dc=org';
 	public $ldapUserBaseDN = 'ou=Users,dc=freestandards,dc=org';
 	public $ldapUsernameField = 'uid';
-	public $ldapMailField = 'mail';	*/
+	public $ldapMailField = 'mail';	
   
   //Set size for pagination for printer and driver queue
   public $printer_queue_pagesize = 5;
