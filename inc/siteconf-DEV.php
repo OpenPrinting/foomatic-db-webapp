@@ -10,15 +10,15 @@ class SiteConfig {
 	public $mainURL = 'http://www.linuxfoundation.org'; //main site for tabs
 	public $mainURI = '/collaborate/workgroups/openprinting/'; // with tailing slash, from document root
 
-	public $dbUser = 'opuser';
+	/*public $dbUser = 'opuser';
     public $dbPass = 'Goose5ai';
 	public $db = 'openprinting';
-    public $dbServer = 'db.linuxfoundation.org';
+    public $dbServer = 'db.linuxfoundation.org';*/
 	
-	/*public $dbUser = 'root';
-	public $dbPass = 'administrator';
-	public $db = 'openprinting';
-	public $dbServer = 'localhost';*/
+	public $dbUser = 'root';
+	public $dbPass = 'lfdev';
+	public $db = 'openprinting_dev';
+	public $dbServer = 'localhost';
 	
 	public $ldapServer = '140.211.169.120';
     public $ldapServer2 = false;
