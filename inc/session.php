@@ -97,7 +97,8 @@ class Session {
           
           //Get role ID for default Uploader role
           $DB = DB::getInstance();
-          $res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Uploader'");
+          //$res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Uploader'"); //Needs to be printer uploader per Till
+          $res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Printer Uploader'");
           if($r = $res->getRow()) {
            $id = $r['roleID'];
           } 
