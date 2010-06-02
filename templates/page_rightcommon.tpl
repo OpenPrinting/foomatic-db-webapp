@@ -16,12 +16,9 @@
 					<div>
 						<ul>
 							<li> <a href="{$BASEURL}account/myuploads" >My Uploads</a></li>
-							{if $isUploader || $isTrustedUploader || $isAdmin }
 							<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
-							{/if}
-							{if $isTrusted || $isAdmin }
 							<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
-							{/if}
+
 							{if $isAdmin }
 							<li><a href="{$BASEURL}admin/queue" >Queue Administration</a></li>
 							<li><a href="{$BASEURL}admin/roleadmin" >Roles Administration</a></li>
