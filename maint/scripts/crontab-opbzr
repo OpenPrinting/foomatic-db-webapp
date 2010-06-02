@@ -1,0 +1,13 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow command
+
+# Every 24 hours: Update the BZR repositories of foomatic-db and
+# foomatic-db-nonfree based on the changes in the MySQL database of
+# OpenPrinting
+20  0  *  *  *  /srv/www/openprinting/maint/scripts/updatebzrfrommysql
+
+# Every minute: Check for PPD files to be checked into the BZR repositories
+# and check them in
+ *  *  *  *  *  php /srv/www/openprinting/maint/scripts/commitppdstobzr.php
