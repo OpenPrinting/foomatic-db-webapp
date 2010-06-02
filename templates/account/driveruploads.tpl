@@ -1,3 +1,7 @@
+{if $loggedout == "true"}
+	<div class="error"><strong>You do not have the necessary permissions to access the requested page.</strong></div>
+{else}
+
 <table width="100%" cellpadding="2" cellspacing="1" style="background: #ccc;">
     <tr style="background: #EEE;">
         <td>Driver Name
@@ -52,7 +56,5 @@
 	{/foreach}
 
 
- 
-
-
 </table>
+{/if}
