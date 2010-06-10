@@ -183,7 +183,7 @@ sub listpackagefilesformask {
 			     ispkgsys($pkgsys, $_);
 			 } grep {
 			     isarchitecture($pkgtype, $_);
-			 } ($dirhtml =~ /href=\"?(?![\?\&\/])($files)\"?/g));
+			 } ($dirhtml =~ /href=\"(?![\?\&\/])($files)\"/gi));
 		}
 	    } else {
 		if (islsbversion($lsbversion, $files) &&
