@@ -79,14 +79,19 @@ class Translation
     return $this->loaded;
   }
 
-  public function toXML($indent = 0) {
+  public function toXML($indent = 0, $link = False) {
     $xmlstr = "";
     $is = str_pad("", $indent);
     foreach($this->translations as $lang => $trans) { 
       if ($lang == "en" or !strlen($trans)) continue;
-      $xmlstr .= "$is<$lang>";
-      $xmlstr .= htmlspecialchars($trans);
-      $xmlstr .= "</$lang>\n";
+      if ($link == False) {
+	$xmlstr .= "$is<$lang>";
+	$xmlstr .= htmlspecialchars($trans);
+	$xmlstr .= "</$lang>\n";
+      } else {
+	$xmlstr .= "$is<$lang url=\"" .
+	  htmlspecialchars($trans) . "\" />\n";
+      }
     }
 
     return $xmlstr;

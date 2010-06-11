@@ -373,7 +373,7 @@ class Driver
       if ($this->translation["licensetext"])
 	$xmlstr .= $this->translation["licensetext"]->toXML($indent + 4);
       if ($this->translation["licenselink"])
-	$xmlstr .= $this->translation["licenselink"]->toXML($indent + 4);
+	$xmlstr .= $this->translation["licenselink"]->toXML($indent + 4, True);
       $xmlstr .= "$is  </licensetext>\n";
     }
     if ($this->nonfreesoftware == true)
