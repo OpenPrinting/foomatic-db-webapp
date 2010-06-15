@@ -1,4 +1,4 @@
 # Make a daily snapshot of the Foomatic BZR (to allow download for users
 # behind a firewall which blocks BZR access)
 #
-20 0 * * * (cd /tmp; /srv/www/openprinting/maint/scripts/mksnapshot)
+40 0 * * * (cd /tmp; /srv/www/openprinting/maint/scripts/mksnapshot)
