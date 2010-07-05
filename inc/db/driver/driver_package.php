@@ -8,6 +8,7 @@ class DriverPackage
 
   public $driver_id;
   public $scope;
+  public $fingerprint;
   public $name;
 
   public function __construct($id, $data) {
@@ -18,6 +19,7 @@ class DriverPackage
 
     $this->driver_id = $id;
     $this->scope = (string)$data['scope'];
+    $this->fingerprint = (string)$data['fingerprint'];
 
     switch((string)gettype($data)) {
     case 'object':
@@ -39,6 +41,10 @@ class DriverPackage
     $xmlstr = "$is<package";
     if (strlen($this->scope)) {
       $xmlstr .= " scope=\"" . htmlspecialchars($this->scope) . "\"";
+    }
+    if (strlen($this->fingerprint)) {
+      $xmlstr .= " fingerprint=\"" . htmlspecialchars($this->fingerprint) .
+	"\"";
     }
     $xmlstr .= ">" . htmlspecialchars($this->name) . "</package>\n";
     
@@ -64,10 +70,14 @@ class DriverPackage
 
     // Insert a new record only if there are no records
     if (!$count) {
-      $query = "insert into driver_package(driver_id,scope,name) values(";
+      $query =
+	"insert into driver_package(driver_id,scope,fingerprint,name) values(";
       $query .= "\"".mysql_real_escape_string($this->driver_id)."\",";
       $query .= "\"".mysql_real_escape_string($this->scope)."\",";
+      $query .= "\"".mysql_real_escape_string($this->fingerprint)."\",";
       $query .= "\"".mysql_real_escape_string($this->name)."\")";
+    } else {
+      $query = "update driver_package set fingerprint=\"{$this->fingerprint}\", name=\"{$this->name}\" where driver_id=\"{$this->driver_id}\" and scope=\"{$this->scope}\"";
     }
 
     $result = $db->query($query);
