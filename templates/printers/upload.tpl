@@ -13,6 +13,9 @@
 {elseif $msg=="error"}
 <h1>Add a New Printer</h1>
 <div class="error">
+	{if $type=='makemodel'}
+	The manufacturer and model fields must be filled!
+	{/if}
 	{if $type=='exists'}
 	Printer already exists in the database!
 	{/if}
