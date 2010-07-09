@@ -59,7 +59,7 @@ class DriverPackage
     if (!$this->loaded) return false;
 
     // Find out if there is already an entry present
-    $query = "select * from driver_package where driver_id=\"{$this->driver_id}\" and scope=\"{$this->scope}\"";
+    $query = "select * from driver_package where driver_id=\"{$this->driver_id}\" and scope=\"{$this->scope}\" and fingerprint=\"{$this->fingerprint}\"";
     $result = $db->query($query);
     if ($result == null) {
       echo __FILE__."[ERROR]".$db->getError()."\n";
@@ -77,7 +77,7 @@ class DriverPackage
       $query .= "\"".mysql_real_escape_string($this->fingerprint)."\",";
       $query .= "\"".mysql_real_escape_string($this->name)."\")";
     } else {
-      $query = "update driver_package set fingerprint=\"{$this->fingerprint}\", name=\"{$this->name}\" where driver_id=\"{$this->driver_id}\" and scope=\"{$this->scope}\"";
+      $query = "update driver_package set name=\"{$this->name}\" where driver_id=\"{$this->driver_id}\" and scope=\"{$this->scope}\" and fingerprint=\"{$this->fingerprint}\"";
     }
 
     $result = $db->query($query);
