@@ -54,6 +54,7 @@ my $onlydrvpkg = ($param{'onlydriverpackages'} ? 1 : 0);
 my $sourcedrvpkg = ($param{'sourcedriverpackages'} ? 1 : 0);
 my $nobinarydrvpkg = ($param{'nobinarydriverpackages'} ? 1 : 0);
 my $onlynewestdrvpkg = ($param{'onlynewestdriverpackages'} ? 1 : 0);
+my $onlysigneddrvpkg = ($param{'onlysigneddriverpackages'} ? 1 : 0);
 my $architectures = $param{'architectures'};
 my $onlyscopes = $param{'onlyscopes'};
 my $notscopes = $param{'notscopes'};
@@ -939,6 +940,8 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 					(($notscopes =~ /\ball\b/) ||
 					 ($notscopes =~
 					  /\b\Q$pkg->{'scope'}\E\b/)));
+			    next if $onlysigneddrvpkg &&
+				!$pkg->{'fingerprint'};
 			    $arch = $pkg->{'arch'};
 			    $pkgsys = $pkg->{'pkgsys'};
 			    $output .= "      </" . $openedarch . ">\n" if
@@ -1275,6 +1278,8 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 					(($notscopes =~ /\ball\b/) ||
 					 ($notscopes =~
 					  /\b\Q$pkg->{'scope'}\E\b/)));
+			    next if $onlysigneddrvpkg &&
+				!$pkg->{'fingerprint'};
 			    $arch = $pkg->{'arch'};
 			    $pkgsys = $pkg->{'pkgsys'};
 			    $output .= ($arch ne "src" ?
