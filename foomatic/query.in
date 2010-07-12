@@ -322,6 +322,11 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			    }
 			    $output .= "    </autodetect>\n";
 			}
+			if ($pr->{'comment'}) {
+			    $output .= "    <comments>\n" .
+				Foomatic::DB::htmlify($pr->{'comment'}) .
+				"\n    </comments>\n";
+			}
 			$output .= "  </printer>\n";
 		    } else {
 			$output .= "  <printer>\n" .
@@ -475,6 +480,12 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 				    $pr->{"snmp_cmd"} . "\n" if
 				    defined($pr->{"snmp_cmd"});
 			    }
+			}
+			if ($pr->{'comment'}) {
+			    my $ctext = $pr->{'comment'};
+			    $ctext =~ s/\n/\n    /gs;
+			    $output .= "  Comments:\n    " .
+				$ctext . "\n";
 			}
 		    } else {
 			$output .= "$id|$make|$model\n";
@@ -909,6 +920,11 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 			  defined($prexc->{'excphoto'}) ||
 			  defined($prexc->{'excload'}) ||
 			  defined($prexc->{'excspeed'})));
+		    if ($dr->{'comment'}) {
+			$output .= "    <comments>\n" .
+			    Foomatic::DB::htmlify($dr->{'comment'}) .
+			    "\n    </comments>\n";
+		    }
 		    if (scalar(@packages) > 0) {
 			$output .= "    <packages>\n";
 			my ($openedarch, $arch, $oldarch) = ("", "", "");
@@ -1239,6 +1255,12 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 		    } elsif (defined($dr->{'speed'})) {
 			$output .= "  Rendering speed: " .
 			    $dr->{'speed'} . "\n";
+		    }
+		    if ($dr->{'comment'}) {
+			my $ctext = $dr->{'comment'};
+			$ctext =~ s/\n/\n    /gs;
+			$output .= "  Comments:\n    " .
+			    $ctext . "\n";
 		    }
 		    if (scalar(@packages) > 0) {
 			my ($arch, $oldarch) = ("", "");
