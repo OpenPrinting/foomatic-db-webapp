@@ -944,6 +944,14 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 				($pkg->{'url'} !~ m!^(https?|ftp)://! ?
 				 $siteurl : "") .
 				 $pkg->{'url'} . "</url>\n";
+			    if ($pkg->{'fingerprint'}) {
+				$output .= "          <fingerprint>" .
+				    ($pkg->{'fingerprint'} !~ 
+				         m!^(https?|ftp)://! ?
+				     $siteurl : "") .
+				     $pkg->{'fingerprint'} . 
+				         "</fingerprint>\n";
+			    }
 			    $output .= "          <realversion>" .
 				$pkg->{'realversion'} . "</realversion>\n";
 			    $output .= "          <version>" .
@@ -1264,6 +1272,14 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 				($pkg->{'url'} !~ m!^(https?|ftp)://! ?
 				 $siteurl : "") .
 				 $pkg->{'url'} . "\n";
+			    if ($pkg->{'fingerprint'}) {
+				$output .=
+				    "      Signature key fingerprint: " .
+				    ($pkg->{'fingerprint'} !~
+				         m!^(https?|ftp)://! ?
+				     $siteurl : "") .
+				     $pkg->{'fingerprint'} . "\n";
+			    }
 			    $output .= "      Real Version: " .
 				$pkg->{'realversion'} . "\n";
 			    $output .= "      Version: " .

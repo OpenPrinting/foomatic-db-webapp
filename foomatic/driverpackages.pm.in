@@ -392,13 +392,14 @@ sub drivermask {
             }
             if ($package->{'scope'}) {
 		my $u = $package->{'url'};
+		my $p;
                 if ($package->{'fingerprint'}) {
-                    $u =~
-                        s/;/;($package->{'scope'}:$package->{'fingerprint'})/g;
+		    $p = "($package->{'scope'}:$package->{'fingerprint'})";
                 } else {
-		    $u =~ s/;/;($package->{'scope'})/g;
+		    $p = "($package->{'scope'})";
 		}
-                $driverfilemask .= "($package->{'scope'})$u";
+		$u =~ s/;/;$p/g;
+                $driverfilemask .= "$p$u";
             } else {
 		$driverfilemask .= $package->{'url'};
             }
