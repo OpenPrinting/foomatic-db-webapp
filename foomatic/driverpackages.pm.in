@@ -234,27 +234,29 @@ sub packagesformask {
     my %filesalreadythere;
     foreach my $package (@packages) {
 	my ($scope, $url, $file, $basename, $version, $release, $lsbver,
-	    $arch, $pkgsys);
-	if ($package =~ m!^(\(([^\(\)]*)\)|)(([^\(\)]*?/|)(([^/]+?)-([^/-]+)-([^/-]+)lsb([^/-]+)\.([^\./-]+)\.(rpm)))$!) {
+	    $arch, $pkgsys, $fingerprint);
+	if ($package =~ m!^(\(([^\(\)\:]+)(\:([^\(\)]+)|)\)|)(([^\(\)]*?/|)(([^/]+?)-([^/-]+)-([^/-]+)lsb([^/-]+)\.([^\./-]+)\.(rpm)))$!) {
 	    $scope = $2;
-	    $url = $3;
-	    $file = $5;
-	    $basename = $6;
-	    $version = $7;
-	    $release = $8;
-	    $lsbver = $9;
-	    $arch = $10;
-	    $pkgsys = $11;
-	} elsif ($package =~ m!^(\(([^\(\)]*)\)|)(([^\(\)]*?/|)(([^/]+?)_([^_/-]+)-([^_/-]+)lsb([^_/-]+)_([^_/-]+)\.(deb)))$!) {
+	    $fingerprint = $4;
+	    $url = $5;
+	    $file = $7;
+	    $basename = $8;
+	    $version = $9;
+	    $release = $10;
+	    $lsbver = $11;
+	    $arch = $12;
+	    $pkgsys = $13;
+	} elsif ($package =~ m!^(\(([^\(\)\:]+)(\:([^\(\)]+)|)\)|)(([^\(\)]*?/|)(([^/]+?)_([^_/-]+)-([^_/-]+)lsb([^_/-]+)_([^_/-]+)\.(deb)))$!) {
 	    $scope = $2;
-	    $url = $3;
-	    $file = $5;
-	    $basename = $6;
-	    $version = $7;
-	    $release = $8;
-	    $lsbver = $9;
-	    $arch = $10;
-	    $pkgsys = $11;
+	    $fingerprint = $4;
+	    $url = $5;
+	    $file = $7;
+	    $basename = $8;
+	    $version = $9;
+	    $release = $10;
+	    $lsbver = $11;
+	    $arch = $12;
+	    $pkgsys = $13;
 	} else {
 	    next;
 	}
@@ -269,6 +271,7 @@ sub packagesformask {
 	    $realversion .= $extraversion;
 	}
 	$packagedata->{scope} = $scope;
+	$packagedata->{fingerprint} = $fingerprint;
 	$packagedata->{basename} = $basename;
 	$packagedata->{url} = $url;
 	$packagedata->{file} = $file;
@@ -335,6 +338,7 @@ sub downloadlinkline {
 	    my $basename = $download->{basename};
 	    my $pkgsys = $download->{pkgsys};
 	    my $lsbver = $download->{lsbver};
+	    my $fingerprint = $download->{fingerprint};
 	    next if ($mode == 1) && ($archs{$arch} eq $archs{$oldarch}) &&
 		($basename eq $oldbasename) && ($pkgsys eq $oldpkgsys); 
 	    $driverdownload .= ", " if $notfirst;
@@ -359,6 +363,10 @@ sub downloadlinkline {
 		($mode == 0 ? $download->{text} :
 		 ($numcmpbasenames > 1 ? $basename : $archs{$arch}) .
 		 " (" . uc($pkgsys) . " for LSB $lsbver)") . "</a>";
+	    if ($fingerprint) {
+		$driverdownload .= "<font size=\"-3\">" .
+		    " (<a href=\"$fingerprint\">Signed</a>)</font>";
+	    }
 	    $oldarch = $arch;
 	    $oldbasename = $basename;
 	    $oldpkgsys = $pkgsys;
@@ -379,13 +387,21 @@ sub drivermask {
     if (defined($drvdata->{'packages'})) {
 	for my $package (@{$drvdata->{'packages'}}) {
 	    $driverfilemask .= ";" if $driverfilemask;
-	    if ($package->{'scope'}) {
+            if ($package->{'fingerprint'} && !$package->{'scope'}) {
+                $package->{'scope'} = "general";
+            }
+            if ($package->{'scope'}) {
 		my $u = $package->{'url'};
-		$u =~ s/;/;($package->{'scope'})/g;
-		$driverfilemask .= "($package->{'scope'})$u";
-	    } else {
+                if ($package->{'fingerprint'}) {
+                    $u =~
+                        s/;/;($package->{'scope'}:$package->{'fingerprint'})/g;
+                } else {
+		    $u =~ s/;/;($package->{'scope'})/g;
+		}
+                $driverfilemask .= "($package->{'scope'})$u";
+            } else {
 		$driverfilemask .= $package->{'url'};
-	    }
+            }
 	}
     }
     $driverfilemask =

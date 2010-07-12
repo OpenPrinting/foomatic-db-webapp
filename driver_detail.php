@@ -118,11 +118,17 @@ $packages = $res->toArray();
 
 $packagedownloads = "";
 $mask = "";
-foreach($packages as $p)
-    if (strlen($p['name']) > 0)
-	$mask .= (strlen($mask) > 0 ? ";" : "") .
-	    (strlen($p['scope']) > 0 ? "({$p['scope']})" : "") .
-	    $p['name'];
+foreach($packages as $p) {
+  if (strlen($p['name']) > 0) {
+    $params =
+      (strlen($p['fingerprint']) > 0 ?
+       (strlen($p['scope']) > 0 ? "({$p['scope']}:" : "(general:") .
+       $p['fingerprint'] . ")" :
+       (strlen($p['scope']) > 0 ? "({$p['scope']})" : ""));
+    $pattern = preg_replace("/;/", ";$params", $p['name']);
+    $mask .= (strlen($mask) > 0 ? ";" : "") . $params . $pattern;
+  }
+}
 if (strlen($mask) <= 0) {
     $mask = "{$_GET['driver']};openprinting-{$_GET['driver']};" .
 	"openprinting-ppds-{$_GET['driver']}";
@@ -358,7 +364,7 @@ if ($packagedownloads != "") {
 	"<td width=\"80%\" colspan=\"5\"><font size=\"-2\">" .
 	"Driver packages: {$packagedownloads}" .
 	"<font size=\"-3\">" .
-	"(<a href=\"http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages\">" .
+	" (<a href=\"http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages\">" .
 	"How to install</a>)</font><br>" .
 	"</font></td>" .
 	"<td width=\"2%\"></td></tr>";

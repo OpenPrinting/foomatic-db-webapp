@@ -175,11 +175,17 @@ while ($rowDriver = $resDriverList->getRow()) {
 
 	$packagedownloads = "";
 	$mask = "";
-	foreach($packages as $p)
-	    if (strlen($p['name']) > 0)
-		$mask .= (strlen($mask) > 0 ? ";" : "") .
-		    (strlen($p['scope']) > 0 ? "({$p['scope']})" : "") .
-		    $p['name'];
+	foreach($packages as $p) {
+	  if (strlen($p['name']) > 0) {
+	    $params =
+	      (strlen($p['fingerprint']) > 0 ?
+	       (strlen($p['scope']) > 0 ? "({$p['scope']}:" : "(general:") .
+	       $p['fingerprint'] . ")" :
+	       (strlen($p['scope']) > 0 ? "({$p['scope']})" : ""));
+	    $pattern = preg_replace("/;/", ";$params", $p['name']);
+	    $mask .= (strlen($mask) > 0 ? ";" : "") . $params . $pattern;
+	  }
+	}
 	if (strlen($mask) <= 0) {
 	    $mask = "{$driver_id};openprinting-{$driver_id};" .
 		"openprinting-ppds-{$driver_id}";
@@ -465,7 +471,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    if ($packagedownloads != "") {
 		$drvpackages = "{$packagedownloads}" .
 		    "<font size=\"-3\">" .
-		    "(<a href=\"http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages\">" .
+		    " (<a href=\"http://www.linux-foundation.org/en/OpenPrinting/Database/DriverPackages\">" .
 		    "How to install</a>)</font>";
 		$infobox .= "Driver packages: " . $drvpackages . "<br>";
 	    }
