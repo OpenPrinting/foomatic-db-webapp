@@ -108,6 +108,9 @@ done
 
 echo Indexing Debian repository ...
 
+# Remove old .db files, their format can change between apt versions
+find debian -name "*.db" | xargs rm
+
 cat > debian/apt-ftparchive.conf <<EOF
 Dir {
   ArchiveDir "/srv/www/linuxprinting.org/download/printdriver/debian";
@@ -140,7 +143,6 @@ APT::FTPArchive::Release::Description "Distribution-independent printer driver p
 EOF
 done
 
-rm -f debian/cache/*
 apt-ftparchive generate debian/apt-ftparchive.conf || exit 1
 for lsbrelease in 3.1 3.2; do
     apt-ftparchive -c debian/apt-lsb$lsbrelease-release.conf release /srv/www/linuxprinting.org/download/printdriver/debian/dists/lsb$lsbrelease > /srv/www/linuxprinting.org/download/printdriver/debian/dists/lsb$lsbrelease/Release || exit 1
