@@ -1,0 +1,148 @@
+#!/bin/sh
+
+# Auto conversion of all 32-bit and 64-bit x86 RPMs to DEBs and indexing
+# of the DEB repository
+
+# Needed to be installed (script runs only on x86_64/amd64):
+# fakeroot, alien, linux32, ia32-libs, apt-ftparchive
+
+componentexceptions=../components.lst
+
+list=`( cd /srv/www/linuxprinting.org/public/; ./query.cgi type=driver moreinfo=1 onlydriverpackages=1 ) | egrep '^([^ ]| *File:.*)' | sed -e s/File://`
+
+component() {
+    local component i
+    for i in $list; do
+	if echo $i | grep -q '\.'; then 
+	    if [ $1 == $i ]; then
+		echo $component
+		break
+	    fi
+	else component=$i
+	fi
+    done
+    echo lsbddk
+}
+
+cd /srv/www/linuxprinting.org/download/printdriver
+
+#for lsbrelease in 3.2 3.1; do
+for lsbrelease in 3.2; do
+    mkdir tmp
+    cd tmp
+    for p in ../RPMS/noarch/*lsb$lsbrelease*.rpm; do
+	echo Converting package $p to Debian format ...
+	fakeroot alien -ckg $p || exit
+	d=`echo $p | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
+	cd $d
+	#perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
+	perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\#\1/' debian/rules
+	dpkg-buildpackage -rfakeroot || exit
+	cd ..
+    done
+    for p in *.deb; do
+	echo Moving package $p into repository ...
+	arch=`echo $p | perl -e '<> =~ /_([^_]+).deb$/; print $1'`
+	component=`perl -e 'open F, "< '$componentexceptions'"; while ($l = <F>) {($re, $c) = split / /, $l; if ("'$p'" =~ /$re/) {print "$c"; last}} close F;'`
+	if [ ! -n "$component" ]; then
+	    component=`echo $p | perl -e '<> =~ /^([^_]+)_\d/; print $1' | perl -p -e 's/^openprinting-(ppds-|)//'`
+	fi
+	for a in amd64 i386; do
+	    mkdir -p ../debian/dists/lsb$lsbrelease/$component/binary-$a/ || exit 1
+	    cp $p ../debian/dists/lsb$lsbrelease/$component/binary-$a/ || exit 1
+	done
+	rm $p
+    done
+    cd ..
+    rm -rf tmp
+    mkdir tmp
+    cd tmp
+    for p in ../RPMS/*64/*lsb$lsbrelease*.rpm; do
+	echo Converting package $p to Debian format ...
+	fakeroot alien -ckg $p || exit
+	d=`echo $p | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
+	cd $d
+	perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
+	perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\#\1/' debian/rules
+	dpkg-buildpackage -aamd64 -rfakeroot || exit
+	cd ..
+    done
+    for p in *.deb; do
+	echo Moving package $p into repository ...
+	arch=`echo $p | perl -e '<> =~ /_([^_]+).deb$/; print $1'`
+	component=`perl -e 'open F, "< '$componentexceptions'"; while ($l = <F>) {($re, $c) = split / /, $l; if ("'$p'" =~ /$re/) {print "$c"; last}} close F;'`
+	if [ ! -n "$component" ]; then
+	    component=`echo $p | perl -e '<> =~ /^([^_]+)_\d/; print $1' | perl -p -e 's/^openprinting-(ppds-|)//'`
+	fi
+	mkdir -p ../debian/dists/lsb$lsbrelease/$component/binary-$arch/ || exit 1
+	mv $p ../debian/dists/lsb$lsbrelease/$component/binary-$arch/ || exit 1
+    done
+    cd ..
+    rm -rf tmp
+
+    mkdir tmp
+    cd tmp
+    for p in ../RPMS/i?86/*lsb$lsbrelease*.rpm; do
+	echo Converting package $p to Debian format ...
+	fakeroot alien -ckg $p || exit
+	d=`echo $p | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
+	cd $d
+	perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
+	perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\#\1/' debian/rules
+	dpkg-buildpackage -ai386 -rfakeroot || exit
+	cd ..
+    done
+    for p in *.deb; do
+	echo Moving package $p into repository ...
+	arch=`echo $p | perl -e '<> =~ /_([^_]+).deb$/; print $1'`
+	component=`perl -e 'open F, "< '$componentexceptions'"; while ($l = <F>) {($re, $c) = split / /, $l; if ("'$p'" =~ /$re/) {print "$c"; last}} close F;'`
+	if [ ! -n "$component" ]; then
+	    component=`echo $p | perl -e '<> =~ /^([^_]+)_\d/; print $1' | perl -p -e 's/^openprinting-(ppds-|)//'`
+	fi
+	mkdir -p ../debian/dists/lsb$lsbrelease/$component/binary-$arch/ || exit 1
+	mv $p ../debian/dists/lsb$lsbrelease/$component/binary-$arch/ || exit 1
+    done
+    cd ..
+    rm -rf tmp
+done
+
+echo Indexing Debian repository ...
+
+cat > debian/apt-ftparchive.conf <<EOF
+Dir {
+  ArchiveDir "/srv/www/linuxprinting.org/download/printdriver/debian";
+  CacheDir "/srv/www/linuxprinting.org/download/printdriver/debian/cache";
+};
+
+EOF
+
+for lsbrelease in 3.1 3.2; do
+    components=`(cd debian/dists/lsb$lsbrelease/; ls -1d */.) | cut -d / -f 1`
+    components=`echo $components`
+    echo $components
+    #perl -p -i -e 's/(Sections\s+\")[^\"]*(\";)/$1'"$components"'$2/' debian/apt-ftparchive.conf
+    cat >> debian/apt-ftparchive.conf <<EOF
+Tree "dists/lsb$lsbrelease" {
+  Sections "$components";
+  Architectures "i386 amd64";
+};
+EOF
+    #perl -p -i -e 's/(::Components\s+\")[^\"]*(\";)/$1'"$components"'$2/' debian/apt-lsb3.2-release.conf
+    cat > debian/apt-lsb$lsbrelease-release.conf <<EOF
+APT::FTPArchive::Release::Origin \"http://www.openprinting.org/download/printdri\
+ver/debian/\";
+APT::FTPArchive::Release::Label "printdriver";
+APT::FTPArchive::Release::Suite "lsb$lsbrelease";
+APT::FTPArchive::Release::Codename "lsb$lsbrelease";
+APT::FTPArchive::Release::Architectures "i386 amd64";
+APT::FTPArchive::Release::Components "$components";
+APT::FTPArchive::Release::Description "Distribution-independent printer driver packages in Debian package format, for LSB-$lsbrelease-based distros";
+EOF
+done
+
+rm -f debian/cache/*
+apt-ftparchive generate debian/apt-ftparchive.conf || exit 1
+for lsbrelease in 3.1 3.2; do
+    apt-ftparchive -c debian/apt-lsb$lsbrelease-release.conf release /srv/www/linuxprinting.org/download/printdriver/debian/dists/lsb$lsbrelease > /srv/www/linuxprinting.org/download/printdriver/debian/dists/lsb$lsbrelease/Release || exit 1
+done
+echo Done.

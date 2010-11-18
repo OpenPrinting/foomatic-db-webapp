@@ -167,6 +167,7 @@ EOF
 done
 
 # Do the actual indexing
+rm -f debian/cache/*
 apt-ftparchive generate debian/apt-ftparchive.conf || exit 1
 for lsbrelease in 3.1 3.2; do
     apt-ftparchive -c debian/apt-lsb$lsbrelease-release.conf release $maindir/debian/dists/lsb$lsbrelease > $maindir/debian/dists/lsb$lsbrelease/Release || exit 1
