@@ -358,7 +358,7 @@ sub downloadlinkline {
 		(lc($pkgsys) eq "rpm" ? 
 		 "application/x-redhat-package-manager" :
 		 (lc($pkgsys) eq "deb" ?
-		  "application/x-debian-package" : 
+		  "application/x-deb" : 
 		  "application/octet-stream")) . "\">" .
 		($mode == 0 ? $download->{text} :
 		 ($numcmpbasenames > 1 ? $basename : $archs{$arch}) .
