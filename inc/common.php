@@ -2,7 +2,7 @@
 
 // REMOVE BEFORE GOING LIVE
 //exec('rm /srv/www/lptest/templates_c/*');
-include('/srv/www/php_libs/class.phpmailer.php');
+include('libphp-phpmailer/class.phpmailer.php');
 include('inc/siteconf.php');
 include('inc/db.php');
 include('inc/smarty/Smarty.class.php');
@@ -40,10 +40,10 @@ if($SESSION->isLoggedIn()) {
 }
 
 // OpenPrinting RSS for right pane
-$rss = fetch_rss('http://forums.freestandards.org/rss.php?21');
-$rss = array_slice($rss->items,0,4);
-foreach($rss as &$r) { $r['pubdate'] = date('M d, Y',strtotime($r['pubdate'])); }
-$SMARTY->assign('AnnouncementsRSS',$rss);
-unset($rss);
+//$rss = fetch_rss('http://forums.freestandards.org/rss.php?21');
+//$rss = array_slice($rss->items,0,4);
+//foreach($rss as &$r) { $r['pubdate'] = date('M d, Y',strtotime($r['pubdate'])); }
+//$SMARTY->assign('AnnouncementsRSS',$rss);
+//unset($rss);
 
 ?>

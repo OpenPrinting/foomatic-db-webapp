@@ -1,0 +1,6 @@
+#!/bin/sh
+
+TOPLEVEL=/srv/www/openprinting
+
+cd $TOPLEVEL/foomatic
+exec /usr/bin/perl ./query "$@"

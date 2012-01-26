@@ -18,7 +18,7 @@ if ($_GET['format'] == "xml") {
   header("Content-Disposition: inline; filename=\"query.txt\"");
 }
 
-$querycmdline = "cd foomatic; ./query";
+$querycmdline = "./query-helper";
 foreach($_GET as $k => $v) {
   $querycmdline .= " " . urldecode($k) . "='" . urldecode($v) . "'";
 }

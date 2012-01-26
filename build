@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# Declare vars
+TIMESTAMP=`date +%Y%m%d%H%M%S`
+BASE=/srv/www/openprinting
+
+echo "Removing Cache and Template Cache Directories from $BASE"
+sudo rm -rf $BASE/templates_c/*
+sudo rm -rf $BASE/cache/*
+echo
+
+# Prepare Foomatic-based backend scripts
+SITEURL=http://www.openprinting.org
+# Work directory for Foomatic-based backend scripts
+WORKDIR=$BASE/foomatic
+# Directory for Perl libraries of Foomatic
+LIBDIR=foomatic-db-engine/lib
+ALIBDIR="$WORKDIR/$LIBDIR"
+# Directory of the Foomatic utilities
+FOOUTILDIR=foomatic-db-engine
+# File download area
+DOWNLOADDIR=$BASE/download
+# Download area for driver packages
+DRIVERDIR=$DOWNLOADDIR/printdriver
+# URL for driver package download
+DRIVERDIRURL="/download/printdriver"
+# URL for PPD file download
+PPDDIRURL="/foomatic-db/db/source/"
+# Directory for administrative scripts
+SCRIPTDIR=.
+ASCRIPTDIR="$WORKDIR/$SCRIPTDIR"
+# PHP site config file
+SITECONFPHP="../inc/siteconf.php"
+( cd $WORKDIR
+    ln -sf `pwd`/foomatic-db ..
+    echo 'Index for available driver packages ...'
+    ( cd $DRIVERDIR
+	ls -1 RPMS/*/*.rpm debian/dists/*/*/*/*.deb > index.txt
+    )
+    echo "Config file for MySQL database access ..."
+    rm -f mysql.conf
+    cp mysql.conf.in mysql.conf
+    incomment=0
+    cat $SITECONFPHP | grep 'public \$db' | \
+    while read line; do
+	key=
+	value=
+	if echo $line | grep -q '/\*.*\*/'; then
+	    line=`echo $line | sed -re 's:^(.*)/\*.*\*/(.*)$:\1\2:'`
+	    incomment=0
+	fi
+	if echo $line | grep -q '/\*'; then
+	    line=`echo $line | sed -re 's:^(.*)/\*.*$:\1:'`
+	    incomment=1
+	fi
+	if echo $line | grep -q '\*/'; then
+	    line=`echo $line | sed -re 's:^.*\*/(.*)$:\1:'`
+	    incomment=0
+	fi
+	if [ $incomment = 0 ]; then
+	    eval "$(echo $line | sed -nre 's/^\s*public\s+\$(db\S*?)\s*=\s*\S(\S*?)\S\s*\;.*$/key="${key:-\1}"; value="${value:-\2}";/p')"
+	    sed -e "s/@$key@/$value/" mysql.conf > mysql.conf.new
+	    if [ -r mysql.conf.new ]; then
+		mv mysql.conf.new mysql.conf
+	    fi
+	fi
+    done
+    mkdir -p $FOOUTILDIR/etc
+    cp mysql.conf $FOOUTILDIR/etc
+    echo 'Substitutions:'
+    for file in *.in; do
+	rm -f ${file%.in}
+	cat $file | \
+	    perl -p -e "s,\@SITEURL\@,$SITEURL," | \
+	    perl -p -e "s:\@DRIVERDIR\@:$DRIVERDIR:" | \
+	    perl -p -e "s:\@DRIVERDIRURL\@:$DRIVERDIRURL:" | \
+	    perl -p -e "s:\@PPDDIRURL\@:$PPDDIRURL:" | \
+	    perl -p -e "s:\@LIBDIR\@:$ALIBDIR:" > ${file%.in}
+	chmod +x ${file%.in}
+    done
+)
+
+# Creating symlinks
+( cd $BASE
+    rm -f query.cgi
+    ln -s query.php query.cgi
+)
+
+# Create upload directory
+sudo mkdir -p $BASE/upload
+
+# Chown files
+#echo "Chown files..."
+#sudo chown -R $OWNER:$GROUP $BASE
+#sudo chmod -R g+w $BASE
+#find $BASE -type d | xargs sudo chmod g+s
+#sudo chown -R www-data:$GROUP $BASE/templates_c
+#sudo chown -R www-data:$GROUP $BASE/cache
+#sudo chown -R www-data:$GROUP $BASE/upload
+#sudo chown -R www-data:$GROUP $BASE/inc/siteconf.php
+#sudo chmod 644 $BASE/inc/siteconf.php
+
+echo "Build completed on ${TIMESTAMP}"
+

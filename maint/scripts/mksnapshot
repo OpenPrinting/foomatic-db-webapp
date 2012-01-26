@@ -20,7 +20,7 @@ currentlink=${downloadpath}${package}-${version}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linux-foundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -55,7 +55,7 @@ currentlink=${downloadpath}${package}-${version}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linux-foundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -92,7 +92,7 @@ currentlink=${downloadpath}${package}-devel-${version}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linux-foundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -127,7 +127,7 @@ currentlink=${downloadpath}${package}-devel-${version}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linux-foundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -165,7 +165,7 @@ currentlink2=${downloadpath}${package}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linux-foundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -202,7 +202,7 @@ currentlink=${downloadpath}${package}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linux-foundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
