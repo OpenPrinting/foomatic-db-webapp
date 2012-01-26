@@ -1,5 +1,46 @@
 #!/bin/sh
 
+# CUPS Filters
+# ------------
+
+version=1.0
+
+# Build development snapshots
+
+package=cups-filters
+dir=
+timestamp=`date +%Y%m%d`
+downloadpath=/srv/www/openprinting/download/cups-filters/
+mkdir -p $downloadpath
+filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
+oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
+currentlink=${downloadpath}${package}-${version}-current.tar.gz
+tmpdir=`mktemp -u snapshot-XXXXXX`
+mkdir $tmpdir
+cd $tmpdir
+bzr branch http://bzr.linuxfoundation.org/openprinting/${dir}/${package} > /dev/null 2>&1
+if [ $? = 0 ] && [ -d ${package} ]; then
+    cd ${package}
+    aclocal > /dev/null 2>&1
+    autoconf > /dev/null 2>&1
+    rm -rf .bzr
+    rm -rf autom*.cache
+    cd ..
+    ln -s ${package} ${package}-${version}-${timestamp}
+    tar -czf $filename --dereference ${package}-${version}-${timestamp}
+    if [ $? = 0 ] && [ -f ${filename} ]; then
+	rm -f $oldfiles
+	rm -f $currentlink
+	ln -s $filename $currentlink
+	chgrp www-data $filename $currentlink
+	chmod g+rw $filename $currentlink
+    else
+	rm -f $filename
+    fi
+fi
+cd ..
+rm -rf $tmpdir
+
 # Foomatic 4.0.x
 # --------------
 
