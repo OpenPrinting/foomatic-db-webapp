@@ -7,38 +7,38 @@
 						<div class="foot-div">
 							<h2>Who are we?</h2>
 							<p>The Linux Foundation is a non-profit consortium dedicated to fostering the growth of Linux.</p>
-							<p><a href="/about">More on the Foundation...</a></p>
+							<p><a href="http://www.linuxfoundation.org/about">More on the Foundation...</a></p>
 						</div>
 								
 						<div class="foot-div">
 							<h2>Explore</h2>
 							<ul class="list-none">
-								<li><a href="/search">Search or Browse</a></li>
-								<li><a href="/">Home</a> / <a href="/news-media/news">News</a> / <a href="/news-media/announcements">Announcements</a></li>
-								<li><a href="/news-media/blogs">Blogs</a> / <a href="/collaborate/publications">Publications</a></li>
-								<li><a href="/events">Events</a> / <a href="/collaborate/workgroups">Workgroups</a></li>
-								<li><a href="/about/membership">Membership</a> / <a href="/about/members">Members</a></li>
+								<li><a href="http://www.linuxfoundation.org/search">Search or Browse</a></li>
+								<li><a href="http://www.linuxfoundation.org/">Home</a> / <a href="http://www.linuxfoundation.org/news-media/news">News</a> / <a href="http://www.linuxfoundation.org/news-media/announcements">Announcements</a></li>
+								<li><a href="http://www.linuxfoundation.org/news-media/blogs">Blogs</a> / <a href="http://www.linuxfoundation.org/collaborate/publications">Publications</a></li>
+								<li><a href="http://www.linuxfoundation.org/events">Events</a> / <a href="http://www.linuxfoundation.org/collaborate/workgroups">Workgroups</a></li>
+								<li><a href="http://www.linuxfoundation.org/about/join">Membership</a> / <a href="http://www.linuxfoundation.org/about/members">Members</a></li>
 							</ul>
 						</div>
 				
 						<div class="foot-div">
 							<h2>Stay Current</h2>
 							<ul class="list-none">
-								<li><a href="http://www.openprinting.org">Printing</a> / <a href="/collaborate/workgroups/lsb">LSB</a></li>
-								<li><a href="/collaborate/tab">TAB</a> / <a href="/collaborate/vac">VAC</a> / <a href="/collaborate/euc">EUC</a></li>
-								<li><a href="/collaborate/workgroups/desktop">Desktop Linux</a> / <a href="/collaborate/workgroups/cgl">Carrier Grade Linux</a></li>
-								<li><a href="/community/legal/trademark">Trademark</a></li>
+								<li><a href="http://events.linuxfoundation.org">Linux Foundation Events</a></li>
+								<li><a href="http://www.linuxfoundation.org/events/calendar">Linux Foundation Public Calendar</a></li>
+								<li><a href="http://training.linuxfoundation.org">Linux Training</a></li>
+								<li><a href="http://www.linux.com">Linux.com</a></li>
 							</ul>
 						</div>
 
 						<div class="foot-div">
 							<h2>About</h2>
 							<ul class="list-none">
-								<li><a href="/about/faq">Frequently Asked Questions</a></li>
-								<li><a href="/participate">How do I get Involved?</a></li>
-								<li><a href="/about">About</a> / <a href="/contact">Contact Us</a> / <a href="/about/careers">Careers</a></li>
-								<li><a href="/about/staff">Staff</a> / <a href="/about/board-members">Board Members</a></li>
-								<li><a href="/privacy">Privacy Policy</a></li>
+								<li><a href="http://www.linuxfoundation.org/about/faq">Frequently Asked Questions</a></li>
+								<li><a href="http://www.linuxfoundation.org/about/join">How do I get Involved?</a></li>
+								<li><a href="http://www.linuxfoundation.org/about">About</a> / <a href="http://www.linuxfoundation.org/about/contact">Contact Us</a> / <a href="http://www.linuxfoundation.org/about/careers">Careers</a></li>
+								<li><a href="http://www.linuxfoundation.org/about/staff">Staff</a> / <a href="http://www.linuxfoundation.org/about/board-members">Board Members</a></li>
+								<li><a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a> / <a href="http://www.linuxfoundation.org/terms">Terms of Use</a> / <a href="http://www.linuxfoundation.org/about/linux-foundation-trademark-usage-guidelines">Trademarks</a> / <a href="http://www.linuxfoundation.org/collaborate/workgroups/faq">Workgroups FAQ</a></li>
 							</ul>
 						</div>
 					</div>
