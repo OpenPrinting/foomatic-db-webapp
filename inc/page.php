@@ -79,7 +79,7 @@ class Page {
 		$this->addGNavItem('Foomatic',$mb.'database/foomatic','foo');
 		$this->addGNavItem('Articles',$mb.'database/articles','articles');
 		$this->addGNavItem('Projects',$mb.'database/projects','projects');
-		$this->addGNavItem('Documentation',$mb.'database/docs','doc');
+		$this->addGNavItem('Documentation',$mb.'database/documentation','doc');
 		$this->addGNavItem('Developers',$mb.'development','dev');
 	}
 }
