@@ -1,7 +1,6 @@
 <?php
 
-// REMOVE BEFORE GOING LIVE
-//exec('rm /srv/www/lptest/templates_c/*');
+// TODO: do we have to include PHPMailer on every page?
 include('libphp-phpmailer/class.phpmailer.php');
 include('inc/siteconf.php');
 include('inc/db.php');
@@ -18,9 +17,11 @@ session_start();
 error_reporting(E_ALL);
 
 $CONF = new SiteConfig();
-$PAGE = Page::getInstance();
 $SMARTY = new Smarty();
+
+$PAGE = Page::getInstance();
 $PAGE->setSmarty($SMARTY);
+
 $SESSION = Session::getInstance();
 
 $DB = DB::getInstance();
@@ -29,10 +30,11 @@ $SMARTY->assign('CONF',$CONF);
 $SMARTY->assign('PAGE',$PAGE);
 $SMARTY->assign('BASEURL',$CONF->baseURL);
 $SMARTY->assign('MAINURL',$CONF->mainURL);
-$SMARTY->assign_by_ref('SESSION',$SESSION);
+// FIXME: woot? double assignmet?
+// $SMARTY->assign_by_ref('SESSION',$SESSION);
 $SESSION->startupTasks();
 $SMARTY->assign_by_ref('SESSION',$SESSION);
-$SMARTY->assign_by_ref('USER',$SESSION->getUser());
+$SMARTY->assign('USER',$SESSION->getUser());
 
 $USER = $SESSION->getUser();
 if($SESSION->isLoggedIn()) {

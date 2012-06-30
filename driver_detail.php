@@ -1,8 +1,9 @@
 <?php
 include('inc/common.php');
+include('inc/login.php');
 
 if(empty($_GET['driver'])) {
-	header('Location: ./drivers');
+	header('Location: /drivers');
 	exit;
 }
 
@@ -23,18 +24,6 @@ $driverparameters = array(
     "load_time" => 'System Load',
     "speed" => 'Speed');
 
-if($SESSION->isloggedIn()){
-	
-		$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
-		$auth = $USER->fetchUserRoles();
-		
-		$adminPerms = $USER->getPerms();
-		$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
-
-		$SMARTY->assign('isUploader', $USER->isUploader($auth) );
-		$SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
-}
-
 $PAGE->setPageTitle('Driver: ' . $_GET['driver']);
 $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');	
@@ -43,12 +32,12 @@ $PAGE->addBreadCrumb($_GET['driver']);
 // Check if the driver is already accepted, released, and not rejected
 $res = $DB->query("
     SELECT id FROM driver_approval
-    WHERE id='" . $_GET['driver'] . "' AND
+    WHERE id='?' AND
     (approved IS NULL OR approved=0 OR approved='' OR
      (rejected IS NOT NULL AND rejected!=0 AND rejected!='') OR
      (showentry IS NOT NULL AND showentry!='' AND showentry!=1 AND
       showentry>CAST(NOW() AS DATE)))
-");
+", $_GET['driver']);
 $row = $res->getRow();
 if (count($row) == 0) {
     // Driver data (Load only if the driver is accepted, not rejected, and 
