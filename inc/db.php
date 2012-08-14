@@ -125,7 +125,8 @@ class DB {
 		if (!$this->lastStatement->execute($arguments)) {
 			$result->hasError = true;
 			// TODO: report errors as exception?
-			// trigger_error()
+			$error = $this->lastStatement->errorInfo();
+			trigger_error($error[2] . ' [[' . $query . ']]', E_USER_ERROR);
 			return false;
 		}
 		
