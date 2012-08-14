@@ -158,7 +158,7 @@
 					<div id="sub-nav">
 						<ul>
 						{foreach from=$PAGE->getGNavItems() item=g}
-							<li {if $PAGE->getActiveID() == $g->id}class="active"{/if} ><a href="{$g->link}" title="{$g->name}"><span>{$g->name}</span></a></li>
+							<li {if $PAGE->getActiveID() == $g->id}class="active"{/if} ><a href="{$g->link}" title="{$g->name|escape:'html'}"><span>{$g->name|escape:'html'}</span></a></li>
 						{/foreach}
 						</ul>
 						<div style="clear: both"></div>
