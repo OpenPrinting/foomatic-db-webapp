@@ -256,7 +256,7 @@
 	
 	
 	<br><br>
-	<input type="submit" name="submit" value="Submit Driver"> <a href="/drivers/upload">Cancel</a>
+	<input type="submit" name="submit" value="Submit Driver"> <a href="/account/myuploads">Cancel</a>
 	
 	</form>
 	

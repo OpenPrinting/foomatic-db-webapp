@@ -43,7 +43,7 @@
 	{/if}	
 
 
-	<input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>	
+	<input type="submit" name="submit" value="Add Printer"> <a href="/account/myuploads">Cancel</a>	
 	<br><br>
 	<table cellpadding="4" style="background: #eee; border: 1px solid #ccc;">
 		<tr bgcolor="#dfdfdf">
@@ -297,7 +297,7 @@
 					
 
 <br>
-<input type="submit" name="submit" value="Add Printer"> <a href="/printers/upload">Cancel</a>
+<input type="submit" name="submit" value="Add Printer"> <a href="/account/myuploads">Cancel</a>
 </form>
 
 {literal}

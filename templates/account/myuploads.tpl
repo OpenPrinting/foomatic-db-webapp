@@ -4,13 +4,12 @@
 	{include file="page_breadcrumbs.tpl"}
 
 	<h1>My Uploads</h1>
-	
-  {if $isUploader || $isTrustedUploader || $isAdmin }
-      <a href="{$BASEURL}drivers/upload" >Upload New Driver</a>
-  {/if}&nbsp;&nbsp;
-  {if $isTrusted || $isAdmin }
-      <a href="{$BASEURL}printers/upload" >Upload New Printer</a>
-	{/if}
+  {if $SESSION->checkPermission('driver_upload')}
+  	<a href="{$BASEURL}drivers/upload" >Upload New Driver</a>&nbsp;&nbsp;
+  {/if}
+  {if $SESSION->checkPermission('printer_upload')}
+  	<a href="{$BASEURL}printers/upload" >Upload New Printer</a>
+  {/if}
   <br/>
 	<div id="tabs">
 			<ul>
