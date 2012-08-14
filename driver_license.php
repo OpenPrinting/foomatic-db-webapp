@@ -18,17 +18,17 @@
 	// Check if the driver is already accepted, released, and not rejected
 	$res = $DB->query("
 	    SELECT id FROM driver_approval
-	    WHERE id='?' AND
+	    WHERE id=? AND
 	    (approved IS NULL OR approved=0 OR approved='' OR
 	     (rejected IS NOT NULL AND rejected!=0 AND rejected!='') OR
 	     (showentry IS NOT NULL AND showentry!='' AND showentry!=1 AND
 	      showentry>CAST(NOW() AS DATE)))
 	",  $_GET['driver']);
 	$row = $res->getRow();
-	if (count($row) == 0) {
+	if (!$row) {
 	    // Load driver's license info (Load only if the driver is accepted, not
 	    // rejected, and released)
-	    $res = $DB->query("SELECT name, license, licensetext, licenselink FROM driver WHERE id = '?'", $_GET['driver']);
+	    $res = $DB->query("SELECT name, license, licensetext, licenselink FROM driver WHERE id = ?", $_GET['driver']);
 	    $driver = $res->getRow();
 	} else {
 	    $driver = null;

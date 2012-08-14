@@ -18,7 +18,7 @@ else{
 	$sql = $DB->query("SELECT da.*, d.id, d.name 
 						FROM driver_approval AS da
 						LEFT JOIN driver AS d ON da.id = d.id
-						WHERE da.contributor = '".$USER->getUserName()."' ");
+						WHERE da.contributor = ?", $USER->getUserName());
 	$dataDrivers = $sql->toArray('id');
 	
 	$SMARTY->assign('dataDrivers',$dataDrivers);

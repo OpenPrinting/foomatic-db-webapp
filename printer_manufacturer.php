@@ -22,7 +22,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
                       printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
-		    WHERE printer.make='".$_GET['manufacturer']."' AND
+		    WHERE printer.make=? AND
 		    printer.functionality='A' AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
@@ -32,7 +32,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		       printer_approval.showentry='' OR
 		       printer_approval.showentry=1 OR
 		       printer_approval.showentry<=CAST(NOW() AS DATE))))
-		    ORDER BY model");
+		    ORDER BY model", $_GET['manufacturer']);
 		$dataPerfect = array();
 		while($rowPerfect = $resPerfect->getRow()){
 			 $dataPerfect[] = $rowPerfect;
@@ -47,7 +47,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
                       printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
-		    WHERE printer.make='".$_GET['manufacturer']."' AND
+		    WHERE printer.make=? AND
 		    printer.functionality='B' AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
@@ -57,7 +57,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		       printer_approval.showentry='' OR
 		       printer_approval.showentry=1 OR
 		       printer_approval.showentry<=CAST(NOW() AS DATE))))
-		    ORDER BY model");
+		    ORDER BY model", $_GET['manufacturer']);
 		$dataMostly = array();
 		while($rowMostly = $resMostly->getRow()){
 			 $dataMostly[] = $rowMostly;
@@ -72,7 +72,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
                       printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
-		    WHERE printer.make='".$_GET['manufacturer']."' AND
+		    WHERE printer.make=? AND
 		    printer.functionality='D' AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
@@ -82,7 +82,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		       printer_approval.showentry='' OR
 		       printer_approval.showentry=1 OR
 		       printer_approval.showentry<=CAST(NOW() AS DATE))))
-		    ORDER BY model");
+		    ORDER BY model", $_GET['manufacturer']);
 		$dataPartially = array();
 		while($rowPartially = $resPartially->getRow()){
 			 $dataPartially[] = $rowPartially;
@@ -122,7 +122,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
                       printer_approval.approved!='')) AS approved
 		    FROM printer LEFT JOIN printer_approval
 		    ON printer.id=printer_approval.id
-		    WHERE printer.make='".$_GET['manufacturer']."' AND
+		    WHERE printer.make=? AND
 		    printer.functionality='F' AND
 		    (printer_approval.id IS NULL OR
 		     ((printer_approval.rejected IS NULL OR
@@ -132,7 +132,7 @@ $SMARTY->assign('manufacturer',$_GET['manufacturer']);
 		       printer_approval.showentry='' OR
 		       printer_approval.showentry=1 OR
 		       printer_approval.showentry<=CAST(NOW() AS DATE))))
-		    ORDER BY model");
+		    ORDER BY model", $_GET['manufacturer']);
 		$dataPaperweight = array();
 		while($rowPaperweight = $resPaperweight->getRow()){
 			 $dataPaperweight[] = $rowPaperweight;

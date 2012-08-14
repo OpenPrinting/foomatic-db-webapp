@@ -45,19 +45,19 @@ if($SESSION->isloggedIn()){
 // add a remark that they are not approved.
 $res = $DB->query("
     SELECT id FROM printer_approval
-    WHERE id='".$_GET['id']."' AND
+    WHERE id=? AND
     ((rejected IS NOT NULL AND rejected!=0 AND
     rejected!='') OR
     (showentry IS NOT NULL AND
     showentry!='' AND
     showentry!=1 AND
     showentry>CAST(NOW() AS DATE)))
-");
+", $_GET['id']);
 $notreleased = 0;
 $row = $res->getRow();
-if (count($row) == 0) {
+if (!$row) {
     // Printer data (Load only if the printer is not unreleased)
-    $res = $DB->query("SELECT * FROM printer WHERE make='".$_GET['manufacturer']."' AND id='".$_GET['id']."' ");
+    $res = $DB->query("SELECT * FROM printer WHERE make = ? AND id = ?", $_GET['manufacturer'], $_GET['id']);
     $makes = array();
     $data = array();
     while($row = $res->getRow()){
@@ -69,11 +69,11 @@ if (count($row) == 0) {
     // Is the printer entry not yet approved?
     $res = $DB->query("
         SELECT id FROM printer_approval
-        WHERE id='".$_GET['id']."' AND
+        WHERE id=? AND
         (approved IS NULL OR approved=0 OR approved='')
-    ");
+    ", $_GET['id']);
     $row = $res->getRow();
-    if (count($row) > 0) {
+    if ($row) {
 	$data['unverified'] = "1";
     }
 } else {
@@ -122,7 +122,7 @@ $resDriverList = $DB->query("
     SELECT driver_printer_assoc.driver_id AS id
     FROM driver_printer_assoc LEFT JOIN driver_approval 
     ON driver_printer_assoc.driver_id=driver_approval.id
-    WHERE driver_printer_assoc.printer_id=\"{$printer_id}\" AND
+    WHERE driver_printer_assoc.printer_id=? AND
     (driver_approval.id IS NULL OR
     (driver_approval.approved IS NOT NULL AND
     driver_approval.approved!=0 AND driver_approval.approved!='' AND
@@ -132,7 +132,7 @@ $resDriverList = $DB->query("
     driver_approval.showentry=1 OR
     driver_approval.showentry<=CAST(NOW() AS DATE))))
     ORDER BY id
-");
+", $printer_id);
 
 /**
  * Generate one driver info box per supporting driver and stack them up in the
@@ -150,27 +150,27 @@ while ($rowDriver = $resDriverList->getRow()) {
 	$driver_id = $rowDriver['id'];
 
 	// Load driver
-	$res = $DB->query("SELECT * FROM driver WHERE id = '?'",
+	$res = $DB->query("SELECT * FROM driver WHERE id = ?",
 			  $driver_id);
 	$driver = $res->getRow();
 
 	// Load driver printer assoc
 	$resDPA = $DB->query("SELECT * 
 			      FROM driver_printer_assoc 
-			      WHERE driver_id=\"$driver_id\" AND  
-			      printer_id=\"$printer_id\"");
+			      WHERE driver_id=? AND  
+			      printer_id=?", $driver_id, $printer_id);
 	$driverPrinterAssoc = $resDPA->getRow();
 
 	// Load support contacts for this driver
 	$res = $DB->query("SELECT *
 		   FROM `driver_support_contact` 
-		   WHERE driver_id = '?'", $driver_id);
+		   WHERE driver_id = ?", $driver_id);
 	$contacts = $res->toArray();
 
 	// Load list of downloadable packages for this driver
 	$res = $DB->query("SELECT *
 		   FROM `driver_package` 
-		   WHERE driver_id = '?'", $driver_id);
+		   WHERE driver_id = ?", $driver_id);
 	$packages = $res->toArray();
 
 	$packagedownloads = "";
@@ -198,7 +198,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 	// Load dependency list for this driver
 	$res = $DB->query("SELECT *
 		   FROM `driver_dependency` 
-		   WHERE driver_id = '?'", $driver_id);
+		   WHERE driver_id = ?", $driver_id);
 	$dependencies = $res->toArray();
 
 	// Build driver info box

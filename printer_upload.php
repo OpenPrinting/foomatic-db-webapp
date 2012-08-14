@@ -35,7 +35,7 @@ if(isset($_POST['submit'])){
         exit(0);
     }
     $id = printerIDfromMakeModel($make, $model);
-    $res = $DB->query("SELECT id FROM printer WHERE id=\"$id\"");
+    $res = $DB->query("SELECT id FROM printer WHERE id=?", $id);
     $row = $res->getRow();
     if (strlen($row['id']) > 0) {
 	$error = "Printer already exists in the database!";

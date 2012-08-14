@@ -248,9 +248,8 @@ class DriverPrinterAssociation
 
     // Prepare the query string for extracting main driver/printer combo
     // details
-    $query = "select * from driver_printer_assoc where driver_id=\"$driver_id\" and printer_id=\"$printer_id\"";
-    $result = $db->query($query);
-
+    $result = $db->query('SELECT * FROM driver_printer_assoc WHERE driver_id = ? and printer_id = ? ', $driver_id, $printer_id);
+	
     if ($result == null) {
       return false;
     }
@@ -276,8 +275,8 @@ class DriverPrinterAssociation
     if ($this->loaded === false) return false;
 	
     // Find out if an entry of this printer exists. If yes, then just update that entry
-    $query = "select * from driver_printer_assoc where driver_id=\"{$this->data['driver_id']}\" and printer_id=\"{$this->data['printer_id']}\"";
-    $result = $db->query($query);
+    $result = $db->query('SELECT * FROM driver_printer_assoc WHERE driver_id = ? and printer_id = ?', $this->data['driver_id'], $this->data['printer_id']);
+	
     if ($result == null) {
       echo __FILE__."[ERROR]".$db->getError()."\n";
       return false;

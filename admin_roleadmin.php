@@ -21,7 +21,7 @@ $offset = 0;
 
 if(!empty($_POST) && isset($_GET['createRole'])) 
 {
-	$DB->query("INSERT INTO web_roles SET roleName = '?' ",$_POST['roleName']);
+	$DB->query("INSERT INTO web_roles SET roleName = ?",$_POST['roleName']);
 }
 
 if(!empty($_REQUEST['roleID']) && is_numeric($_REQUEST['roleID'])) 
@@ -29,7 +29,7 @@ if(!empty($_REQUEST['roleID']) && is_numeric($_REQUEST['roleID']))
 	$id = $_REQUEST['roleID'];
 	if(isset($_POST['deleteRole'])) 
   {
-		$DB->query("DELETE FROM web_roles WHERE roleID = '?' LIMIT 1",$id);
+		$DB->query("DELETE FROM web_roles WHERE roleID = ? LIMIT 1", $id);
 	} 
   else 
   {
@@ -62,11 +62,11 @@ if(!empty($_REQUEST['roleID']) && is_numeric($_REQUEST['roleID']))
 						$key = substr($k,5);
 						if($privs[$key]['value'] == null)
             {
-							$DB->query("INSERT INTO web_roles_privassign SET privName = '?', roleID = '?', value = '?'",$key,$editRole,$v);
+							$DB->query("INSERT INTO web_roles_privassign SET privName = ?, roleID = ?, value = ?", $key, $editRole, $v);
 						}
             else if($v != $privs[$key]['value']) 
             {
-							$DB->query("UPDATE web_roles_privassign SET value = '?' WHERE privName = '?' AND roleID = '?' LIMIT 1",$v,$key,$editRole);
+							$DB->query("UPDATE web_roles_privassign SET value = ? WHERE privName = ? AND roleID = ? LIMIT 1", $v, $key, $editRole);
 						}
 					} 
 				}

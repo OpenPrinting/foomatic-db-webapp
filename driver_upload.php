@@ -96,7 +96,7 @@ if(isset($_POST['submit'])){
 	$error = "Driver name can only contain letters, numbers, \"-\", and \"_\"!";
     }
     $id = $_POST['driver_name'];
-    $res = $DB->query("SELECT id FROM driver WHERE id=\"$id\"");
+    $res = $DB->query("SELECT id FROM driver WHERE id=?", $id);
     $row = $res->getRow();
     if (strlen($row['id']) > 0) {
 	$error = "Driver already exists in the database!";

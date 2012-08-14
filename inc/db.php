@@ -1,49 +1,58 @@
 <?php	
 class Result {
 	
-	private $result = false;
+	private $statement;
 	public $hasError = false;
-	private $currentRow = 0;
 	
-	public function Result($result) {
-		$this->result = $result;
+	public function __construct(PDOStatement $statement) {
+		$this->statement = $statement;
 	}
 	
 	public function toArray($fieldAsIndex = false) {
-		if($this->hasError) return false;
-		$arr = array();
-		while($r = $this->result->fetch_assoc()) {
-			if(!$fieldAsIndex) 
-				array_push($arr,$r);
-			else
-				$arr[$r[$fieldAsIndex]] = $r;
+		if ($this->hasError) {
+			return false;
 		}
-		return $arr;
+		
+		$result = array();
+		
+		while ($row = $this->statement->fetch(PDO::FETCH_ASSOC)) {
+			if (!$fieldAsIndex) {
+				array_push($result, $row);
+			} else {
+				$result[$row[$fieldAsIndex]] = $row;
+			}
+		}
+		
+		return $result;
 	}
 	
 	public function getRow() {
-		if($this->result == false) {
+		if ($this->hasError) {
 			return false;
-		} else {
-			return $this->result->fetch_assoc();
 		}
+		
+		return $this->statement->fetch(PDO::FETCH_ASSOC);
 	}
 	
 	public function numRows() {
-		if($this->hasError) {
-			return 0;
-		} else {
-			return $this->result->num_rows;
+		if ($this->hasError) {
+			return false;
 		}
+		
+		return $this->statement->rowCount();
 	}
 	
+	
+	/*
+	TODO: reimplement?
 	public function seek($to) {
-		if($to < 0 || $to >= $this->numRows()) return false;
-		return $this->result->data_seek($to);
+		
 	}
+	*/
 	
+	// FIXME: deprecated
 	public function free() {
-		return $this->result->free();
+		return true;
 	}
 }
 	
@@ -59,12 +68,15 @@ class DB {
 	}
 
 	public function __construct() {	
+		// TODO: move to common.php, call with DB::getInstance
 		global $CONF;
-		$this->mysqli = @new mysqli($CONF->dbServer, $CONF->dbUser, $CONF->dbPass, $CONF->db);
-		if(mysqli_connect_errno()) {
+		
+		try {
+			$this->connection = new PDO('mysql:host=' . $CONF->dbServer . ';dbname=' . $CONF->db, $CONF->dbUser, $CONF->dbPass);
+		} catch (PDOException $exception) {
+			// TODO: die more gracefully
 			die('Database connection error.');
-			exit;
-		}	
+		}
 	}
 	
 	public function __destroy() {
@@ -73,35 +85,52 @@ class DB {
 		
 	// Starts a transaction.
 	function beginTransaction() {
-		return @$this->mysqli->autocommit(false);
+		return $this->connection->beginTransaction();
 	}
 	
 	// Commits all changes made since the transaction began.
 	function commit() {
-		$res = @$this->mysqli->commit();
-		$this->mysqli->autocommit(true);
-		return $res;
+		return $this->connection->commit();
 	}
 	
 	// Undoes all changes since the beginning of the  transaction.
 	function rollback() {
-		$res = @$this->mysqli->rollback();
-		$this->mysqli->autocommit(true);
-		return $res;
+		return $this->connection->rollBack();
 	}
 	
 	// Number of affected rows by the last performed query.
 	function affectedRows() {
-		return $this->mysqli->affected_rows;
+		if ($this->lastStatement === null) {
+			return false;
+		}
+		
+		return $this->lastStatement->rowCount();
 	}
 	
 	// Unique autonumber of the last inserted record.
 	function lastInsertID() {
-		return $this->mysqli->insert_id;
+		return $this->connection->lastInsertId();
 	}
 	
-	function query($query) 
-	{
+	function query($query, $arguments = array()) {
+		
+		$this->lastStatement = $this->connection->prepare($query);
+		
+		if (!is_array($arguments)) {
+			$arguments = array_slice(func_get_args(), 1);
+		}
+		
+		$result = new Result($this->lastStatement);
+		
+		if (!$this->lastStatement->execute($arguments)) {
+			$result->hasError = true;
+			// TODO: report errors as exception?
+			// trigger_error()
+			return false;
+		}
+		
+		return $result;
+		/*
 		$args  = func_get_args();
 		$query = array_shift($args);		
 		$query = str_replace("?", "%s", $query);
@@ -126,6 +155,7 @@ class DB {
 			return false;
 		} else 
 			return $res;
+		*/
 	}	
 }
 

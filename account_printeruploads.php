@@ -18,7 +18,7 @@ else{
 	$sql = $DB->query("SELECT pa.*, p.id, p.make, p.model 
 						FROM printer_approval AS pa
 						LEFT JOIN printer AS p ON pa.id = p.id
-						WHERE pa.contributor = '".$USER->getUserName()."' ");
+						WHERE pa.contributor = ?", $USER->getUserName());
 	$dataPrinters = $sql->toArray('id');
 					
 	$SMARTY->assign('dataPrinters',$dataPrinters);

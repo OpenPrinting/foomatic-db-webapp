@@ -62,8 +62,8 @@ class Session {
         $DB = DB::getInstance();
         $res = $DB->query("SELECT id
 							FROM web_user
-							WHERE username = '?'
-              AND name='?'"
+							WHERE username = ?
+              AND name=?"
 							,$this->user->getUserName(),$this->user->getFullName() );
         $numrow = $res->numRows();
         if($numrow == 0)
@@ -71,7 +71,7 @@ class Session {
           //if user not found insert user into web_user table
           $DB = DB::getInstance();
           $DB->query("INSERT INTO web_user(username,name,lastlogin,ipaddress,referrer) 
-                      VALUES ('?','?',NOW(),'?','?')",
+                      VALUES (?,?,NOW(),?,?)",
                       $this->user->getUserName(), 
                       $this->user->getFullName(),
                       $this->ip(),
@@ -84,9 +84,9 @@ class Session {
           $DB = DB::getInstance();
           $DB->query("UPDATE web_user 
                       SET lastlogin = NOW(),
-                      ipaddress = '?',
-                      referrer='?'
-                      WHERE id = '?'",
+                      ipaddress = ?,
+                      referrer=?
+                      WHERE id = ?",
                       $this->ip(),$this->getReferrer(),$webuser['id']);
           
         }
@@ -98,7 +98,7 @@ class Session {
           //Get role ID for default Uploader role
           $DB = DB::getInstance();
           //$res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Uploader'"); //Needs to be printer uploader per Till
-          $res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Printer Uploader'");
+          $res =$DB->query("SELECT roleID FROM web_roles where roleName = ?", array('Printer Uploader'));
           if($r = $res->getRow()) {
            $id = $r['roleID'];
           } 

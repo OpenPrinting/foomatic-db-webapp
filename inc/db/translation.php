@@ -165,10 +165,11 @@ class Translation
     // Loop through each translation and add it to the table.
     // We must add the translations one by one as they go into
     // different lines
-    foreach($t as $lang => $trans) { 
+    foreach($t as $lang => $trans) {
+	
       // Find out if there is already an entry present
-      $query = "select lang from ${table}_translation where $pkeys_expr and lang=\"$lang\";";
-      $result = $db->query($query);
+      $result = $db->query('SELECT lang FROM ' . $table . '_translation WHERE ' . $pkeys_expr . ' and lang = ?', $lang);
+	  
       $count = mysql_num_rows($result);
       mysql_free_result($result);
 

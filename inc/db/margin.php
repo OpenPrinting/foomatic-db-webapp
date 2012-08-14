@@ -185,10 +185,10 @@ class Margin
     }
 	
     if (!$this->loaded) return false;
-
+	
     // Find out if an entry already exists under the general settings
-    $query = "select * from margin where driver_id=\"{$this->driver_id}\" and printer_id=\"{$this->printer_id}\" and margin_type=\"general\"";
-    $result = $db->query($query);
+    $result = $db->query('SELECT * FROM margin WHERE driver_id = ? and printer_id = ? and margin_type = ?', $this->driver_id, $this->printer_id, 'general');
+		
     $count = mysql_num_rows($result);
     mysql_free_result($result);
 
@@ -241,9 +241,10 @@ class Margin
     }
     if ($this->exception) {
       foreach ($this->exception as $e) {
+	
 	// Find out if an entry already exists under the general settings
-	$query = "select * from margin where driver_id=\"{$this->driver_id}\" and printer_id=\"{$this->printer_id}\" and margin_type=\"exception\" and pagesize=\"{$e['pagesize']}\"";
-	$result = $db->query($query);
+	$result = $db->query('SELECT * FROM margin WHERE driver_id = ? and printer_id = ? and margin_type = ? and pagesize = ?', $this->driver_id, $this->printer_id, 'exception', $e['pagesize']);
+	
 	$count = mysql_num_rows($result);
 	mysql_free_result($result);
 

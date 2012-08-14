@@ -32,17 +32,17 @@ $PAGE->addBreadCrumb($_GET['driver']);
 // Check if the driver is already accepted, released, and not rejected
 $res = $DB->query("
     SELECT id FROM driver_approval
-    WHERE id='?' AND
+    WHERE id=? AND
     (approved IS NULL OR approved=0 OR approved='' OR
      (rejected IS NOT NULL AND rejected!=0 AND rejected!='') OR
      (showentry IS NOT NULL AND showentry!='' AND showentry!=1 AND
       showentry>CAST(NOW() AS DATE)))
 ", $_GET['driver']);
 $row = $res->getRow();
-if (count($row) == 0) {
+if (!$row) {
     // Driver data (Load only if the driver is accepted, not rejected, and 
     // released)
-    $res = $DB->query("SELECT * FROM driver WHERE id = '?'", $_GET['driver']);
+    $res = $DB->query("SELECT * FROM driver WHERE id = ?", $_GET['driver']);
     $driver = $res->getRow();
 } else {
     $driver = null;
@@ -52,7 +52,7 @@ $SMARTY->assign('driver',$driver);
 // Load driver printer assoc
 $resDPA = $DB->query("SELECT dpa.*, p.make, p.model 
 					  FROM driver_printer_assoc dpa, printer p 
-					  WHERE driver_id = '?' 
+					  WHERE driver_id = ?
 					  AND p.id = dpa.printer_id", $_GET['driver']);
 $driverPrinterAssoc = $resDPA->getRow();
 $SMARTY->assign('driverPrinterAssoc',$driverPrinterAssoc);
@@ -64,7 +64,7 @@ $res = $DB->query("
 	      FROM driver_printer_assoc dpa
 	      LEFT JOIN printer p 
 		       ON p.id = dpa.printer_id 
-	      WHERE dpa.driver_id = '?') AS pr
+	      WHERE dpa.driver_id = ?) AS pr
         LEFT JOIN printer_approval
         ON pr.id=printer_approval.id                           
         WHERE (printer_approval.id IS NULL OR     
@@ -95,13 +95,13 @@ $SMARTY->assign('printers',$printers);
 
 $res = $DB->query("SELECT *
 		   FROM `driver_support_contact` 
-		   WHERE driver_id = '?'", $_GET['driver']);
+		   WHERE driver_id = ?", $_GET['driver']);
 
 $contacts = $res->toArray();
 
 $res = $DB->query("SELECT *
 		   FROM `driver_package` 
-		   WHERE driver_id = '?'", $_GET['driver']);
+		   WHERE driver_id = ?", $_GET['driver']);
 
 $packages = $res->toArray();
 
@@ -129,7 +129,7 @@ if (sizeof($out) > 0)
 
 $res = $DB->query("SELECT *
 		   FROM `driver_dependency` 
-		   WHERE driver_id = '?'", $_GET['driver']);
+		   WHERE driver_id = ?", $_GET['driver']);
 
 $dependencies = $res->toArray();
 

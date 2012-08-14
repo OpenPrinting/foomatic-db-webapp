@@ -90,7 +90,7 @@ class User {
 							FROM web_roles_userassign ua 
 							JOIN web_roles wr 
 								ON wr.roleID = ua.roleID 
-							WHERE uid = '?' 
+							WHERE uid = ?
 							ORDER BY roleName",$this->userName);
 		while($r = $res->getRow()) {
 			$roles[$r['roleID']] = $r['roleName'];

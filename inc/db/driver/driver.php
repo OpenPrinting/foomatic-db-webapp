@@ -505,8 +505,7 @@ class Driver
     }
 
     // Prepare the query string for extracting main driver details
-    $query = "select * from driver where id=\"$id\"";
-    $result = $db->query($query);
+    $result = $db->query('SELECT * FROM driver WHERE id = ?', $id);
 
     if ($result == null) {
       return false;
@@ -516,9 +515,8 @@ class Driver
     mysql_free_result($result);
 	
     // Prepare the query string for extracting details about the driver's support contacts
-    $query = "select * from driver_support_contact where driver_id=\"{$this->id}\"";
-    $result = $db->query($query);
-
+    $result = $db->query('SELECT * FROM driver_support_contact WHERE driver_id = ?', $this->id);
+	
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
 	$this->supportcontacts[sizeof($this->supportcontacts)] = new DriverSupportContact($this->id, $row);
@@ -528,8 +526,7 @@ class Driver
     mysql_free_result($result);
 	
     // Prepare the query string for extracting details about the driver's dependencies
-    $query = "select * from driver_dependency where driver_id=\"{$this->id}\"";
-    $result = $db->query($query);
+    $result = $db->query('SELECT * FROM driver_dependency WHERE driver_id = ?', $this->id);
 	
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
@@ -539,8 +536,7 @@ class Driver
     mysql_free_result($result);
 	
     // Prepare the query string for extracting details about the driver's packages
-    $query = "select * from driver_package where driver_id=\"{$this->id}\"";
-    $result = $db->query($query);
+    $result = $db->query('SELECT * FROM driver_package WHERE driver_id = ?', $this->id);
 
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
@@ -550,9 +546,8 @@ class Driver
     mysql_free_result($result);
 	
     // Prepare the query string for extracting details about the printers that work with this driver
-    $query = "select * from driver_printer_assoc where driver_id=\"{$this->id}\"";
-    $result = $db->query($query);
-
+    $result = $db->query('SELECT * FROM driver_printer_assoc WHERE driver_id = ?', $this->id);
+	
     if ($result) {
       while($row = mysql_fetch_assoc($result)) {
 	$this->printers[sizeof($this->printers)] = new DriverPrinterAssociation($this->id, $row);
@@ -610,8 +605,8 @@ class Driver
 	
     // Find out if there is already an entry present and if so, remove it
     // before creating a new one
-    $query = "select * from driver where id=\"{$this->id}\"";
-    $result = $db->query($query);
+    $result = $db->query('SELECT * FROM driver WHERE id = ?', $this->id);
+	
     $count = mysql_num_rows($result);
     mysql_free_result($result);
     if ($count) {
@@ -728,10 +723,11 @@ class Driver
     // printer/driver-combo-specific definitions belong to the driver entry.
     // This means that we have to delete all margin definitions with the ID
     // of this driver
-    $query = "delete from margin where driver_id=\"$id\";";
+	
     // Execute the deletion of margin definitions. This does not delete any
     // items in other tables
-    $result = $db->query($query);
+    $result = $db->query('DELETE FROM margin WHERE driver_id = ?', $id);
+	
     if ($result == null) {
       echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
     }
