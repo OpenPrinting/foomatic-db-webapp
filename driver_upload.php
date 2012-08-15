@@ -119,21 +119,20 @@ if(isset($_POST['submit'])){
 	    $_FILES['payload']['error'] == 0 and
 	    $_FILES['payload']['size'] <= $_POST['MAX_FILE_SIZE']) {
 	    $dir = "upload/driver/$id";
-	    $pwd = exec("pwd");
-	    exec("mkdir -p $pwd/$dir",
-		 $output = array(), $return_value);
-	    if ($return_value != 0) {
+      
+      // TODO: valid replacement?
+      // $pwd = exec("pwd");
+      $pwd = getcwd();
+      
+	    if (!mkdir($pwd . "/" . $dir, 0777, true)) {
 		$error = "Problem with file upload, " .
 		    "Creating directory caused error code: $return_value!"; 
 	    } else {
-		exec("mv " . $_FILES['payload']['tmp_name'] .
-		     " $pwd/$dir/" . $_FILES['payload']['name'],
-		     $output = array(), $return_value);
-		if ($return_value != 0) {
+		if (!move_uploaded_file($_FILES['payload']['tmp_name'], $pwd . '/' . $dir . '/' . $_FILES['payload']['name'])) {
 		    $error = "Problem with file upload, " .
 			"Copying the file caused error code: $return_value!"; 
 		} else {
-		    exec("chmod -R ug+rwX,o+rX $pwd/upload",
+		    exec("chmod -R ug+rwX,o+rX " . escapeshellarg($pwd . '/' . upload),
 			 $output = array(), $return_value);
 		    if ($return_value != 0) {
 			$error = "Problem with file upload, " .
@@ -318,7 +317,7 @@ if(isset($_POST['submit'])){
         " . ($approved ?
 	     "\"" . my_mysql_real_escape_string($user) . "\"" :
 	     "null") . ",
-        \"" . my_mysql_real_escape_string("TODO: Upload comment") . "\"
+        \"" . my_mysql_real_escape_string($_POST['comment']) . "\"
     )");
 
     if (strlen($_POST['supportdescription']) > 0) {

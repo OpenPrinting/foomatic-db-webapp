@@ -191,7 +191,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 		"openprinting-ppds-{$driver_id}";
 	}
 	$out = array();
-	exec("cd foomatic; ./packageinfo '$mask'", $out, $ret_value);
+	exec("cd foomatic; ./packageinfo " . escapeshellarg($mask), $out, $ret_value);
 	if (sizeof($out) > 0)
 	    $packagedownloads = $out[0];
 

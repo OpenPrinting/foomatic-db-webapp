@@ -123,7 +123,7 @@ if (strlen($mask) <= 0) {
 	"openprinting-ppds-{$_GET['driver']}";
 }
 $out = array();
-exec("cd foomatic; ./packageinfo '$mask'", $out, $ret_value);
+exec("cd foomatic; ./packageinfo " . escapeshellarg($mask), $out, $ret_value);
 if (sizeof($out) > 0)
     $packagedownloads = $out[0];
 
