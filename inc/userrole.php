@@ -48,9 +48,12 @@ class UserRole {
   
   //****************************************************
   public function getSomeMembers($limit,$offset) {
+    $limit = (int) $limit;
+    $offset = (int) $offset;
+    
 		if($this->isValid) {
 			$DB = DB::getInstance();
-      $res = $DB->query("SELECT ua.uid , wu. name, wu.lastlogin, wu.block FROM web_roles_userassign ua LEFT JOIN web_user wu ON ua.uid = wu.username  WHERE ua.roleID = ? ORDER BY ua.uid LIMIT ? OFFSET ?", $this->roleID, $limit, $offset);
+      $res = $DB->query("SELECT ua.uid , wu. name, wu.lastlogin, wu.block FROM web_roles_userassign ua LEFT JOIN web_user wu ON ua.uid = wu.username  WHERE ua.roleID = ? ORDER BY ua.uid LIMIT " . $limit . " OFFSET " . $offset, $this->roleID);
 			$members = array();
 			while($r = $res->getRow()) {
 				array_push($members,$r);
