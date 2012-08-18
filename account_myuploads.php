@@ -7,11 +7,11 @@ if(!$SESSION->isloggedIn()){
 	header('location: /login?err=expired');
 }
 
-$PAGE->setPageTitle('My Uploads');
+$PAGE->setPageTitle('Your Uploads');
 $PAGE->setActiveID('driver');
 //$PAGE->addBreadCrumb('My Account',$CONF->baseURL.'account/');
 
-$PAGE->addBreadCrumb('My Uploads');
+$PAGE->addBreadCrumb('Your Uploads');
 
 		$SMARTY->assign('showTabs', "1");
 

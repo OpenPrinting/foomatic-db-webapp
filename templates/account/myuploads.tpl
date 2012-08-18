@@ -3,7 +3,7 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	<h1>My Uploads</h1>
+	<h1>Your Uploads</h1>
   {if $SESSION->checkPermission('driver_upload')}
   	<a href="{$BASEURL}drivers/upload" >Upload New Driver</a>&nbsp;&nbsp;
   {/if}
