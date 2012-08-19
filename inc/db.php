@@ -1,59 +1,58 @@
 <?php	
 class Result {
 	
-	private $statement;
-	public $hasError = false;
+  private $statement;
+  public $hasError = false;
 	
-	public function __construct(PDOStatement $statement) {
-		$this->statement = $statement;
-	}
+  public function __construct(PDOStatement $statement) {
+    $this->statement = $statement;
+  }
 	
-	public function toArray($fieldAsIndex = false) {
-		if ($this->hasError) {
-			return false;
-		}
+  public function toArray($fieldAsIndex = false) {
+    if ($this->hasError) {
+      return false;
+    }
+    
+    if (!$fieldAsIndex) {
+      return $this->statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 		
-		$result = array();
+    $result = array();
 		
-		while ($row = $this->statement->fetch(PDO::FETCH_ASSOC)) {
-			if (!$fieldAsIndex) {
-				array_push($result, $row);
-			} else {
-				$result[$row[$fieldAsIndex]] = $row;
-			}
-		}
+    while ($row = $this->statement->fetch(PDO::FETCH_ASSOC)) {
+      $result[$row[$fieldAsIndex]] = $row;
+    }
 		
-		return $result;
-	}
+    return $result;
+  }
 	
-	public function getRow() {
-		if ($this->hasError) {
-			return false;
-		}
+  public function getRow() {
+    if ($this->hasError) {
+      return false;
+    }
 		
-		return $this->statement->fetch(PDO::FETCH_ASSOC);
-	}
+    return $this->statement->fetch(PDO::FETCH_ASSOC);
+  }
 	
-	public function numRows() {
-		if ($this->hasError) {
-			return false;
-		}
+  public function numRows() {
+    if ($this->hasError) {
+      return false;
+    }
+		 
+    return $this->statement->rowCount();
+  }
+	
+  /*
+  TODO: reimplement?
+  public function seek($to) {
 		
-		return $this->statement->rowCount();
-	}
+  }
+  */
 	
-	
-	/*
-	TODO: reimplement?
-	public function seek($to) {
-		
-	}
-	*/
-	
-	// FIXME: deprecated
-	public function free() {
-		return true;
-	}
+  // FIXME: deprecated
+  public function free() {
+    return true;
+  }
 }
 	
 class DB {

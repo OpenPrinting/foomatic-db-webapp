@@ -1,8 +1,9 @@
 <?php
   
   include('inc/common.php');
+  include('inc/notifications.php');
   
-  // Use mysql_real_escape_string
+  // FIXME: deprecate! - replace with PDO::quote
   function my_mysql_real_escape_string($str) {
     //return $str;
     $str = htmlspecialchars($str);
@@ -342,8 +343,10 @@
     	}
     }
     
+    $notifications = new Notifications($CONF, $DB);
+    $notifications->notifyPrinterUpload($model, $make, $user, !$SESSION->checkPermission('printer_noqueue'));
+    
     // send email notification
-  
     if ($CONF->mailusername) {
       $mailbody = "Date: " . $today . "\n";
       $mailbody .= "User: " . $user . "\n";

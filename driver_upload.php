@@ -1,9 +1,10 @@
 <?php
   
   include_once('inc/common.php');
+  include_once('inc/notifications.php');
   include_once('inc/db/processtarballs.php');
   
-  // FIXME: deprecate!
+  // FIXME: deprecate! - replace with PDO::quote
   function my_mysql_real_escape_string($str) {
       $str = htmlspecialchars($str);
       $str = addslashes($str);
@@ -53,37 +54,13 @@
   		 GROUP BY driver_id)
   		 AS pj
   		 ON pj.driver_id = driver.id
-  	ORDER BY name');
+  	ORDER BY name
+  ');
 
   $r = $res->toArray('id');
 
   $SMARTY->assign("drivers", $r);
-
-  ///// Kevin Legacy code /////
-  /*
-  //$um = new UploadManager('/srv/www/lptest/freshies');
-  if(isset($_GET['upload']) && $um->hasFiles()) {
-  	$file = $um->pop();
-			
-  	while($um->hasFiles()) {
-  		// Someone tried to upload more than one file. Cheater.
-  		$file2 = $um->pop();
-  		$um->delete();
-  	}
-			
-  	if(!preg_match(',^([A-Za-z0-9-]*)-([A-Za-z0-9.]*).tar.gz$,',$file->getOrigName(),$matches)) {
-  		echo 'File not acceptable.<br />';
-  		echo $file->getOrigName();
-  		$file->delete();
-  	} else {
-  		echo 'Name okay.<br /><br />';
-  		print_r($matches);
-  	}
-			
-  }
-  */
-  ///// Kevin Legacy code /////
-
+  
   if (isset($_POST['submit'])) {
     $error = "";
     
@@ -382,6 +359,8 @@
       }
     }
     
+    $notifications = new Notifications($CONF, $DB);
+    $notifications->notifyDriverUpload($_POST['driver_name'], $user, !$approved);
     
     // send email notification of driver upload
     
