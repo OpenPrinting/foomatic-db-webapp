@@ -1,5 +1,6 @@
 <?php
 include('inc/common.php');
+include('inc/login.php');
 include('inc/notifications.php');
 
 $SESSION->pageLock('notifications');
@@ -34,10 +35,6 @@ if ($settings['email'] === null) {
 }
 
 $SMARTY->assign('settings', $settings);
-
-$SMARTY->assign('isLoggedIn', $SESSION->isloggedIn());
-$adminPerms = $USER->getPerms();
-$SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
 
 $SMARTY->display('admin/notifications.tpl');
 

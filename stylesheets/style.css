@@ -793,3 +793,36 @@ div.success{
   border-bottom: 1px solid #cccccc;
   text-align: center;
 }
+
+/* -------------------------------------------------
+ * Queue
+ * -------------------------------------------------*/
+
+table.queue {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table.queue thead tr th, table.queue tfoot tr th {
+  padding: 3px;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  text-align: left;
+}
+
+table.queue thead tr th.actions, table.queue tfoot tr th.actions {
+  text-align: right;
+}
+
+table.queue tbody tr td {
+  padding: 5px;
+}
+
+table.queue tbody tr td.actions {
+  text-align: right;
+}
+
+table.queue tbody tr.even td {
+  background-color: #efefef;
+}
