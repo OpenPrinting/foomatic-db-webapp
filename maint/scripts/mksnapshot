@@ -1,5 +1,9 @@
 #!/bin/sh
 
+www_group="www-data"
+downloads_dir="/srv/www/openprinting/download"
+bzr_repo="http://bzr.linuxfoundation.org/openprinting"
+
 # CUPS Filters
 # ------------
 
@@ -10,7 +14,7 @@ version=1.0
 package=cups-filters
 dir=
 timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/cups-filters/
+downloadpath=${downloads_dir}/cups-filters/
 mkdir -p $downloadpath
 filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
 oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
@@ -18,7 +22,7 @@ currentlink=${downloadpath}${package}-${version}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting/${dir}/${package} > /dev/null 2>&1
+bzr branch ${bzr_repo}/${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     aclocal > /dev/null 2>&1
@@ -32,7 +36,7 @@ if [ $? = 0 ] && [ -d ${package} ]; then
 	rm -f $oldfiles
 	rm -f $currentlink
 	ln -s $filename $currentlink
-	chgrp www-data $filename $currentlink
+	chgrp ${www_group} $filename $currentlink
 	chmod g+rw $filename $currentlink
     else
 	rm -f $filename
@@ -46,149 +50,83 @@ rm -rf $tmpdir
 
 version=4.0
 
-# Build stable release snapshots
+# Build stable release snapshots 
+# for foomatic-db-engine and foomatic-filter
 
-# foomatic-db-engine
-
-package=foomatic-db-engine
 dir=foomatic-4.0
 timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/foomatic/
+downloadpath=${downloads_dir}/foomatic/
 mkdir -p $downloadpath
-filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
-oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
-currentlink=${downloadpath}${package}-${version}-current.tar.gz
-tmpdir=`mktemp -u snapshot-XXXXXX`
-mkdir $tmpdir
-cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
-if [ $? = 0 ] && [ -d ${package} ]; then
-    cd ${package}
-    ./make_configure > /dev/null 2>&1
-    rm -rf .bzr
-    rm -rf autom*.cache
-    cd ..
-    ln -s ${package} ${package}-${version}-${timestamp}
-    tar -czf $filename --dereference ${package}-${version}-${timestamp}
-    if [ $? = 0 ] && [ -f ${filename} ]; then
-	rm -f $oldfiles
-	rm -f $currentlink
-	ln -s $filename $currentlink
-	chgrp www-data $filename $currentlink
-	chmod g+rw $filename $currentlink
-    else
-	rm -f $filename
-    fi
-fi
-cd ..
-rm -rf $tmpdir
 
-# foomatic-filters
-
-package=foomatic-filters
-dir=foomatic-4.0
-timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/foomatic/
-mkdir -p $downloadpath
-filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
-oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
-currentlink=${downloadpath}${package}-${version}-current.tar.gz
-tmpdir=`mktemp -u snapshot-XXXXXX`
-mkdir $tmpdir
-cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
-if [ $? = 0 ] && [ -d ${package} ]; then
-    cd ${package}
-    ./make_configure > /dev/null 2>&1
-    rm -rf .bzr
-    rm -rf autom*.cache
-    cd ..
-    ln -s ${package} ${package}-${version}-${timestamp}
-    tar -czf $filename --dereference ${package}-${version}-${timestamp}
-    if [ $? = 0 ] && [ -f ${filename} ]; then
-	rm -f $oldfiles
-	rm -f $currentlink
-	ln -s $filename $currentlink
-	chgrp www-data $filename $currentlink
-	chmod g+rw $filename $currentlink
-    else
-	rm -f $filename
+for package in foomatic-db-engine foomatic-filters
+do
+    filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
+    oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
+    currentlink=${downloadpath}${package}-${version}-current.tar.gz
+    tmpdir=`mktemp -u snapshot-XXXXXX`
+    mkdir $tmpdir
+    cd $tmpdir
+    bzr branch ${bzr_repo}/${dir}/${package} > /dev/null 2>&1
+    if [ $? = 0 ] && [ -d ${package} ]; then
+	cd ${package}
+	./make_configure > /dev/null 2>&1
+	rm -rf .bzr
+	rm -rf autom*.cache
+	cd ..
+	ln -s ${package} ${package}-${version}-${timestamp}
+	tar -czf $filename --dereference ${package}-${version}-${timestamp}
+	if [ $? = 0 ] && [ -f ${filename} ]; then
+	    rm -f $oldfiles
+	    rm -f $currentlink
+	    ln -s $filename $currentlink
+	    chgrp ${www_group} $filename $currentlink
+	    chmod g+rw $filename $currentlink
+        else
+	    rm -f $filename
+        fi
     fi
-fi
-cd ..
-rm -rf $tmpdir
+    cd ..
+    rm -rf $tmpdir
+done
 
 # Build development snapshots
+# for foomatic-db-engine and foomatic-filters
 
-# foomatic-db-engine
-
-package=foomatic-db-engine
 dir=foomatic
 timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/foomatic/
+downloadpath=${downloads_dir}/foomatic/
 mkdir -p $downloadpath
-filename=${downloadpath}${package}-devel-${version}-${timestamp}.tar.gz
-oldfiles=`ls -1 ${downloadpath}${package}-devel-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
-currentlink=${downloadpath}${package}-devel-${version}-current.tar.gz
-tmpdir=`mktemp -u snapshot-XXXXXX`
-mkdir $tmpdir
-cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
-if [ $? = 0 ] && [ -d ${package} ]; then
-    cd ${package}
-    ./make_configure > /dev/null 2>&1
-    rm -rf .bzr
-    rm -rf autom*.cache
-    cd ..
-    ln -s ${package} ${package}-devel-${version}-${timestamp}
-    tar -czf $filename --dereference ${package}-devel-${version}-${timestamp}
-    if [ $? = 0 ] && [ -f ${filename} ]; then
-	rm -f $oldfiles
-	rm -f $currentlink
-	ln -s $filename $currentlink
-	chgrp www-data $filename $currentlink
-	chmod g+rw $filename $currentlink
-    else
-	rm -f $filename
-    fi
-fi
-cd ..
-rm -rf $tmpdir
 
-# foomatic-filters
-
-package=foomatic-filters
-dir=foomatic
-timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/foomatic/
-mkdir -p $downloadpath
-filename=${downloadpath}${package}-devel-${version}-${timestamp}.tar.gz
-oldfiles=`ls -1 ${downloadpath}${package}-devel-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
-currentlink=${downloadpath}${package}-devel-${version}-current.tar.gz
-tmpdir=`mktemp -u snapshot-XXXXXX`
-mkdir $tmpdir
-cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
-if [ $? = 0 ] && [ -d ${package} ]; then
-    cd ${package}
-    ./make_configure > /dev/null 2>&1
-    rm -rf .bzr
-    rm -rf autom*.cache
-    cd ..
-    ln -s ${package} ${package}-devel-${version}-${timestamp}
-    tar -czf $filename --dereference ${package}-devel-${version}-${timestamp}
-    if [ $? = 0 ] && [ -f ${filename} ]; then
-	rm -f $oldfiles
-	rm -f $currentlink
-	ln -s $filename $currentlink
-	chgrp www-data $filename $currentlink
-	chmod g+rw $filename $currentlink
-    else
-	rm -f $filename
+for package in foomatic-db-engine foomatic-filters
+do
+    filename=${downloadpath}${package}-devel-${version}-${timestamp}.tar.gz
+    oldfiles=`ls -1 ${downloadpath}${package}-devel-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
+    currentlink=${downloadpath}${package}-devel-${version}-current.tar.gz
+    tmpdir=`mktemp -u snapshot-XXXXXX`
+    mkdir $tmpdir
+    cd $tmpdir
+    bzr branch ${bzr_repo}/${dir}/${package} > /dev/null 2>&1
+    if [ $? = 0 ] && [ -d ${package} ]; then
+        cd ${package}
+	./make_configure > /dev/null 2>&1
+	rm -rf .bzr
+	rm -rf autom*.cache
+	cd ..
+	ln -s ${package} ${package}-devel-${version}-${timestamp}
+	tar -czf $filename --dereference ${package}-devel-${version}-${timestamp}
+	if [ $? = 0 ] && [ -f ${filename} ]; then
+	    rm -f $oldfiles
+	    rm -f $currentlink
+	    ln -s $filename $currentlink
+	    chgrp ${www_group} $filename $currentlink
+	    chmod g+rw $filename $currentlink
+	else
+	    rm -f $filename
+	fi
     fi
-fi
-cd ..
-rm -rf $tmpdir
+    cd ..
+    rm -rf $tmpdir
+done
 
 # Build database snapshots
 
@@ -197,7 +135,7 @@ rm -rf $tmpdir
 package=foomatic-db
 dir=foomatic
 timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/foomatic/
+downloadpath=${downloads_dir}/foomatic/
 mkdir -p $downloadpath
 filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
 oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
@@ -206,7 +144,7 @@ currentlink2=${downloadpath}${package}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch ${bzr_repo}/${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -221,7 +159,7 @@ if [ $? = 0 ] && [ -d ${package} ]; then
 	rm -f $currentlink2
 	ln -s $filename $currentlink
 	ln -s $filename $currentlink2
-	chgrp www-data $filename $currentlink
+	chgrp ${www_group} $filename $currentlink
 	chmod g+rw $filename $currentlink
     else
 	rm -f $filename
@@ -235,7 +173,7 @@ rm -rf $tmpdir
 package=foomatic-db-nonfree
 dir=foomatic
 timestamp=`date +%Y%m%d`
-downloadpath=/srv/www/openprinting/download/foomatic/
+downloadpath=${downloads_dir}/foomatic/
 mkdir -p $downloadpath
 filename=${downloadpath}${package}-${timestamp}.tar.gz
 oldfiles=`ls -1 ${downloadpath}${package}-????????.tar.gz 2> /dev/null | grep -v $filename`
@@ -243,7 +181,7 @@ currentlink=${downloadpath}${package}-current.tar.gz
 tmpdir=`mktemp -u snapshot-XXXXXX`
 mkdir $tmpdir
 cd $tmpdir
-bzr branch http://bzr.linuxfoundation.org/openprinting//${dir}/${package} > /dev/null 2>&1
+bzr branch ${bzr_repo}/${dir}/${package} > /dev/null 2>&1
 if [ $? = 0 ] && [ -d ${package} ]; then
     cd ${package}
     ./make_configure > /dev/null 2>&1
@@ -256,7 +194,7 @@ if [ $? = 0 ] && [ -d ${package} ]; then
 	rm -f $oldfiles
 	rm -f $currentlink
 	ln -s $filename $currentlink
-	chgrp www-data $filename $currentlink
+	chgrp ${www_group} $filename $currentlink
 	chmod g+rw $filename $currentlink
     else
 	rm -f $filename
