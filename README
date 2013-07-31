@@ -1,0 +1,29 @@
+How to setup openprinting site and database from bazaar branch
+==============================================================
+
+1) Copy the whole contents of the site branch to a folder where it is going to be located
+I.e.,
+
+  # cp printing-new/* /srv/www/openprinting/
+
+2) Create "inc/siteconf.php" configuration file for the site. You can use siteconf-DEV.php or siteconf-PROD.php as a basis.
+In that file you should set access parameters for the MySQL database, LDAP server, mail addresses and some other settings.
+
+3) Edit the "build" script - set BASEDIR variable at the top of the script to the actual directory where the site is located
+
+4) Launch the build script:
+
+  # ./build
+
+Note that this script uses inc/siteconf.php to create mysql.conf file for foomatic.
+
+5) If you want to create openprinting database from scratch, launch setupdb.sh script from the maint/scripts folder:
+
+  # cd maint/scripts
+  # ./setupdb.sh
+
+
+Note that setupdb.sh uses inc/siteconf.php to get database access parameters.
+
+======
+That's all. Now you should be able to access your copy of the openprinting site.
