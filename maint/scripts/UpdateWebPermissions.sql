@@ -1,4 +1,4 @@
-INSERT INTO `openprinting`.`web_permissions` (
+INSERT IGNORE INTO `web_permissions` (
 `privName` ,
 `title`
 )
@@ -6,7 +6,7 @@ VALUES (
 'printer_upload', 'Allow printer uploading'
 );
 
-INSERT INTO `openprinting`.`web_permissions` (
+INSERT IGNORE INTO `web_permissions` (
 `privName` ,
 `title`
 )

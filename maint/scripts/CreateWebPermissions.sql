@@ -6,7 +6,7 @@ CREATE TABLE `web_permissions` (
 
 
 INSERT INTO `web_permissions` VALUES
-  ('driver_noqueue','Bypass driver upload moderation queue')
+  ('driver_noqueue','Bypass driver upload moderation queue'),
   ('driver_queue_adm','Moderate the driver queue'),
   ('driver_upload','Upload driver tarballs'),
   ('printer_noqueue','Bypass printer upload moderation queue'),
