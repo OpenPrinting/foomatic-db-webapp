@@ -73,8 +73,8 @@ class DB {
 		try {
 			$this->connection = new PDO('mysql:host=' . $CONF->dbServer . ';dbname=' . $CONF->db, $CONF->dbUser, $CONF->dbPass);
 		} catch (PDOException $exception) {
-			// TODO: die more gracefully
-			die('Database connection error.');
+			die("Database connection error: ".$exception->getMessage()
+				." (error code: ".$exception->getCode().")");
 		}
 	}
 	
