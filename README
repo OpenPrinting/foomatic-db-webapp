@@ -25,5 +25,22 @@ Note that this script uses inc/siteconf.php to create mysql.conf file for foomat
 
 Note that setupdb.sh uses inc/siteconf.php to get database access parameters.
 
+6) Now you can populate the databse using the data from bzr using "importfrombzr" script
+which tries to parse printer xml files and load them to the database.
+Let's try to import everything from foomatic-db and foomatic-db-nonfree:
+
+  # export WORKDIR=/srv/www/openprinting/foomatic
+  # cd $WORKDIR
+  # bzr branch http://bzr.linuxfoundation.org/openprinting/foomatic/foomatic-db
+  # bzr branch http://bzr.linuxfoundation.org/openprinting/foomatic/foomatic-db-nonfree
+  # cd ..
+
+  # revno=`cd $WORKDIR/foomatic-db && bzr revno`
+  # maint/scripts/importfrombzr $WORKDIR/foomatic-db 1 $revno
+
+  # revno=`cd $WORKDIR/foomatic-db-nonfree && bzr revno`
+  # maint/scripts/importfrombzr $WORKDIR/foomatic-db-nonfree 1 $revno
+
+
 ======
 That's all. Now you should be able to access your copy of the openprinting site.
