@@ -2,43 +2,131 @@
 
 # Auto conversion of a single 32-bit or 64-bit x86 RPM to DEB and indexing
 # of the DEB repository
+# If '--all' is passed a s a single argument, the script converts
+# all existing RPM packages
 # Needed to be installed (script runs only on x86_64/amd64):
 # fakeroot, alien, linux32 (util-linux), ia32-libs, apt-utils (or
 # apt-ftparchive)
 
-maindir=/srv/www/openprinting/download/printdriver
+wwwdir=/srv/www/openprinting
+maindir=$wwwdir/download/printdriver
 mainurl=http://www.openprinting.org/download/printdriver
+
+componentexceptions=../components.lst
+
+build_for_arch() {
+    # Build package for a given arch
+    # Argument: architecture
+    case $1 in
+	x86_64)
+	    dpkg-buildpackage -aamd64 -rfakeroot -us -uc || exit 1
+	    ;;
+	i486)
+	    dpkg-buildpackage -ai386 -rfakeroot -us -uc || exit 1
+	    ;;
+	noarch)
+	    dpkg-buildpackage -rfakeroot -us -uc || exit 1
+	    ;;
+	*)
+	    echo "Not an appropriate architecture!"
+	    exit 1
+	    ;;
+    esac
+}
+
+move_to_repo() {
+    # Move package to appropriate repository
+    # Arguments: package, lsbrelease, component
+    p=$1
+    lsbrelease=$2
+    component=$3
+
+    echo Moving package into repository ...
+    arch=`echo "$p" | perl -e '<> =~ /_([^_]+).deb$/; print $1'`  # all i386 amd64
+    component=`perl -e 'open F, "< '"$componentexceptions"'"; while ($l = <F>) {($re, $c) = split / /, $l; if ("'"$p"'" =~ /$re/) {print "$c"; last}} close F;'`
+    if [ ! -n "$component" ]; then
+        component=`echo "$p" | perl -e '<> =~ /^([^_]+)_\d/; print $1' | perl -p -e 's/^openprinting-(ppds-|)//'`
+    fi
+
+    #If no architecture (_all.deb) then place file in all architecture directories
+    if [ $arch = 'all' ]; then
+        arch='amd64 i386'
+    fi
+
+    # Place file in proper directory
+    for a in $arch; do
+        # Update the component directory with new file, deleting all old
+        # Generate file mask to delete old files
+        match=`echo "$p" | perl -e '$q = <>; $q =~ /([a-zA-Z0-9\.-]+_)[a-zA-Z0-9\.-]+(_[a-zA-Z0-9\.-]+\.deb)$/; print "$1*$2";'`
+        # Create directory if not yet done
+        mkdir -p ../debian/dists/lsb$lsbrelease/$component/binary-$a/ || exit 1
+        # Remove old versions
+        rm -f ../debian/dists/lsb$lsbrelease/$component/binary-$a/$match
+        # Copy new version of file
+        cp "$p" ../debian/dists/lsb$lsbrelease/$component/binary-$a/ || exit 1
+    done
+}
+
+convert_pkg() {
+    # convert RPM to PKG
+    # Arguments: package, lsbrelease
+    p=$1
+    lsbrelease=$2
+
+    shortname=`basename $p`
+    echo Converting package $shortname to Debian format ...
+    fakeroot alien -ckg $p || exit
+    arch=`echo "$p" | perl -e '<> =~ /(x86_64|i486|noarch).rpm$/; print $1'`
+    d=`echo $p | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
+    cd $d
+    if [ "$arch" != "noarch" ]; then
+	perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
+    fi
+    perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\#\1/' debian/rules
+    build_for_arch $arch || exit 1
+    cd ..
+}
+
+######################
+#  The main part
+######################
 
 echo 
 
 mkdir -p $maindir/debian
 cd $maindir
 
-if [ $# = 1 ]; then
+if [ $# = 1 ] && [ $1 == "--all" ]; then
+    # '--all' argument provided - process all packages
 
+    #for lsbrelease in 3.2 3.1; do
+    for lsbrelease in 3.2; do
+        if [ -e tmp ]; then 
+	    rm -r tmp
+        fi
+	mkdir tmp
+	cd tmp
+
+	for p in ../RPMS/*64/*lsb$lsbrelease*.rpm ../RPMS/i?86/*lsb$lsbrelease*.rpm ../RPMS/noarch/*lsb$lsbrelease*.rpm ; do
+	    convert_pkg $p $lsbrelease || exit 1
+	done
+
+	for p in *.deb; do
+            move_to_repo $p $lsbrelease $component || exit 1
+	    rm $p
+	done
+
+	cd ..
+	rm -rf tmp
+    done
+elif [ $# = 1 ]; then
+    # single argument, but not '--all' - assume it to be a file name
     if [ ! -f $1 ]; then
-	echo "Non-existent file."
+	echo "Non-existent file and no '--all' option."
 	exit 1
     fi
 
     file=`readlink -fn $1`
-    shortfile=`basename $file`
-
-    componentexceptions=../components.lst
-    #list=`( cd /srv/www/openprinting/; ./query.php type=driver moreinfo=1 onlydriverpackages=1 ) | egrep '^([^ ]| *File:.*)' | sed -e s/File://`
-    component() {
-	local component i
-	for i in $list; do
-	    if echo $i | grep -q '\.'; then 
-		if [ $1 == $i ]; then
-		    echo $component
-		    break
-		fi
-	    else component=$i
-	    fi
-	done
-	echo lsbddk
-    }
 
     #Set up temporary directory
     if [ -e tmp ]; then 
@@ -46,37 +134,14 @@ if [ $# = 1 ]; then
     fi
     mkdir tmp
     cd tmp
-                
+
     #Detect LSB version and architecture from filename
     lsbrelease=`echo "$file" | perl -e '<> =~ /lsb([0-9\.]+).(x86_64|i486|noarch).rpm$/; print $1'`
     arch=`echo "$file" | perl -e '<> =~ /(x86_64|i486|noarch).rpm$/; print $1'`
     echo "LSB Version:  $lsbrelease"
     echo "Architecture: $arch"
 
-    echo "Converting package $shortfile to Debian format ..."
-    fakeroot alien -ckg "$file" || exit 1
-    d=`echo "$file" | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
-    cd $d
-    if [ "$arch" != "noarch" ]; then
-	perl -p -i -e 's/^(\s*Depends:\s*).*$/\1lsb (>= '$lsbrelease')/' debian/control
-    fi
-    perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\#\1/' debian/rules
-
-    case $arch in
-	x86_64)
-	    dpkg-buildpackage -aamd64 -rfakeroot || exit
-	    ;;
-	i486)
-	    dpkg-buildpackage -ai386 -rfakeroot || exit
-	    ;;
-	noarch)
-	    dpkg-buildpackage -rfakeroot || exit
-	    ;;
-	*)
-	    echo "Not an appropriate architecture!"
-	    exit 1
-	    ;;
-    esac
+    convert_pkg $file $lsbrelease || exit 1
 
     echo
     echo
@@ -84,35 +149,11 @@ if [ $# = 1 ]; then
 
     cd ..
 
-    #Some stuff... it's Perl, it's dark, evil magic...
+    # Move package to appropriate repository
     for p in *.deb; do
-	echo Moving package into repository ...
-	arch=`echo "$p" | perl -e '<> =~ /_([^_]+).deb$/; print $1'`  # all i386 amd64
-	component=`perl -e 'open F, "< '"$componentexceptions"'"; while ($l = <F>) {($re, $c) = split / /, $l; if ("'"$p"'" =~ /$re/) {print "$c"; last}} close F;'`
-	if [ ! -n "$component" ]; then
-	    component=`echo "$p" | perl -e '<> =~ /^([^_]+)_\d/; print $1' | perl -p -e 's/^openprinting-(ppds-|)//'`
-	fi
-
-	#If no architecture (_all.deb) then place file in all architecture directories
-	if [ $arch = 'all' ]; then
-	    arch='amd64 i386'
-	fi
-	
-	# Place file in proper directory
-	for a in $arch; do
-	    # Update the component directory with new file, deleting all old
-	    # Generate file mask to delete old files
-	    match=`echo "$p" | perl -e '$q = <>; $q =~ /([a-zA-Z0-9\.-]+_)[a-zA-Z0-9\.-]+(_[a-zA-Z0-9\.-]+\.deb)$/; print "$1*$2";'`
-	    # Create directory if not yet done
-	    mkdir -p ../debian/dists/lsb$lsbrelease/$component/binary-$a/ || exit 1
-	    # Remove old versions
-	    rm -f ../debian/dists/lsb$lsbrelease/$component/binary-$a/$match
-	    # Copy new version of file
-	    cp "$p" ../debian/dists/lsb$lsbrelease/$component/binary-$a/ || exit 1
-	done
-
+        move_to_repo $p $lsbrelease $component || exit 1
     done
-		
+
     #Clean up temp directory
     cd ..
     rm -r tmp
