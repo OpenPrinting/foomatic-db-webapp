@@ -38,35 +38,10 @@ SITECONFPHP="../inc/siteconf.php"
 	ls -1 RPMS/*/*.rpm debian/dists/*/*/*/*.deb > index.txt
     )
     echo "Config file for MySQL database access ..."
-    rm -f mysql.conf
-    cp mysql.conf.in mysql.conf
-    incomment=0
-    cat $SITECONFPHP | grep 'public \$db' | \
-    while read line; do
-	key=
-	value=
-	if echo $line | grep -q '/\*.*\*/'; then
-	    line=`echo $line | sed -re 's:^(.*)/\*.*\*/(.*)$:\1\2:'`
-	    incomment=0
-	fi
-	if echo $line | grep -q '/\*'; then
-	    line=`echo $line | sed -re 's:^(.*)/\*.*$:\1:'`
-	    incomment=1
-	fi
-	if echo $line | grep -q '\*/'; then
-	    line=`echo $line | sed -re 's:^.*\*/(.*)$:\1:'`
-	    incomment=0
-	fi
-	if [ $incomment = 0 ]; then
-	    eval "$(echo $line | sed -nre 's/^\s*public\s+\$(db\S*?)\s*=\s*\S(\S*?)\S\s*\;.*$/key="${key:-\1}"; value="${value:-\2}";/p')"
-	    sed -e "s/@$key@/$value/" mysql.conf > mysql.conf.new
-	    if [ -r mysql.conf.new ]; then
-		mv mysql.conf.new mysql.conf
-	    fi
-	fi
-    done
+    php ../dump_mysql_config.php > mysql.conf
     mkdir -p $FOOUTILDIR/etc
     cp mysql.conf $FOOUTILDIR/etc
+
     echo 'Substitutions:'
     for file in *.in; do
 	rm -f ${file%.in}
