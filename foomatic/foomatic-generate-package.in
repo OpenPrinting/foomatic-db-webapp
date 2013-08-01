@@ -677,7 +677,7 @@ $formerchangelog
 
     close FILE;
 } else {
-    _die('Cannot create spec file $specfilename!\n');
+    _die("Cannot create spec file $specfilename!\n");
 }
 
 sysrun(($platform eq "i486" ? "linux32 " : "") .
@@ -707,7 +707,7 @@ sysrun("cd $tmpdir/$dir && " .
      "perl -p -i -e 's/^(\\s*Depends:\\s*).*\$/\\1lsb (>= $lsbver)/' debian/control && " : "") .
     "perl -p -i -e 's/(dh_(shlibdeps|installchangelogs|installdocs))/\\#\\1/' debian/rules && " .
     "dpkg-buildpackage $debianplatform -rfakeroot") or
-   _die("Cannot buid binary Debian package from $tmpdir/$dir/!\n");
+   _die("Cannot bulid binary Debian package from $tmpdir/$dir/!\n");
 my $binarydebpackage = `cd $tmpdir && ls -1 *.deb`;
 sysrun("mkdir -p $rpmdir/DEBS/$platform/ && mv $tmpdir/*.deb $rpmdir/DEBS/$platform/") or
    _die("Cannot move Debian package to $rpmdir/DEBS/$platform/!\n");
