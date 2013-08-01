@@ -21,6 +21,29 @@ export $CONF
 DBPARAMS="--password=$password -u $user -h $server"
 TMPFILE=`mktemp`
 
+trigger_pkg_regen() {
+    # Check which files inside 'source/PPD/' and 'source/driver/' folders were modified
+    # and regenerate corresponding driver packages
+    # For modified PPDs, we get drivers from the database
+    bzr diff -r $oldrev | grep 'source/PPD' | grep 'modified file\|added file\|removed file' \
+	| sed 's%.*/%%' | sed 's%\.ppd.*%%' | sort -u | while read ppd
+    do
+	driver=`mysql $DBPARAMS $database -e "SELECT default_driver FROM printer WHERE id='ppd'" | grep -v "default_driver"`
+	echo $driver >>$TMPFILE
+    done
+
+    bzr diff -r $oldrev | grep 'source/driver' | grep 'modified file\|added file\|removed file' \
+	| sed 's%.*/%%' | sed 's%\.xml.*%%' >>$TMPFILE
+
+    cat $TMPFILE | sort -u | grep -v '^[[:space:]]*$' | while read driver
+    do
+	echo "Regenerating $driver"
+	../foomatic-generate-package -d $driver
+    done
+}
+
+# Main part
+
 ( cd $WORKDIR
     # Update packages from the version control system, then apply the
     # changed files to the MySQL database
@@ -35,24 +58,7 @@ TMPFILE=`mktemp`
 		./maint/scripts/importfrombzr $WORKDIR/foomatic-db $oldrev $rev
 	    )
 
-	    # Check which files inside 'source/PPD/' and 'source/driver/' folders were modified
-	    # and regenerate corresponding driver packages
-	    # For modified PPDs, we get drivers from the database
-	    bzr diff -r $oldrev | grep 'source/PPD' | grep 'modified file\|added file\|removed file' \
-		| sed 's%.*/%%' | sed 's%\.ppd.*%%' | sort -u | while read ppd
-	    do
-		driver=`mysql $DBPARAMS $database -e "SELECT default_driver FROM printer WHERE id='ppd'" | grep -v "default_driver"`
-		echo $driver >>$TMPFILE
-	    done
-
-	    bzr diff -r $oldrev | grep 'source/driver' | grep 'modified file\|added file\|removed file' \
-		| sed 's%.*/%%' | sed 's%\.xml.*%%' >>$TMPFILE
-
-	    cat $TMPFILE | sort -u | grep -v '^[[:space:]]*$' | while read driver
-	    do
-		echo "Regenerating $driver"
-		../foomatic-generate-package -d $driver
-	    done
+	    trigger_pkg_regen
 	fi
 	cd ..
     fi
@@ -70,22 +76,7 @@ TMPFILE=`mktemp`
 	    # empty $TMPFILE after previous step
 	    echo > $TMPFILE
 
-	    # Check which files inside 'source/PPD/' and 'source/driver/' folders were modified
-	    # and regenerate corresponding driver packages
-	    bzr diff -r $oldrev | grep 'source/PPD' | grep 'modified file\|added file\|removed file' \
-		| sed 's%.*/%%' | sed 's%\.ppd.*%%' | sort -u | while read ppd
-	    do
-		driver=`mysql $DBPARAMS $database -e "SELECT default_driver FROM printer WHERE id='ppd'" | grep -v "default_driver"`
-		echo $driver >>$TMPFILE
-	    done
-
-	    bzr diff -r $oldrev | grep 'source/driver' | grep 'modified file\|added file\|removed file' \
-		| sed 's%.*/%%' | sed 's%\.xml.*%%' >>$TMPFILE
-
-	    cat $TMPFILE | sort -u | while read driver
-	    do
-		../foomatic-generate-package -d $driver
-	    done
+	    trigger_pkg_regen
 	fi
 	cp -r db/source/PPD/* ../foomatic-db/db/source/PPD/
 	cd ..
