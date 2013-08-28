@@ -12,6 +12,10 @@
 BASE=/srv/www/openprinting
 # Work directory for Foomatic-based backend scripts
 WORKDIR=$BASE/foomatic
+# Printer drivers download area
+DOWNLOAD_DIR=$BASE/download/printdriver
+
+RPMDIR=`rpmbuild --showrc | egrep '^\-[0-9]+:\s*_topdir' | rev | cut -f1 |rev`
 
 # This will return a single line with all necessary params in a 'key=value' form
 CONF=`cd ../../foomatic &&  php ../dump_mysql_config.php | sed 's/: /=/g'`
@@ -38,7 +42,54 @@ trigger_pkg_regen() {
     cat $TMPFILE | sort -u | grep -v '^[[:space:]]*$' | while read driver
     do
 	echo "Regenerating $driver"
-	../foomatic-generate-package -d $driver
+	rm -f /tmp/foomatic.$$
+	../foomatic-generate-package -d $driver | tee /tmp/foomatic.$$
+
+	# Now analyze the packages built and copy them to the download area
+	RPM_PKG=`grep "RPM package:" /tmp/foomatic.$$ | cut -f2 -d:`
+	if [[ ${RPM_PKG}x == "x" ]]
+	then
+	    continue
+	fi
+
+	RPM_PKG_FILE=`basename ${RPM_PKG}`
+	RPM_PKG_DIR=`dirname ${RPM_PKG}`
+	SPEC_NAME=`rpm -qp --qf=%{NAME} ${RPM_PKG}`.spec
+
+	# Backup old files
+	# Always check if file exists to avoid errors in script output
+	if [ -f $DOWNLOAD_DIR/SPECS/$SPEC_NAME ]
+	then
+	    mv -f $DOWNLOAD_DIR/SPECS/$SPEC_NAME $DOWNLOAD_DIR/old/SPECS
+	fi
+	cp ${RPM_PKG_DIR}/../../SPECS/$SPEC_NAME $DOWNLOAD_DIR/SPECS
+	if [[ $RPM_PKG =~ "noarch" ]]
+	then
+	# Names of old packages are formed on the basis of $SPEC_NAME
+	# Can't just use $RPM_PKG_FILE here since it contains a timestamp
+	    if [ -f $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME/.spec/}*.rpm ]
+	    then
+		mv -f $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME/.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/noarch/
+	    fi
+	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/noarch/
+	elif [[ $RPM_PKG =~ "x86_64" ]]
+	then
+	    if [ -f $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME/.spec/}*.rpm ]
+	    then
+		mv -f $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/x86_64/
+	    fi
+	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/x86_64/
+
+	else # i486
+	    if [ -f $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME/.spec/}*.rpm ]
+	    then
+		mv -f $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/i*86/
+	    fi
+	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/i*86/
+
+	fi
+
+	rm -f /tmp/foomatic.$$
     done
 }
 
