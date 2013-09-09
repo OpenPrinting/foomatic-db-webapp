@@ -19,6 +19,8 @@ class SiteConfig {
 	public $dbPass = 'lfdev';
 	public $db = 'openprinting_dev';
 	public $dbServer = 'localhost';
+	/* Allow login using db credentials? */
+	public $allowDBlogin = true;
 	
 	public $ldapServer = '140.211.169.120';
     public $ldapServer2 = false;
