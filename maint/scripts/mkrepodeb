@@ -8,6 +8,10 @@
 # fakeroot, alien, linux32 (util-linux), ia32-libs, apt-utils (or
 # apt-ftparchive)
 
+# The script takes into account USE_EXISTING_DEBS environment variable
+# - if it is set, it tries to reuse packages from DEBDIR instead of
+# building new ones (DEBDIR should be also set by the caller)
+
 wwwdir=/srv/www/openprinting
 maindir=$wwwdir/download/printdriver
 mainurl=http://www.openprinting.org/download/printdriver
@@ -41,7 +45,7 @@ move_to_repo() {
     lsbrelease=$2
     component=$3
 
-    echo Moving package into repository ...
+    echo Moving package $p into repository ...
     arch=`echo "$p" | perl -e '<> =~ /_([^_]+).deb$/; print $1'`  # all i386 amd64
     component=`perl -e 'open F, "< '"$componentexceptions"'"; while ($l = <F>) {($re, $c) = split / /, $l; if ("'"$p"'" =~ /$re/) {print "$c"; last}} close F;'`
     if [ ! -n "$component" ]; then
@@ -68,13 +72,47 @@ move_to_repo() {
 }
 
 convert_pkg() {
-    # convert RPM to PKG
+    # convert RPM to DEB
     # Arguments: package, lsbrelease
     p=$1
     lsbrelease=$2
 
     shortname=`basename $p`
     echo Converting package $shortname to Debian format ...
+
+    if [ "x$USE_EXISTING_DEBS" != "x" ]
+    then
+	echo "Trying to reuse existing package..."
+	# RPM and Deb names are not exactly the same,
+	# let's try to guess Deb name on the basis f RPM one
+	# (replace '-' with '_' before year and archs, as well as arch names)
+	debname=`echo $shortname | sed 's/-20/_20/' | sed 's/.noarch/_all/' \\
+		    | sed 's/.rpm/.deb/' | sed 's/.x86_64/_amd64/' | sed 's/.i486/_i386/'`
+
+	echo $debname | grep -q "_all"
+	noarch=$?
+	echo $debname | grep -q "_amd64"
+	amd=$?
+
+	if [ $noarch = "0" ]
+	then
+	    DEBPKG="$DEBDIR/noarch/$debname"
+	elif [ $amd = "0" ]
+	then
+	    DEBPKG="$DEBDIR/amd64/$debname"
+	else
+	    DEBPKG="$DEBDIR/i386/$debname"
+	fi
+
+	if [ -f $DEBPKG ]
+	then
+	    cp $DEBPKG .
+	    return 0
+	else
+	    echo "Failed to find $DEBPKG, will generate new package"
+	fi
+    fi
+
     fakeroot alien -ckg $p || exit
     arch=`echo "$p" | perl -e '<> =~ /(x86_64|i486|noarch).rpm$/; print $1'`
     d=`echo $p | perl -p -e 's/^.*?([^\/]*)-[a-zA-Z\d\.]+lsb[\d\.]+\.[^\.]+\.rpm/\1/i'`
@@ -146,8 +184,6 @@ elif [ $# = 1 ]; then
     echo
     echo
     echo
-
-    cd ..
 
     # Move package to appropriate repository
     for p in *.deb; do
