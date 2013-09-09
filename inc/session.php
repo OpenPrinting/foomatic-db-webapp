@@ -33,18 +33,30 @@ class Session {
 			return false;
 		}
 		
+		$loggedIn = false;
+
 		// Authenticate against LDAP
 		$ldap = new LDAP($u,$p);
 		if(!$ldap->isBound()) {
-			$this->loginStatus = "badcred";
-			return false;
+			// Authenticate using the database
+			// (try to check if this user has db access and log him in, if this is the case)
+			try {
+				$test_connection = new PDO('mysql:host=' . $CONF->dbServer . ';dbname=' . $CONF->db, $u, $p);
+				$loggedIn = true;
+			} catch (PDOException $exception) {
+				// Do not show any message now, just remember that we have failed to login
+			}
+			
+			if( !$loggedIn ) {
+				$this->loginStatus = "badcred";
+				return false;
+			}
 		}
-  
 		unset($ldap);
-		
-    $this->loggedIn = true;
-    $this->user = new User($u);
-    return true;
+
+		$this->loggedIn = true;
+		$this->user = new User($u);
+		return true;
 	}
 	
 	public function startupTasks() {
