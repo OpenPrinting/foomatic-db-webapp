@@ -55,6 +55,8 @@ trigger_pkg_regen() {
 	RPM_PKG_FILE=`basename ${RPM_PKG}`
 	RPM_PKG_DIR=`dirname ${RPM_PKG}`
 	SPEC_NAME=`rpm -qp --qf=%{NAME} ${RPM_PKG}`.spec
+	DEB_PKG=`grep "Debian package:" /tmp/foomatic.$$ | cut -f2 -d:`
+	DEB_PKG_FILE=`basename $DEB_PKG`
 
 	# Backup old files
 	# Always check if file exists to avoid errors in script output
@@ -65,13 +67,14 @@ trigger_pkg_regen() {
 	cp ${RPM_PKG_DIR}/../../SPECS/$SPEC_NAME $DOWNLOAD_DIR/SPECS
 	if [[ $RPM_PKG =~ "noarch" ]]
 	then
-	# Names of old packages are formed on the basis of $SPEC_NAME
-	# Can't just use $RPM_PKG_FILE here since it contains a timestamp
+	    # Names of old packages are formed on the basis of $SPEC_NAME
+	    # Can't just use $RPM_PKG_FILE here since it contains a timestamp
 	    if [ -f $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME/.spec/}*.rpm ]
 	    then
 		mv -f $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME/.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/noarch/
 	    fi
 	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/noarch/
+	    USE_EXISTING_DEBS=1 DEBDIR=$RPMDIR/DEBS ./mkrepodeb $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME.spec/}*.rpm
 	elif [[ $RPM_PKG =~ "x86_64" ]]
 	then
 	    if [ -f $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME/.spec/}*.rpm ]
@@ -79,18 +82,22 @@ trigger_pkg_regen() {
 		mv -f $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/x86_64/
 	    fi
 	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/x86_64/
-
+	    USE_EXISTING_DEBS=1 DEBDIR=$RPMDIR/DEBS ./mkrepodeb $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME.spec/}*.rpm
 	else # i486
 	    if [ -f $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME/.spec/}*.rpm ]
 	    then
 		mv -f $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/i*86/
 	    fi
 	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/i*86/
-
+	    USE_EXISTING_DEBS=1 DEBDIR=$RPMDIR/DEBS ./mkrepodeb $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME.spec/}*.rpm
 	fi
-
-	rm -f /tmp/foomatic.$$
     done
+
+    # Sign packages
+    (
+    cd $DOWNLOAD_DIR/debian/dists/lsb3.2
+    gpg --default-key 4CFD1E2F -abs -o Release.gpg Release
+    )
 }
 
 # Main part

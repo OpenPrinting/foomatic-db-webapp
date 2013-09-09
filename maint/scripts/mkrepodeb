@@ -136,7 +136,6 @@ cd $maindir
 
 if [ $# = 1 ] && [ $1 = "--all" ]; then
     # '--all' argument provided - process all packages
-
     #for lsbrelease in 3.2 3.1; do
     for lsbrelease in 3.2; do
         if [ -e tmp ]; then 
@@ -145,7 +144,7 @@ if [ $# = 1 ] && [ $1 = "--all" ]; then
 	mkdir tmp
 	cd tmp
 
-	for p in ../../RPMS/*64/*lsb$lsbrelease*.rpm ../../RPMS/i?86/*lsb$lsbrelease*.rpm ../../RPMS/noarch/*lsb$lsbrelease*.rpm ; do
+	for p in ../RPMS/*64/*lsb$lsbrelease*.rpm ../RPMS/i?86/*lsb$lsbrelease*.rpm ../RPMS/noarch/*lsb$lsbrelease*.rpm ; do
 	    convert_pkg $p $lsbrelease || exit 1
 	done
 
