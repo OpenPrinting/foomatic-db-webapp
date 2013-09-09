@@ -93,6 +93,8 @@ trigger_pkg_regen() {
 	fi
     done
 
+    ./mkreporpm
+
     # Sign packages
     (
     cd $DOWNLOAD_DIR/debian/dists/lsb3.2
