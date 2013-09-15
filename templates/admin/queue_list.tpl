@@ -45,7 +45,7 @@
           {cycle values="even,odd" name="entries" print=false reset=true}
           {foreach from=$queue[$type] item=entry}
             <tr class="{cycle values="even,odd" name="entries"}">
-              <td><input type="checkbox" name="selected[]" value="selected" /></td>
+              <td><input type="checkbox" name="selected_{$type}[]" value="selected" /></td>
               {if $entry.make}
                 <td>{$entry.name}{$entry.make} {$entry.model}</td>
               {else}
@@ -68,7 +68,7 @@
                   <a href="{$BASEURL}printer/{$entry.make|replace:" ":"+"}/{$entry.id|replace:" ":"+"}/delete">Delete</a> | 
                   <a href="{$BASEURL}printer/{$entry.make|replace:" ":"+"}/{$entry.id|replace:" ":"+"}/edit">Edit</a>
                 {else}
-                  <a href="{$BASEURL}driver/{$entry.id}/delete">Delete</a> | 
+                  <a href="{$BASEURL}driver/{$entry.id}/delete" onclick="return confirm('Do you really want to delete this {$type}?');">Delete</a> | 
                   <a href="{$BASEURL}driver/{$entry.id}/edit">Edit</a>
                 {/if}
               </td>

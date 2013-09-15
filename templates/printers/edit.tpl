@@ -9,12 +9,25 @@
     <fieldset>
       <input type="submit" name="submit" value="Save Changes" />
       <input type="submit" name="approve" value="Approve" />
+      <input type="submit" name="reject" value="Reject" />
       <a href="{$BASEURL}admin/queue">Cancel</a>
     </fieldset>
     <fieldset>
       <legend>General</legend>
       
       <table>
+        <tr>
+          <td>Status:</td>
+          <td>
+            {if $entry.approved != ""}
+              Approved
+            {elseif $entry.rejected != ""}
+              Rejected
+            {else}
+              Submitted by {$printer.contributor} ({$printer.submitted})
+            {/if}
+          </td>
+        </tr>
         <tr>
           <td><label for="comments">Comments:</label></td> 
           <td colspan="2"><textarea id="comments" name="comments" cols="55" rows="8" />{$printer.comment}</textarea></td>
@@ -26,10 +39,10 @@
         <tr>
           <td><label for="driver-edit-manufacturer">Manufacturer</label></td> 
           <td valign="top">
-            <select name="make" id="driver-edit-manufacturer">
+            <select name="make" id="driver-edit-manufacturer" disabled="disabled">
               <option value="" selected="selected">--select manufacturer--</option>
               {foreach from=$makes item=make}
-                <option value="{$make|escape}"{if $make == $printer.make} selected="selected"{/if}>{$make|escape}</option>
+                <option value="{$make.make|escape}"{if $make == $printer.make} selected="selected"{/if}>{$make.make|escape}</option>
               {foreachelse}
                 <option value="0">None Available</option>
               {/foreach}
@@ -38,7 +51,7 @@
         </tr>
         <tr>
           <td><label for="driver-edit-model">Model</label></td>
-          <td><input type="text" size="32" name="model" id="driver-edit-model" value="{$printer.model}" /></td>
+          <td><input type="text" size="32" name="model" id="driver-edit-model" value="{$printer.model}" disabled="disabled" /></td>
         </tr>
         <tr>
           <td><label for="driver-edit-url">URL:</label></td>
@@ -140,6 +153,7 @@
     <fieldset>
       <input type="submit" name="submit" value="Save Changes" />
       <input type="submit" name="approve" value="Approve" />
+      <input type="submit" name="reject" value="Reject" />
       <a href="{$BASEURL}admin/queue">Cancel</a>
     </fieldset>
   </form>

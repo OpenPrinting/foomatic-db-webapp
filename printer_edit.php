@@ -3,7 +3,9 @@
   include('inc/common.php');
   include('inc/login.php');
   
-  $result = $DB->query("SELECT printer.*, printer_approval.* FROM printer INNER JOIN printer_approval ON printer.id = printer_approval.id WHERE printer.make = ? AND printer.id = ?", $_GET['manufacturer'], $_GET['id']);
+  $SESSION->pageLock('printer_edit');
+  
+  $result = $DB->query("SELECT printer.*, printer_approval.*, DATE(printer_approval.submitted) AS submitted FROM printer INNER JOIN printer_approval ON printer.id = printer_approval.id WHERE printer.make = ? AND printer.id = ?", $_GET['manufacturer'], $_GET['id']);
   $printer = $result->getRow();
   
   if ($result->numRows() < 1) {
@@ -18,186 +20,70 @@
   $PAGE->addBreadCrumb($name, $CONF->baseURL . 'printer/' . $printer['make'] . '/' . $printer['id']);
   $PAGE->addBreadCrumb('Edit');
   
+  if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
+    $DB->query('UPDATE printer SET url = ?, functionality = ?, contrib_url = ?, comments = ?, mechanism = ?, color = ?, res_x = ?, res_y = ?, postscript = ?, pdf = ?, pcl = ?, lips = ?, escp = ?, escp2 = ?, hpgl2 = ?, tiff = ?, proprietary = ?, pjl = ?, postscript_level = ?, pdf_level = ?, pcl_level = ?, lips_level = ?, escp_level = ?, escp2_level = ?, hpgl2_level = ?, tiff_level = ?, text = ?, general_model = ?, general_ieee1284 = ?, general_commandset = ?, general_description = ?, general_manufacturer = ?, parallel_model = ?, parallel_ieee1284 = ?, parallel_commandset = ?, parallel_description = ?, parallel_manufacturer = ?, usb_model = ?, usb_ieee1284 = ?, usb_commandset = ?, usb_description = ?, usb_manufacturer = ?, snmp_description = ? WHERE id = ?',
+      $_POST['url'],
+      $_POST['func'],
+      $_POST['contrib_url'],
+      $_POST['notes'],
+      $_POST['type'],
+      (!empty($_POST['color']))? '1' : '0',
+      $_POST['resolution_x'],
+      $_POST['resolution_y'],
+      (!empty($_POST['postscript']))? '1' : '0',
+      (!empty($_POST['pdf']))? '1' : '0',
+      (!empty($_POST['pcl']))? '1' : '0',
+      (!empty($_POST['lips']))? '1' : '0',
+      (!empty($_POST['escp']))? '1' : '0',
+      (!empty($_POST['escp2']))? '1' : '0',
+      (!empty($_POST['hpgl2']))? '1' : '0',
+      (!empty($_POST['tiff']))? '1' : '0',
+      (!empty($_POST['proprietary']))? '1' : '0',
+      (!empty($_POST['pjl']))? '1' : '0',
+      $_POST['postscript_level'],
+      $_POST['pdf_level'],
+      $_POST['pcl_level'],
+      $_POST['lips_level'],
+      $_POST['escp_level'],
+      $_POST['escp2_level'],
+      $_POST['hpgl2_level'],
+      $_POST['tiff_level'],
+      !empty($_POST['ascii'])? '1' : '0',
+      $_POST['general_mdl'],
+      $_POST['general_ieee'],
+      $_POST['general_cmd'],
+      $_POST['general_des'],
+      $_POST['general_mfg'],
+      $_POST['par_mdl'],
+      $_POST['par_ieee'],
+      $_POST['par_cmd'],
+      $_POST['par_des'],
+      $_POST['par_mfg'],
+      $_POST['usb_mdl'],
+      $_POST['usb_ieee'],
+      $_POST['usb_cmd'],
+      $_POST['usb_des'],
+      $_POST['usb_mfg'],
+      $_POST['snmp_des'],
+      $printer['id']
+    );
+    
+    $DB->query('UPDATE printer_approval SET approved = ?, rejected = ?, approver = ?, comment = ? WHERE id = ?',
+      (!empty($_POST['approve']))? date('Y-m-d') : null,
+      (!empty($_POST['reject']))? date('Y-m-d') : null,
+      (!empty($_POST['approve']))? $SESSION->getUserName() : null,
+      $_POST['comments'],
+      $printer['id']
+    );
+    
+    $result = $DB->query("SELECT printer.*, printer_approval.* FROM printer INNER JOIN printer_approval ON printer.id = printer_approval.id WHERE printer.make = ? AND printer.id = ?", $_GET['manufacturer'], $_GET['id']);
+    $printer = $result->getRow();
+  }
+  
   $SMARTY->assign('printer', $printer);
   
-  if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
-    
-    $DB->query("INSERT INTO printer (
-        id,
-        make,
-        model,
-        pcmodel,
-        url,
-        functionality,
-        default_driver,
-        ppdentry,
-        contrib_url,
-        comments,
-        unverified,
-        mechanism,
-        color,
-        res_x,
-        res_y,
-        postscript,
-        pdf,
-        pcl,
-        lips,
-        escp,
-        escp2,
-        hpgl2,
-        tiff,
-        proprietary,
-        pjl,
-        postscript_level,
-        pdf_level,
-        pcl_level,
-        lips_level,
-        escp_level,
-        escp2_level,
-        hpgl2_level,
-        tiff_level,
-        text,
-        general_model,
-        general_ieee1284,
-        general_commandset,
-        general_description,
-        general_manufacturer,
-        parallel_model,
-        parallel_ieee1284,
-        parallel_commandset,
-        parallel_description,
-        parallel_manufacturer,
-        usb_model,
-        usb_ieee1284,
-        usb_commandset,
-        usb_description,
-        usb_manufacturer,
-        snmp_model,
-        snmp_ieee1284,
-        snmp_commandset,
-        snmp_description,
-        snmp_manufacturer
-  	 ) VALUES (
-       \"" . my_mysql_real_escape_string($id) . "\",
-	     \"" . my_mysql_real_escape_string($make) . "\",
-	     \"" . my_mysql_real_escape_string($model) . "\",
-	     null,
-	     \"" . my_mysql_real_escape_string($_POST['url']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['func']) . "\",
-	     null,
-	     null,
-	     \"" . my_mysql_real_escape_string($_POST['contrib_url']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['notes']) . "\",
-	     0,
-	     \"" . my_mysql_real_escape_string($_POST['type']) . "\",
-	     " . ((array_key_exists("color", $_POST) and
-		   $_POST['color'] == "on") ?
-	          "1" : "0") . ",
-	     " . ($_POST['resolution_x'] > 0 ?
-		  my_mysql_real_escape_string($_POST['resolution_x']) :
-		  "0") . ",
-	     " . ($_POST['resolution_y'] > 0 ?
-                  my_mysql_real_escape_string($_POST['resolution_y']) :
-                  "0") . ",
-	     " . ((array_key_exists("postscript", $_POST) and
-		   $_POST['postscript'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("pdf", $_POST) and
-		   $_POST['pdf'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("pcl", $_POST) and
-		   $_POST['pcl'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("lips", $_POST) and
-		   $_POST['lips'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("escp", $_POST) and
-		   $_POST['escp'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("escp2", $_POST) and
-		   $_POST['escp2'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("hpgl2", $_POST) and
-		   $_POST['hpgl2'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("tiff", $_POST) and
-		   $_POST['tiff'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("proprietary", $_POST) and
-		   $_POST['proprietary'] == "on") ?
-	          "1" : "0") . ",
-	     " . ((array_key_exists("pjl", $_POST) and
-		   $_POST['pjl'] == "on") ?
-	          "1" : "0") . ",
-	     \"" . my_mysql_real_escape_string($_POST['postscript_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['pdf_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['pcl_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['lips_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['escp_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['escp2_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['hpgl2_level']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['tiff_level']) . "\",
-	     " . ((array_key_exists("ascii", $_POST) and
-		   $_POST['ascii'] == "on") ?
-	          "\"us-ascii\"" :
-	          "null") . ",
-	     \"" . my_mysql_real_escape_string($_POST['general_mdl']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['general_ieee']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['general_cmd']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['general_des']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['general_mfg']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['par_mdl']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['par_ieee']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['par_cmd']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['par_des']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['par_mfg']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['usb_mdl']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['usb_ieee']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['usb_cmd']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['usb_des']) . "\",
-	     \"" . my_mysql_real_escape_string($_POST['usb_mfg']) . "\",
-	     null,
-	     null,
-	     null,
-	     \"" . my_mysql_real_escape_string($_POST['snmp_des']) . "\",
-	     null
-  	 )
-    ");
-      
-     $DB->query("INSERT INTO printer_approval (
-         id, 
-         contributor, 
-         submitted,
-         showentry,
-         approved,
-         rejected,
-         approver,
-         comment
-       ) VALUES (
-         \"" . my_mysql_real_escape_string($id) . "\", 
-         \"" . my_mysql_real_escape_string($user) . "\",
-         \"" . $today . "\",
-         " . $release . ", 
-         " . ($SESSION->checkPermission('printer_noqueue') ?
-         "\"" . $today . "\"" : "null") . ",
-         null,
-         " . ($SESSION->checkPermission('printer_noqueue') ?
-         "\"" . my_mysql_real_escape_string($user) . "\"" :
-         "null") . ",
-         \"" . my_mysql_real_escape_string($_POST['comments']) . "\"
-       )
-     ");
-  }
-  
-  $res = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
-  $makes = array();
-  
-  // TODO: use toArray or similar?
-  while ($r = $res->getRow()) {
-    $makes[$r['make']] = $r['make'];
-  }
-  
-  $SMARTY->assign('makes', $makes);
+  $result = $DB->query("SELECT DISTINCT make FROM printer ORDER BY make");
+  $SMARTY->assign('makes', $result->toArray('make'));
   
   $SMARTY->display('printers/edit.tpl');
   

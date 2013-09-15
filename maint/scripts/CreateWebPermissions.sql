@@ -12,4 +12,9 @@ INSERT INTO `web_permissions` VALUES
   ('printer_noqueue','Bypass printer upload moderation queue'),
   ('printer_upload','Allow printer uploading'),
   ('roleadmin','Manage roles, permissions, and user assignments.'),
-  ('show_admin','Show link to admin UI');
+  ('show_admin','Show link to admin UI'),
+  ('notifications','Receive notifications for uploads'),
+  ('driver_edit','Edit and approve printers in queue'),
+  ('printer_edit','Edit and approve drivers in queue'),
+  ('driver_delete','Delete drivers in queue'),
+  ('printer_delete','Delete printers in queue');

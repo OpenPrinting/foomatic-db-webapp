@@ -37,4 +37,9 @@ INSERT INTO `web_roles_privassign` VALUES
   (23,4,'printer_noqueue',0),
   (24,4,'printer_upload',1),
   (25,4,'roleadmin',0),
-  (26,4,'show_admin',0);
+  (26,4,'show_admin',0),
+  (27,3,'notifications',1),
+  (27,3,'driver_edit',1),
+  (27,3,'printer_edit',1),
+  (27,3,'driver_delete',1),
+  (27,3,'printer_delete',1);
