@@ -72,7 +72,7 @@
 			{/literal}
 		{/if}
 				
-		{if $showTabs == "1"}
+		{if isset($showTabs) and $showTabs == "1"}
 		<script type="text/javascript" src="{$BASEURL}javascript/ui/ui.tabs.js"></script>
 			{literal}
 			<script type="text/javascript">

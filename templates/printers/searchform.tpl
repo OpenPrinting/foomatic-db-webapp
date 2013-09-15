@@ -9,7 +9,7 @@
 		select the model number from the list as well. Otherwise, choose the "show all" option and all printers made by the 
 		selected manufacturer will be listed on your screen.</p>
 	
-	{if $errorMessage}
+	{if isset($errorMessage)}
 		<div class="error">
 			<strong>{$errorMessage}</strong>
 		</div>
@@ -76,9 +76,9 @@
       database by filling out the <a href="{$BASEURL}printers/upload">add new printer form</a> on this site.
       If you cannot find what you are looking for please send an email to:<br><br> openprinting [at] linuxfoundation [dot] org
     </p>
-    { else }
+    {else}
     <p> You are not currently logged in. In order to add a new printer please <a href = "{$BASEURL}login">login here</a> </p>
-  { /if }
+  {/if}
 	
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}

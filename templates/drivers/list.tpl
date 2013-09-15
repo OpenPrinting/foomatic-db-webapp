@@ -10,7 +10,7 @@
 	
 	<div class="section" id="for-devs">
 		
-		{if $UPLOAD_ALLOWED}
+		{if isset($UPLOAD_ALLOWED)}
 			<h2>Upload a driver tarball</h2>
 			<p>To upload your driver or check the status of one of your previous uploads, please visit  
 				<a href="{$BASEURL}account/myuploads">uploads &amp; statuses</a>.

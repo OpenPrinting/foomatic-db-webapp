@@ -4,7 +4,7 @@
 include('libphp-phpmailer/class.phpmailer.php');
 include('inc/siteconf.php');
 include('inc/db.php');
-include('inc/smarty/Smarty.class.php');
+include('inc/smarty/SmartyBC.class.php');
 include('inc/page.php');
 include('inc/session.php');
 include('inc/ldap.php');
@@ -17,7 +17,8 @@ session_start();
 error_reporting(E_ALL);
 
 $CONF = new SiteConfig();
-$SMARTY = new Smarty();
+$SMARTY = new SmartyBC();
+$SMARTY->clear_compiled_tpl();
 
 $PAGE = Page::getInstance();
 $PAGE->setSmarty($SMARTY);
@@ -34,6 +35,7 @@ $SMARTY->assign('MAINURL',$CONF->mainURL);
 // $SMARTY->assign_by_ref('SESSION',$SESSION);
 $SESSION->startupTasks();
 $SMARTY->assign_by_ref('SESSION',$SESSION);
+$SMARTY->assign('isLoggedIn', false);
 $SMARTY->assign('USER',$SESSION->getUser());
 
 $USER = $SESSION->getUser();

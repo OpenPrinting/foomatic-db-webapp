@@ -11,7 +11,7 @@
 	</p>
 	
 
-	{if $loginMessage}
+	{if isset($loginMessage)}
 		<div class="error">
 			<strong>{$loginMessage}</strong>
 		</div>

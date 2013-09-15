@@ -77,14 +77,16 @@
 				<a href="http://forums.freestandards.org/rss.php?21"><img src="{$BASEURL}images/icons/rss.png" alt="RSS" title="RSS" /></a>
 			</h4>
 			
-			<div class="section">
-			{foreach from=$AnnouncementsRSS item=i}
-				<p>
-					<a href="{$i.link}">{$i.title}</a><br /><small>({$i.pubdate} by {$i.author})</small>
-				</p>
+			{if isset($AnnouncementsRSS)}
+				<div class="section">
+				{foreach from=$AnnouncementsRSS item=i}
+					<p>
+						<a href="{$i.link}">{$i.title}</a><br /><small>({$i.pubdate} by {$i.author})</small>
+					</p>
 				 
-			{/foreach}
-			</div>
+				{/foreach}
+				</div>
+			{/if}
 			
             {*<ul>
             	<li><a class="list-link-2 youtube" href="#">Linux Foundation Channel</a></li>
