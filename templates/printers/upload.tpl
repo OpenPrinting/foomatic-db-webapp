@@ -3,14 +3,14 @@
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-{if $msg=="success"}
+{if isset($msg) and $msg=="success"}
 <h1>Add a New Printer</h1>
 <div class="success">
 	The printer specifications have been uploaded to the system!
 </div>	
 <a href="/printers/upload">Add a New Printer</a>
 
-{elseif $msg=="error"}
+{elseif isset($msg) and $msg=="error"}
 <h1>Add a New Printer</h1>
 <div class="error">
 	{if $type=='makemodel'}

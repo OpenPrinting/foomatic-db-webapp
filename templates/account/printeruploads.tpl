@@ -1,4 +1,4 @@
-{if $loggedout == "true"}
+{if isset($loggedout) and $loggedout == "true"}
 	<div class="error"><strong>You do not have the necessary permissions to access the requested page.</strong></div>
 {else}
 	

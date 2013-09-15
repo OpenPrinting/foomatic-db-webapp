@@ -13,7 +13,7 @@ $(function(){
 <div id="two_col_col_1">
 	{include file="page_breadcrumbs.tpl"}
 
-	{if $roleID}
+	{if isset($roleID)}
 		<div class="section">
      <h1>Editing role: {$roleName}</h1>
      <div class="members">
@@ -53,17 +53,17 @@ $(function(){
           
           {if $membertotal > $pagesize }
             <div id="paginate"> 
-              { if $offset > 0 }
-              <a href="{$BASEURL}admin/roleadmin?offset={ $offset-$pagesize }&roleID={$roleID}">PREV</a>
-              { else }
+              {if $offset > 0}
+              <a href="{$BASEURL}admin/roleadmin?offset={$offset-$pagesize}&amp;roleID={$roleID}">PREV</a>
+              {else}
               PREV
               {/if}
                &nbsp;|&nbsp;
-              {$offset+1}-{if $offset+$pagesize < $membertotal} { $offset+$pagesize } {else} {$membertotal} {/if} of {$membertotal} members
+              {$offset+1}-{if $offset+$pagesize < $membertotal} {$offset+$pagesize} {else} {$membertotal} {/if} of {$membertotal} members
               &nbsp;|&nbsp;
-              { if $offset <= $membertotal-$pagesize }
-              <a href="{$BASEURL}admin/roleadmin?offset={ $offset+$pagesize }&roleID={$roleID}">NEXT</a>
-              { else }
+              {if $offset <= $membertotal-$pagesize}
+              <a href="{$BASEURL}admin/roleadmin?offset={$offset+$pagesize}&amp;roleID={$roleID}">NEXT</a>
+              {else}
                NEXT
               {/if}
             </div>
@@ -84,7 +84,7 @@ $(function(){
 						{foreach from=$permissions item=perm}
 							<tr class="{cycle values="alt,"}">
 								<td>
-									{html_options name=priv_`$perm.privName` options=$priv_opts selected=$perm.value}
+									{html_options name="priv_`$perm.privName`" options=$priv_opts selected=$perm.value}
 								</td>
 								<td>{$perm.title}</td>
 							</tr>

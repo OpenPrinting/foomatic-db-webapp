@@ -26,14 +26,14 @@
 	
 	{if $isUploader || $isTrustedUploader || $isAdmin }
 
-	{if $msg=="success"}
+	{if isset($msg) and $msg=="success"}
 
 		<div class="success">
 			The driver specifications have been uploaded to the system!
 		</div>	
 		<a href="/drivers/upload">Add a New Driver</a>
 		
-	{elseif $msg=="error"}
+	{elseif isset($msg) and $msg=="error"}
 
 		<div class="error">
 			{$error}
