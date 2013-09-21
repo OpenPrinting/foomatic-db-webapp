@@ -12,7 +12,7 @@
 		
 		{if isset($UPLOAD_ALLOWED)}
 			<h2>Upload a driver tarball</h2>
-			<p>To upload your driver or check the status of one of your previous uploads, please visit  
+			<p>To upload your driver or check the status of one of your previous uploads, please visit	
 				<a href="{$BASEURL}account/myuploads">uploads &amp; statuses</a>.
 			</p>	
 		{else}
@@ -39,7 +39,11 @@
 				{/if}
 				</td>
 				<td><a href="{$BASEURL}driver/{$d.id}/">{$d.name|escape}</a></td>
-				<td>{$drivertypes[$d.execution]}</td>
+				<td>
+					{if isset($drivertypes[$d.execution])}
+						{$drivertypes[$d.execution]}
+					{/if}
+				</td>
 				<td>{$d.printerCount|default:0}</td>
 				<td><small>
 					{if $d.shortdescription}

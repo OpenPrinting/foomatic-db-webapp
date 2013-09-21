@@ -2,8 +2,8 @@
 
 <div id="two_col_col_1">
 
-{if ($data.noentry != "1" or count($driverinfoboxes) > 0) and
-    $data.notreleased != "1"}
+{if (!isset($data.noentry) or $data.noentry != "1" or count($driverinfoboxes) > 0) and
+    (!isset($data.notreleased) or $data.notreleased != "1")}
 	{include file="page_breadcrumbs.tpl"}
 
 	{$printerinfobox}
@@ -21,7 +21,7 @@
 		<a href="{$forumurl}">
 		forum for printers from {$forummake}</a>.</p>
 	{/if}
-	{if $data.noentry != "1"}
+	{if !isset($data.noentry) or $data.noentry != "1"}
 		{if $data.pjl == "1" or $data.text == "us-ascii" or
 		$data.contrib_url != ""}	
 			<h3>Miscellaneous</h3>
