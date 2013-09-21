@@ -234,7 +234,7 @@
         my_mysql_real_escape_string($_POST['speed']) : "null") . ",
         " . (array_key_exists('execution', $_POST) ?
         "\"" . my_mysql_real_escape_string($_POST['execution']) .
-        "\"" : "null") . ",
+        "\"" : "\"\"") . ",
         0,
         0,
         null,

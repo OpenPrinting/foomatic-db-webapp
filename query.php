@@ -20,7 +20,7 @@ if ($_GET['format'] == "xml") {
 
 $querycmdline = "./query-helper";
 foreach($_GET as $k => $v) {
-  $querycmdline .= " " . urldecode($k) . "='" . urldecode($v) . "'";
+  $querycmdline .= " " . escapeshellarg(urldecode($k)) . "='" . escapeshellarg(urldecode($v)) . "'";
 }
 
 passthru($querycmdline);

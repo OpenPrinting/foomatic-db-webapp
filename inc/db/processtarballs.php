@@ -309,7 +309,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			    $printermake = $printer->make;
 			    $result = array();
 			    exec("$searchprinter -m4 -d1 " .
-				 "\"{$printer->make}|{$printer->model}\"",
+				 "\"" . escapeshellarg($printer->make) . "|" . escapeshellarg($printer->model) . "\"",
 				 $result, $ret_value);
 			    if ($ret_value != 0) {
 				fwrite($lfh,
