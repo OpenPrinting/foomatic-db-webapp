@@ -13,6 +13,8 @@ class SiteConfig {
 	public $dbPass = 'Goose5ai';
 	public $db = 'openprinting';
 	public $dbServer = 'db.linuxfoundation.org';
+	/* Allow login using db credentials? */
+	public $allowDBlogin = false;
 	
 	/*public $dbUser = 'root';
 	public $dbPass = 'administrator';
