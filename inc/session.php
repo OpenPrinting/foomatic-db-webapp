@@ -173,15 +173,22 @@ class Session {
 	// If not allowed to access this page, let the user know.
 	// Ought to be called before page headers are sent.
 	public function pageLock($permission) {
-		if(!$this->checkPermission($permission)) {
-			global $CONF;
-			$PAGE = Page::getInstance();
-			$SMARTY = $PAGE->getSmarty();
-			$PAGE->setPageTitle('Access Denied');
-			$PAGE->setActiveID('');
-			$PAGE->addBreadCrumb('Access Denied');
-			$SMARTY->display('restricted_page.tpl');
+		if($this->checkPermission($permission)) {
+			return;
 		}
+		
+		global $CONF;
+		
+		$PAGE = Page::getInstance();
+		$SMARTY = $PAGE->getSmarty();
+		
+		$PAGE->setPageTitle('Access Denied');
+		$PAGE->setActiveID('');
+		$PAGE->addBreadCrumb('Access Denied');
+		
+		$SMARTY->display('restricted_page.tpl');
+		
+		die();
 	}	
 	
 	public function requireLogin() {
