@@ -826,3 +826,76 @@ table.queue tbody tr td.actions {
 table.queue tbody tr.even td {
   background-color: #efefef;
 }
+
+/* -------------------------------------------------
+ * Uploads
+ * -------------------------------------------------*/
+
+div.upload-header {
+  padding: 5px 10px;
+  margin: 10px 15px 10px 15px;
+  border-bottom: 2px solid #024060;
+  background-color: #0f9eef;
+}
+
+div.upload-header span.step {
+  display: inline-block;
+  padding: 15px 30px 15px 5px;
+  background: url(../images/layout/upload-arrow.png) no-repeat right top;
+  font-size: 18px;
+  color: #caeafa;
+  cursor: pointer;
+}
+
+div.upload-header span.step.last {
+  background: transparent;
+}
+
+div.upload-header span.step.active {
+  font-weight: bold;
+  color: #fff;
+}
+
+div.upload-nav {
+  display: none;
+  padding: 10px;
+  margin: 10px 15px 10px 15px;
+  border-top: 2px solid #024060;
+}
+
+h1.upload {
+  margin: 15px 20px 20px 15px;
+  color: #024060;
+}
+
+h2.upload {
+  margin: 0 20px 0 15px;
+}
+
+p.upload-description {
+  margin: 10px 20px 10px 15px;
+}
+
+table.upload-form {
+  margin: 15px 15px 30px;
+  border-spacing: 0;
+  border-collapse:collapse;
+}
+
+table.upload-form tr td {
+  padding: 10px;
+}
+
+table.upload-form tr td.upload-form-label {
+  padding: 5px;
+  vertical-align: top;
+  font-weight: bold;
+/*  background-color: #f2f2f2;*/
+  color: #024060;
+}
+
+table.upload-form tr.desc td {
+  padding: 0 10px 20px;
+  font-size: 0.9em;
+  color: #48647f;
+}
