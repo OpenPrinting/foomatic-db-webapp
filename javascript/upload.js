@@ -34,6 +34,6 @@
       event.preventDefault();
     });
     
-    $('.step-fieldset h2').hide();
+    $('.step-fieldset h2.upload').hide();
   });
 })();

@@ -868,7 +868,7 @@ h1.upload {
   color: #024060;
 }
 
-h2.upload {
+h2.upload, h2.upload-description {
   margin: 0 20px 0 15px;
 }
 
