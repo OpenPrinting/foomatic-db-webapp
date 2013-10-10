@@ -103,21 +103,6 @@
 			<div id="page-inner">
 				<div id="page-header" class="clearfix">
 					<div id="util-nav">
-						<div id="lf-link">
-							<a title="Linux Foundation - US" href="http://www.linuxfoundation.org">
-								<img src="{$BASEURL}images/icons/flag_us.gif" alt="Linux Foundation - US" title="" />
-							</a>
-							<a title="Linux Foundation - Japan" href="http://www.linuxfoundation.jp">
-								<img src="{$BASEURL}images/icons/flag_jp.gif" alt="Linux Foundation - Japan" title="" />
-							</a>
-							<a href="http://www.linuxfoundation.org">LinuxFoundation.org</a>
-						</div>
-						<ul id="lf-more-contain">
-							<li><a href="http://www.linux.com">Linux.com</a></li>
-							<li><a href="http://events.linuxfoundation.org">Events</a></li>
-							<li><a href="http://video.linuxfoundation.org">Video</a></li>
-							<li><a onmouseout="delayhidemenu()" onclick="return dropdownmenu(this, event, menu2, '100px')" id="lf-more" href="#">More</a></li>
-						</ul>
 						<ul id="user-nav">
 							{if $SESSION->isLoggedIn() }
 								<li><a class="list-link login" href="{$MAINURL}/users/{$USER->getUserName()}" >{$USER->getUserName()}</a></li>
@@ -142,19 +127,6 @@
 				</div>
 				
 				<div id="navbar">
-					<div id="primary-nav">
-						<ul>
-							<li><a href="{$MAINURL}/" id="activetab" title="Home"><span>Home</span></a></li>
-							<li><a href="{$MAINURL}/about" title="About Us"><span>About Us</span></a></li>
-							<li><a href="{$MAINURL}/news-media" title="News &amp; Media"><span>News &amp; Media</span></a></li>
-							<li><a href="{$MAINURL}/programs" title="Programs"><span>Programs</span></a></li>
-							<li><a href="{$MAINURL}/collaborate" title="Collaborate"><span>Collaborate</span></a></li>
-							<li><a href="{$MAINURL}/participate" title="Participate"><span>Participate</span></a></li>
-							<li><a href="{$MAINURL}/events" title="Events"><span>Events</span></a></li>
-							<li><a href="{$MAINURL}/linux-training" title="Training"><span>Training</span></a></li>
-						</ul>
-					</div>
-					
 					<div id="sub-nav">
 						<ul>
 						{foreach from=$PAGE->getGNavItems() item=g}
