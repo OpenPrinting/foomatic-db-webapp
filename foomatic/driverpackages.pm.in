@@ -293,11 +293,11 @@ sub packagesformask {
 	    return  1 if (($archs{$b->{arch}} eq $archs{$ar}) &&
 			  ($archs{$a->{arch}} ne $archs{$ar}));
 	}
-	my $x = ($a->{basename} cmp $b->{basename});
-	return $x if $x != 0;
 	$x = ($a->{scope} cmp $b->{scope});
 	return $x if $x != 0;
 	$x = $b->{sortindex} cmp $a->{sortindex};
+	return $x if $x != 0;
+	my $x = ($a->{basename} cmp $b->{basename});
 	return $x if $x != 0;
 	foreach my $psys (@pkgsysorder) {
 	    return -1 if ((lc($a->{pkgsys}) eq lc($psys)) &&
