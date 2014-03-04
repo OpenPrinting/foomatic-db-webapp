@@ -101,9 +101,11 @@ if ($printer) {
     $p = $db->get_printer($printer);
     if ($p->{noxmlentry}) {
 	@printers = $db->find_printer($printer,
-				      ($querytype =~ /^(drivers?)/i 
+				      (($querytype =~ /^(drivers?)/i) ||
+				       ($printer =~ /\b((MFG|MANUFACTURER|MDL|MODEL|DES|DESCRIPTION):[^;]*;)+/)
 				       ? 2 : 1),
-				      ($querytype =~ /^(drivers?)/i 
+				      (($querytype =~ /^(drivers?)/i) ||
+				       ($printer =~ /\b((MFG|MANUFACTURER|MDL|MODEL|DES|DESCRIPTION):[^;]*;)+/) 
 				       ? 2 : 1));
 	if (scalar(@printers) > 0) {
 	    $printer = $printers[0];
