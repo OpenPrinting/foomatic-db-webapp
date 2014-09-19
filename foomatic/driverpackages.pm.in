@@ -169,7 +169,7 @@ sub listpackagefilesformask {
 	}
 	if ($path =~ m!^(https?|ftp)\://!) {
 	    if ($files =~ /[\?\*]/) {
-		my $dirhtml = Foomatic::DB::getpage(undef, $path, 1);
+		my $dirhtml = Foomatic::DB::getpage($path, 1);
 		if ($dirhtml) {
 		    $files =~ s/\?/[^\\\">]/sg;
 		    $files =~ s/\*/[^\\\">]*?/sg;
