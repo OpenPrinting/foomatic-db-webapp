@@ -105,14 +105,14 @@
 					<div id="util-nav">
 						<ul id="user-nav">
 							{if $SESSION->isLoggedIn() }
-								<li><a class="list-link login" href="{$MAINURL}/users/{$USER->getUserName()}" >{$USER->getUserName()}</a></li>
+								<li><a class="list-link login" href="https://identity.linuxfoundation.org/user" >{$SESSION->getUser()->getUserName()}</a></li>
 								{if $SHOW_ADMIN_UI }
 									<li><a class="list-link flag" href="{$BASEURL}admin/" >Site Admin</a></li>
 								{/if}
 								<li><a class="list-link logout" href="{$BASEURL}logout" >Logout</a></li>
 							{else}
 								<li><a class="list-link login" href="{$BASEURL}login" >Login</a></li>
-								<li><a class="list-link signup" href="https://www.linuxfoundation.org/user/register?destination=home">Register</a></li>
+								<li><a class="list-link signup" href="https://identity.linuxfoundation.org/user?destination=cas/login%3Fservice%3Dhttps%253A//www.openprinting.org/printers">Register</a></li>
 							{/if}
 						</ul>
 					</div>

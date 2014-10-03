@@ -21,6 +21,8 @@ class SiteConfig {
 	public $dbServer = 'localhost';
 	/* Allow login using db credentials? */
 	public $allowDBlogin = true;
+
+	public $authType = 'cas';
 	
 	public $ldapServer = '140.211.169.120';
     public $ldapServer2 = false;
@@ -35,6 +37,11 @@ class SiteConfig {
 	public $ldapUserBaseDN = 'ou=Users,dc=freestandards,dc=org';
 	public $ldapUsernameField = 'uid';
 	public $ldapMailField = 'mail';	*/
+
+	public $casModulePath = '/path/to/cas/module';
+	public $casServer = 'cas.example.com';
+	public $casPort = 443;
+	public $casContext = '/cas';
   
   //Set size for pagination for printer and driver queue
   public $printer_queue_pagesize = 5;

@@ -7,7 +7,7 @@ class Session {
 	private $loggedIn = false;
 	private $user = false;
 	private $loginStatus = false;
-  private $referrer = "";
+	private $referrer = "";
 	
 	public static function getInstance() {
 		if(empty(Session::$self)) {
@@ -26,8 +26,32 @@ class Session {
 	public function isLoggedIn() { 
 		return $this->loggedIn; 
 	}
+
+	public function startCAS() {
+		global $CONF;
+		phpCAS::client(CAS_VERSION_2_0, $CONF->casServer, $CONF->casPort, $CONF->casContext);
+		phpCAS::setCasServerCACert('/etc/ssl/certs/ca-certificates.crt');
+	}
+
+	public function authenticate() {
+		global $CONF;
+		$success = false;
+		if ($CONF->authType == 'ldap') {
+			$u = $_POST['username'];
+			$success = $this->authenticate_ldap($u, $_POST['password']);
+		} else {
+			phpCAS::forceAuthentication();
+			$u = phpCAS::getUser();
+			$success = true;
+		}
+
+		$this->loggedIn = true;
+		$this->user = new User($u);
+		$this->loadUser();
+		return $success;
+	}
 	
-	public function authenticate($u,$p) {
+	public function authenticate_ldap($u,$p) {
 		if(empty($u) || empty($p)) {
 			$this->loginStatus = "empty";
 			return false;
@@ -56,18 +80,23 @@ class Session {
 			}
 		}
 		unset($ldap);
-
-		$this->loggedIn = true;
-		$this->user = new User($u);
 		return true;
 	}
-	
-	public function startupTasks() {
-		//@TODO Need to login and return to the page you logged in from
-		
-		if(isset($_GET['doLogin']) && !empty($_POST) && !$this->loggedIn) {
-			if($this->authenticate($_POST['username'],$_POST['password'])) {
-				
+
+	public function logout() {
+		$this->loggedIn = false;
+		$this->user = false;
+		$this->loginStatus = false;
+	}
+
+	public function loadUser() {
+
+	// JAL 2014-10-02: Whitespace in this file is totally messed up.
+	//                 So, noting here that this entire block of code,
+	//                 to the end of the function, is internally
+	//                 consistent, even though it doesn't match
+	//                 the rest of the file.
+
         /*  05-23-2010 PCN
          *  Added table web_user to openprinting database.
          *  user information ( username, full name, user ip address, referring url)
@@ -75,11 +104,8 @@ class Session {
          * */ 
         //Try to find web_user if already in database
         $DB = DB::getInstance();
-        $res = $DB->query("SELECT id
-							FROM web_user
-							WHERE username = ?
-              AND name=?"
-							,$this->user->getUserName(),$this->user->getFullName() );
+        $res = $DB->query("SELECT id FROM web_user WHERE username = ? AND name=?"
+            ,$this->user->getUserName(),$this->user->getFullName() );
         $numrow = $res->numRows();
         if($numrow == 0)
         {
@@ -115,21 +141,40 @@ class Session {
           //$res =$DB->query("SELECT roleID FROM web_roles where roleName = 'Uploader'"); //Needs to be printer uploader per Till
           $res =$DB->query("SELECT roleID FROM web_roles where roleName = ?", array('Printer Uploader'));
           if($r = $res->getRow()) {
-           $id = $r['roleID'];
+            $id = $r['roleID'];
           } 
           
           $role = new UserRole($id);
           $role->addMember($this->user->getUserName());
         }
          
-        header('Location: /account/myuploads');
+	} //loadUser() end
+	
+	public function startupTasks() {
+		$this->startCAS();
+		//@TODO Need to login and return to the page you logged in from
+		
+		if(isset($_GET['doLogin']) && !empty($_POST) && !$this->loggedIn) {
+			if($this->authenticate()) {
+				$this->loadUser();
+				header('Location: /account/myuploads');
 				exit;
 			}
 		}
 		
 		if(isset($_GET['doLogout'])) {
-			$_SESSION = array();
-			header('Location: /login');
+			$desturl = $this->getReferrer();
+			$this->logout();
+			$this->clearReferrer();
+			if ($desturl != '') {
+				// CAS API transition: switch the comments
+				// when running against a newer CAS server.
+				// phpCAS::logoutWithRedirectService($desturl);
+				phpCAS::logoutWithRedirectServiceAndUrl($desturl, $desturl);
+			} else {
+				phpCAS::logout();
+			}
+			header('Location: /printers');
 			exit;
 		}
 	}
@@ -214,16 +259,20 @@ class Session {
 		return $this->user->getUserName();
 	}
   
-  /*  05-23-2010 PCN
-   * added setter and getter for user redferring url
-   * */
-  public function setReferrer($ref) {
+	/*  05-23-2010 PCN
+	 * added setter and getter for user redferring url
+	 * */
+	public function setReferrer($ref) {
 		$this->referrer = $ref;
-    return;
+		return;
 	}
   
-  public function getReferrer() {
+	public function getReferrer() {
 		return $this->referrer;
+	}
+
+	public function clearReferrer() {
+		$this->setReferrer('');
 	}
 }
 ?>

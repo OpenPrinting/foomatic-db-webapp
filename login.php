@@ -1,34 +1,45 @@
 <?php
 //First try to get referring uri
 if (isset($_SERVER['HTTP_REFERER'])) {
-    $referrer = $_SERVER['HTTP_REFERER'];
+  $referrer = $_SERVER['HTTP_REFERER'];
 }
 else
 {
-  $referrer = " ";
+  $referrer = "";
 }
 
 include('inc/common.php');
 
 //set referrer url
-$SESSION->setReferrer($referrer);
+if (($referrer != "") && ($SESSION->getReferrer() == "")) {
+  $SESSION->setReferrer($referrer);
+}
+
+if ($CONF->authType == 'cas') {
+  $SESSION->authenticate();
+}
 
 if($SESSION->isLoggedIn()) 
 {
-  header('Location: /account/myuploads');
+  $referrer = $SESSION->getReferrer();
+  if ($referrer == "") {
+    $referrer = "/printers";
+  }
+  header('Location: ' . $referrer);
+  exit;
 }
 
 $PAGE->setActiveID('home');
 $PAGE->setPageTitle('Login');
 $PAGE->addBreadCrumb('Authentication');
 
+// if not using CAS, use our login screen
+if ($CONF->authType != 'cas') {
+   $a = $SESSION->getLoginMessage();
 
-$a = $SESSION->getLoginMessage();
-
-if($a) {
+   if($a) {
 	$SMARTY->assign('loginMessage',$a);
-}
-else {
+   } else {
 	
 	if(isset($_GET['err']) && $_GET['err'] != ""){
 		switch ($_GET['err']) {
@@ -40,6 +51,7 @@ else {
 				break;
 		}
 	}
+   }
 }
 
 

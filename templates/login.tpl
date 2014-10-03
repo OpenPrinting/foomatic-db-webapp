@@ -5,8 +5,15 @@
 
 	<h1>OpenPrinting Login</h1>
 
+	{if isset($successRefer)}
+
+	<p>You are successfully logged in.  Select
+	<a href="{$successRefer}">this link</a> to continue.</p>
+
+	{else}
+
 	<p>Please log in with your Linux Foundation username and password. If you need to register a new account, 
-		recover your password, or validate your e-mail, please <a href="https://www.linuxfoundation.org/user/register">
+		recover your password, or validate your e-mail, please <a href="https://identity.linuxfoundation.org/">
 		follow this link</a>.
 	</p>
 	
@@ -41,7 +48,8 @@
 	<script type="text/javascript">
 		document.getElementsByName('username')[0].focus();
 	</script>
-	
+
+	{/if}
 </div>
 
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}

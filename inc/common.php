@@ -2,7 +2,11 @@
 
 // TODO: do we have to include PHPMailer on every page?
 include('libphp-phpmailer/class.phpmailer.php');
+
 include('inc/siteconf.php');
+$CONF = new SiteConfig();
+include($CONF->casModulePath . '/CAS.php');
+
 include('inc/db.php');
 include('inc/smarty/SmartyBC.class.php');
 include('inc/page.php');
@@ -16,7 +20,6 @@ include('inc/rss/rss_fetch.inc');
 session_start();
 error_reporting(E_ALL);
 
-$CONF = new SiteConfig();
 $SMARTY = new SmartyBC();
 $SMARTY->clear_compiled_tpl();
 

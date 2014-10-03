@@ -14,24 +14,38 @@ class User {
 	private $permissions = array();
 	
 	public function __construct($userName = false) {
+		global $CONF;
 		if($userName) {
-			// Fetch some data from LDAP, eh?
-			$ldap = new LDAP(); // anon bind is ok
-			$usr = $ldap->getUser($userName);
-			unset($ldap);      
-			if($usr) {
-				$this->firstName = $usr['firstName'];
-				$this->lastName = $usr['lastName'];
-				$this->fullName = $usr['fullName'];
-				$this->userName = $usr['userName'];
-				$this->email = $usr['email'];
-				$this->valid = true;
-      	}
-      	else 
-      	{
-			// What do we even do if we fail?
+			if ($CONF->authType == 'ldap') {
+				// Fetch some data from LDAP, eh?
+				$ldap = new LDAP(); // anon bind is ok
+				$usr = $ldap->getUser($userName);
+				unset($ldap);      
+				if($usr) {
+					$this->firstName = $usr['firstName'];
+					$this->lastName = $usr['lastName'];
+					$this->fullName = $usr['fullName'];
+					$this->userName = $usr['userName'];
+					$this->email = $usr['email'];
+					$this->valid = true;
+				} else {
+					// What do we even do if we fail?
+				}
+			} else {
+				// Fetch data from CAS.
+				phpCAS::checkAuthentication();
+				$cas_username = phpCAS::getUser();
+				$cas_attributes = phpCAS::getAttributes();
+				if ($userName == $cas_username) {
+					$this->firstName = $cas_attributes['profile_name_first'];
+					$this->lastName = $cas_attributes['profile_name_last'];
+					$this->fullName = $cas_attributes['profile_name_full'];
+					$this->userName = $cas_username;
+					$this->email = $cas_attributes['mail'];
+					$this->valid = true;
+				}
+			}
 		}
-	  }
 	}
 
 	public function isValid() { 
