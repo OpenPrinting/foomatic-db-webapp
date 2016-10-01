@@ -18,11 +18,14 @@ if ($_GET['format'] == "xml") {
   header("Content-Disposition: inline; filename=\"query.txt\"");
 }
 
-$querycmdline = "./query-helper";
+$dir = getcwd();
+$querycmdline = "/usr/bin/perl ./query";
 foreach($_GET as $k => $v) {
-  $querycmdline .= " " . escapeshellarg(urldecode($k)) . "='" . escapeshellarg(urldecode($v)) . "'";
+  $querycmdline .= " " . escapeshellarg($k) . "=" . escapeshellarg($v);
 }
 
+chdir('foomatic');
 passthru($querycmdline);
+chdir($dir);
 
 ?>
