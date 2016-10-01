@@ -97,10 +97,12 @@ my @printers;
 # other information than the Foomatic ID, as IEEE-1284 device ID
 # or make and model
 my $p;
+my $searchterm = "";
 if ($printer) {
     $p = $db->get_printer($printer);
     if ($p->{noxmlentry}) {
-	@printers = $db->find_printer($printer,
+	$searchterm = $printer;
+	@printers = $db->find_printer($searchterm,
 				      (($querytype =~ /^(drivers?)/i) ||
 				       ($printer =~ /\b((MFG|MANUFACTURER|MDL|MODEL|DES|DESCRIPTION):[^;]*;)+/)
 				       ? 2 : 1),
@@ -115,7 +117,8 @@ if ($printer) {
 	@printers = ($printer);
     }
 } elsif ($model) {
-    @printers = $db->find_printer(($make ? "$make|" : "") . $model,
+    $searchterm = ($make ? "$make|" : "") . $model;
+    @printers = $db->find_printer($searchterm,
 				  ($querytype =~ /^(drivers?)/i
 				   ? 2 : 1),
 				  ($querytype =~ /^(drivers?)/i
@@ -162,14 +165,17 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 	    # If there is no exact match on the manufacturer name try the
 	    # search function
 	    if (scalar(@printers) <= 0) {
-		@printers = $db->find_printer("$make|", 1, 1);
+		$searchterm = "$make|";
+		@printers = $db->find_printer($searchterm, 1, 1);
 	    }
 	}
     }
 
     # XML header
     if ($format eq "xml") {
-	$output .= "<printers>\n";
+	$output .= "<printers" .
+	    ($searchterm ne "" ? " searchterm=\"" . $searchterm . "\"" : "") .
+	    ">\n";
     }
 
     # List entries
@@ -618,7 +624,9 @@ if ($querytype =~ /^(makes?|manufacturers?)/i) {
 	# XML header with optional printer ID
 	$output .= "<drivers" . 
 	    ($showprinterid && $printer && ($driver !~ /^all$/i)
-	     ? " printer=\"printer/$printer\"" : "") . ">\n";
+	     ? " printer=\"printer/$printer\"" : "") .
+	     ($searchterm ne "" ? " searchterm=\"" . $searchterm . "\"" : "") .
+	    ">\n";
     } elsif ($showprinterid && $printer && ($driver !~ /^all$/i)) {
 	# Optional printer ID output in text format
 	$output .= "Printer: $printer\n";
