@@ -30,6 +30,14 @@ $SESSION = Session::getInstance();
 
 $DB = DB::getInstance();
 
+# JAL: The following setting switches Smarty caching on.
+# With cacning turned on, the load on the server is low, but the 
+# content is incorrect; the driver and printer page are the same
+# for all printers.  With Smarty caching turned off, the content is
+# correct, but the load is high.
+
+#$SMARTY->caching = 1;
+
 $SMARTY->assign('CONF',$CONF);
 $SMARTY->assign('PAGE',$PAGE);
 $SMARTY->assign('BASEURL',$CONF->baseURL);

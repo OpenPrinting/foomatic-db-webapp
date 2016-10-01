@@ -25,6 +25,7 @@ if($SESSION->isLoggedIn())
   if ($referrer == "") {
     $referrer = "/printers";
   }
+  //$SMARTY->assign('successRefer', $referrer);
   header('Location: ' . $referrer);
   exit;
 }
