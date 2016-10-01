@@ -10,7 +10,8 @@ $CONF = new SiteConfig();
 
 $options = getopt("p:d:o:");
 
-if ($options['p']) {
+foreach (array_keys($options) as $opt) switch ($opt) {
+case 'p':
   $filename = $options['p'];
   $fh = fopen($filename, 'r');
   if ($fh) {
@@ -24,13 +25,13 @@ if ($options['p']) {
     print "[ERROR]: Unable to open $filename\n";
     $error = true;
   }
-}
-if ($error) {
-  print "[ERROR]: Failed importing printer XML file $filename into the MySQL database\n";
-  exit;
-}
+  if ($error) {
+    print "[ERROR]: Failed importing printer XML file $filename into the MySQL database\n";
+    exit;
+  }
+  break;
 
-if ($options['d']) {
+case 'd':
   $filename = $options['d'];
   $fh = fopen($filename, 'r');
   if ($fh) {
@@ -44,13 +45,13 @@ if ($options['d']) {
     print "[ERROR]: Unable to open $filename\n";
     $error = true;
   }
-}
-if ($error) {
-  print "[ERROR]: Failed importing driver XML file $filename into the MySQL database\n";
-  exit;
-}
+  if ($error) {
+    print "[ERROR]: Failed importing driver XML file $filename into the MySQL database\n";
+    exit;
+  }
+  break;
 
-if ($options['o']) {
+case 'o':
   $filename = $options['o'];
   $fh = fopen($filename, 'r');
   if ($fh) {
@@ -64,10 +65,11 @@ if ($options['o']) {
     print "[ERROR]: Unable to open $filename\n";
     $error = true;
   }
-}
-if ($error) {
-  print "[ERROR]: Failed importing option XML file $filename into the MySQL database\n";
-  exit;
+  if ($error) {
+    print "[ERROR]: Failed importing option XML file $filename into the MySQL database\n";
+    exit;
+  }
+  break;
 }
 
 ?>
