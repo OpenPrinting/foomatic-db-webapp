@@ -188,9 +188,13 @@ class Margin
 	
     // Find out if an entry already exists under the general settings
     $result = $db->query('SELECT * FROM margin WHERE driver_id = ? and printer_id = ? and margin_type = ?', $this->driver_id, $this->printer_id, 'general');
-		
-    $count = mysql_num_rows($result);
-    mysql_free_result($result);
+
+    if ($result == null) {
+      $count = 0;
+    } else {
+      $count = mysql_num_rows($result);
+      mysql_free_result($result);
+    }
 
     if ($count) {
       $query = "update margin set ";
@@ -244,9 +248,13 @@ class Margin
 	
 	// Find out if an entry already exists under the general settings
 	$result = $db->query('SELECT * FROM margin WHERE driver_id = ? and printer_id = ? and margin_type = ? and pagesize = ?', $this->driver_id, $this->printer_id, 'exception', $e['pagesize']);
-	
-	$count = mysql_num_rows($result);
-	mysql_free_result($result);
+
+  	if ($result == null) {
+      	  $count = 0;
+        } else {
+	  $count = mysql_num_rows($result);
+	  mysql_free_result($result);
+	}
 
 	if ($count) {
 	  $query = "update margin set ";

@@ -168,10 +168,13 @@ class Translation
     foreach($t as $lang => $trans) {
 	
       // Find out if there is already an entry present
-      $result = $db->query('SELECT lang FROM ' . $table . '_translation WHERE ' . $pkeys_expr . ' and lang = ?', $lang);
-	  
-      $count = mysql_num_rows($result);
-      mysql_free_result($result);
+      $result = $db->query('SELECT lang FROM ' . $table . '_translation WHERE ' . $pkeys_expr . ' and lang = \'' . $lang . '\'');
+
+      $count = 0;
+      if ($result) {
+      	$count = mysql_num_rows($result);
+        mysql_free_result($result);
+      }
 
       // Prepare the query string. Update if data exists or insert a new record
       if ($count) {

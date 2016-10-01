@@ -605,15 +605,19 @@ class Driver
 	
     // Find out if there is already an entry present and if so, remove it
     // before creating a new one
-    $result = $db->query('SELECT * FROM driver WHERE id = ?', $this->id);
-	
-    $count = mysql_num_rows($result);
-    mysql_free_result($result);
-    if ($count) {
-      if (!$this->removeFromDB($this->id, $db)) {
-	return false;
+    $query = 'SELECT * FROM driver WHERE id = \'' . $this->id . '\'';
+    $result = $db->query($query);
+
+    if ($result) {
+      $count = mysql_num_rows($result);
+      mysql_free_result($result);
+      if ($count) {
+        if (!$this->removeFromDB($this->id, $db)) {
+	  return false;
+        }
       }
-    }
+    } else
+      echo "[WARNING] While removing old driver data...\n".$db->getError()."\n";
 
     // Prepare the query string to insert a new record
     $query = "insert into driver(";
@@ -638,7 +642,7 @@ class Driver
     }
 	
     // Trigger the save of translation data
-    if ($this->translation) {
+    if (property_exists($this, 'translation')) {
       foreach ($this->translation as $field => $trobj) {
 	if (!$trobj->saveDB($db)) {
 	  echo "[ERROR] While saving driver translation data for the \"$field\" field...\n".$db->getError()."\n";
@@ -726,7 +730,8 @@ class Driver
 	
     // Execute the deletion of margin definitions. This does not delete any
     // items in other tables
-    $result = $db->query('DELETE FROM margin WHERE driver_id = ?', $id);
+    $query = 'DELETE FROM margin WHERE driver_id = \'' . $id . '\''; 
+    $result = $db->query($query);
 	
     if ($result == null) {
       echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
