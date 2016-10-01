@@ -112,7 +112,8 @@ class DB {
 	}
 	
 	function query($query, $arguments = array()) {
-		
+
+		/*
 		$this->lastStatement = $this->connection->prepare($query);
 		
 		if (!is_array($arguments)) {
@@ -130,7 +131,7 @@ class DB {
 		}
 		
 		return $result;
-		/*
+		*/
 		$args  = func_get_args();
 		$query = array_shift($args);		
 		$query = str_replace("?", "%s", $query);
@@ -155,7 +156,6 @@ class DB {
 			return false;
 		} else 
 			return $res;
-		*/
 	}	
 }
 
