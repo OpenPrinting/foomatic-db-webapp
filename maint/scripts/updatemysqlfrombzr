@@ -18,7 +18,7 @@ DOWNLOAD_DIR=$BASE/download/printdriver
 RPMDIR=`rpmbuild --showrc | egrep '^\-[0-9]+:\s*_topdir' | rev | cut -f1 |rev`
 
 # This will return a single line with all necessary params in a 'key=value' form
-CONF=`cd ../../foomatic &&  php ../dump_mysql_config.php | sed 's/: /=/g'`
+CONF=`cd $WORKDIR &&  php ../dump_mysql_config.php | sed 's/: /=/g'`
 # This will export 'server', 'user', 'password' and 'database' variables
 export $CONF
 
