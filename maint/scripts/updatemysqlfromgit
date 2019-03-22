@@ -1,0 +1,148 @@
+#!/bin/bash
+
+# Script for automatically updating the MySQL database when data got committed
+# to the git repositories of foomatic-db and foomatic-db-nonfree. The script
+# also updates the copies of the Foomatic git repositories which provide the
+# manufacturer-supplied ready-made PPD files for the OpenPrinting database.
+
+# This script should be run as a cron job or triggered by git commits into
+# foomatic-db and foomatic-db-nonfree.
+
+# Declare vars
+BASE=/srv/www/openprinting
+# Work directory for Foomatic-based backend scripts
+WORKDIR=$BASE/foomatic
+# Printer drivers download area
+DOWNLOAD_DIR=$BASE/download/printdriver
+
+RPMDIR=`rpmbuild --showrc | egrep '^\-[0-9]+:\s*_topdir' | rev | cut -f1 |rev`
+
+# This will return a single line with all necessary params in a 'key=value' form
+CONF=`cd $WORKDIR &&  php ../dump_mysql_config.php | sed 's/: /=/g'`
+# This will export 'server', 'user', 'password' and 'database' variables
+export $CONF
+
+DBPARAMS="--password=$password -u $user -h $server"
+TMPFILE=`mktemp`
+
+trigger_pkg_regen() {
+    # Check which files inside 'source/PPD/' and 'source/driver/' folders were modified
+    # and regenerate corresponding driver packages
+    # For modified PPDs, we get drivers from the database
+
+    git diff --name-only $oldrev | grep 'source/PPD' | \
+	sed 's%.*/%%' | sed 's%\.ppd.*%%' | sort -u | while read ppd
+	do
+	driver=`mysql $DBPARAMS $database -e "SELECT default_driver FROM printer WHERE id='ppd'" | grep -v "default_driver"`
+	echo $driver >>$TMPFILE
+    done
+
+    git diff --name-only | grep 'source/driver' \
+	| sed 's%.*/%%' | sed 's%\.xml.*%%' >>$TMPFILE
+    cat $TMPFILE | sort -u | grep -v '^[[:space:]]*$' | while read driver
+    do
+	echo "Regenerating $driver"
+	rm -f /tmp/foomatic.$$
+	../foomatic-generate-package -d $driver | tee /tmp/foomatic.$$
+
+	# Now analyze the packages built and copy them to the download area
+	RPM_PKG=`grep "RPM package:" /tmp/foomatic.$$ | cut -f2 -d:`
+	if [[ ${RPM_PKG}x == "x" ]]
+	then
+	    continue
+	fi
+
+	RPM_PKG_FILE=`basename ${RPM_PKG}`
+	RPM_PKG_DIR=`dirname ${RPM_PKG}`
+	SPEC_NAME=`rpm -qp --qf=%{NAME} ${RPM_PKG}`.spec
+
+	# Sign RPM package
+	rpmsign --resign $RPM_PKG
+
+	# Backup old files
+	# Always check if file exists to avoid errors in script output
+	if [ -f $DOWNLOAD_DIR/SPECS/$SPEC_NAME ]
+	then
+	    mv -f $DOWNLOAD_DIR/SPECS/$SPEC_NAME $DOWNLOAD_DIR/old/SPECS
+	fi
+	cp ${RPM_PKG_DIR}/../../SPECS/$SPEC_NAME $DOWNLOAD_DIR/SPECS
+	if [[ $RPM_PKG =~ "noarch" ]]
+	then
+	    # Names of old packages are formed on the basis of $SPEC_NAME
+	    # Can't just use $RPM_PKG_FILE here since it contains a timestamp
+	    if [ -f $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME/.spec/}*.rpm ]
+	    then
+		mv -f $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME/.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/noarch/
+	    fi
+	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/noarch/
+	    USE_EXISTING_DEBS=1 DEBDIR=$RPMDIR/DEBS ./mkrepodeb $DOWNLOAD_DIR/RPMS/noarch/${SPEC_NAME.spec/}*.rpm
+	elif [[ $RPM_PKG =~ "x86_64" ]]
+	then
+	    if [ -f $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME/.spec/}*.rpm ]
+	    then
+		mv -f $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/x86_64/
+	    fi
+	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/x86_64/
+	    USE_EXISTING_DEBS=1 DEBDIR=$RPMDIR/DEBS ./mkrepodeb $DOWNLOAD_DIR/RPMS/x86_64/${SPEC_NAME.spec/}*.rpm
+	else # i486
+	    if [ -f $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME/.spec/}*.rpm ]
+	    then
+		mv -f $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME.spec/}*.rpm $DOWNLOAD_DIR/old/RPMS/i*86/
+	    fi
+	    cp ${RPM_PKG} $DOWNLOAD_DIR/RPMS/i*86/
+	    USE_EXISTING_DEBS=1 DEBDIR=$RPMDIR/DEBS ./mkrepodeb $DOWNLOAD_DIR/RPMS/i*86/${SPEC_NAME.spec/}*.rpm
+	fi
+    done
+
+    ./mkreporpm
+
+    # Sign additional data
+    (
+    cd $DOWNLOAD_DIR/debian/dists/lsb3.2
+    gpg --default-key 4CFD1E2F -abs -o Release.gpg Release
+    )
+}
+
+# Main part
+
+( cd $WORKDIR
+    # Update packages from the version control system, then apply the
+    # changed files to the MySQL database
+    ## Package: foomatic-db
+    if [ -d foomatic-db ]; then
+	cd foomatic-db
+	oldrev=`git rev-parse --short HEAD`
+	git pull
+	rev=`git rev-parse --short HEAD`
+	if test "$rev" != "$oldrev"; then
+	    ( cd $BASE
+		./maint/scripts/importfromgit $WORKDIR/foomatic-db $oldrev $rev
+	    )
+
+	    trigger_pkg_regen
+	fi
+	cd ..
+    fi
+    ## Package: foomatic-db-nonfree
+    if [ -d foomatic-db-nonfree ]; then
+	cd foomatic-db-nonfree
+	oldrev=`git rev-parse --short HEAD`
+	git pull
+	rev=`git rev-parse --short HEAD`
+	if test "$rev" != "$oldrev"; then
+	    ( cd $BASE
+		./maint/scripts/importfromgit $WORKDIR/foomatic-db-nonfree $oldrev $rev
+	    )
+
+	    # empty $TMPFILE after previous step
+	    echo > $TMPFILE
+
+	    trigger_pkg_regen
+	fi
+	cp -r db/source/PPD/* ../foomatic-db/db/source/PPD/
+	cd ..
+    fi
+)
+
+# Cleanup
+rm -f $TMPFILE

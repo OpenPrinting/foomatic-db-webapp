@@ -1,0 +1,195 @@
+#!/bin/bash
+
+# Script for automatically updating the Git repositories from the MySQL
+# database
+
+# This script should be run as a cron job once a day
+
+# Declare vars
+BASE=/srv/www/openprinting
+#BASE=$PWD
+#BASE=.
+# Work directory for Foomatic-based backend scripts
+#FOOMATICDIR=$BASE/foomatic/foomatic-db
+FOOMATICDIR=$BASE/foomatic
+#FOOMATICDIR=/home/dj/github/
+
+if test "$1" = "--ppd-free"; then
+    ppdcommit=free
+fi
+if test "$1" = "--ppd-nonfree"; then
+    ppdcommit=nonfree
+fi
+
+cd $BASE
+for repo in foomatic-db-nonfree foomatic-db; do
+    if test "$ppdcommit" = "free"  -a "$repo" = "foomatic-db-nonfree"; then
+	continue
+    fi
+    if test "$ppdcommit" = "nonfree"  -a "$repo" = "foomatic-db"; then
+	continue
+    fi
+    pushed=0;
+    try=0
+    while test "$pushed" = "0" -a "$try" -lt "10"; do
+	try=$((try + 1))
+        # Import any git commit which happened in the meantime into the MySQL
+        # database
+	$BASE/maint/scripts/updatemysqlfromgit
+
+        # Create a temporary directory
+	tmpdir= 
+	trap 'rm -rf $tmpdir' 0 1 2 13 15
+	tmpdir=$(mktemp -d -t updategitfrommysql.XXXXXX)
+	# tmpdir=$(mktemp -d -t updategitfrommysql)
+        # Download the repository
+	pushd $tmpdir > /dev/null 2>&1
+	echo $PWD;
+	git clone https://github.com/OpenPrinting/$repo.git
+	# exit;
+	if test -z "$ppdcommit"; then
+	    # Remove all XML files
+	    rm -rf $repo/db/source/printer
+	    rm -rf $repo/db/source/driver
+	    rm -rf $repo/db/source/opt
+	    popd > /dev/null 2>&1
+	
+	    # Export the current XML files from the MySQL database
+	    if test "$repo" = "foomatic-db-nonfree"; then 
+		php $BASE/maint/scripts/exporttogit.php -d $tmpdir -n
+	    else
+		php $BASE/maint/scripts/exporttogit.php -d $tmpdir -f
+	    fi
+	else
+	    # Copy PPD files into the repository
+	    mkdir -p $tmpdir/$repo/db/source
+	    cp -r $2 $tmpdir/$repo/db/source
+	    popd > /dev/null 2>&1
+	fi
+
+	# Look for new files with "git diff" and add them to the
+	# repository, also generate the entries for the ChangeLog file
+	pushd $tmpdir/$repo > /dev/null 2>&1
+	state=unknown
+	touch $tmpdir/approved
+	touch $tmpdir/added
+	touch $tmpdir/modified
+	touch $tmpdir/removed
+	noadded=1
+	nomodified=1
+	noremoved=1
+	changes=0
+	# tempIFS=$IFS
+	# endline="
+	# "
+	# IFS=$endline
+	git add .
+	mapfile -t array < <(git diff --name-status --no-renames HEAD --)
+	#for f in `git diff --name-status --no-renames HEAD --`; do
+	echo $array;
+	for f in "${array[@]}"; do
+		echo $f;
+		# IFS=$tempIFS
+		status="$(echo $f | head -c 1)"
+	    if [ "$status" = "A" ]; then
+		state=new
+	    elif [ "$status" = "M" ]; then
+		state=modified
+	    elif [ "$status" = "D" ]; then
+		state=removed
+		fi
+		file1=` echo "$f" | awk -F"\t" 'END {print $2}' `
+		#git add $file1
+	    if `echo $file1 | egrep -q '^db/source/'`; then
+		if test "$state" = "new"; then
+		    changes=1
+		    popd > /dev/null 2>&1
+		    if test -z "`php $BASE/maint/scripts/changelogentry.php -f $file1`"; then
+			if test "$noadded" = "1"; then
+			    echo -en "\t* $file1" >> $tmpdir/added
+			    noadded=0
+			else
+			    echo -en ",\n\t  $file1" >> $tmpdir/added
+			fi
+		    else
+			php $BASE/maint/scripts/changelogentry.php -f $file1 >> $tmpdir/approved
+		    fi
+		    pushd $tmpdir/$repo > /dev/null 2>&1
+		elif test "$state" = "modified"; then
+		    changes=1
+		    if test "$nomodified" = "1"; then
+			echo -en "\t* $file1" >> $tmpdir/modified
+			nomodified=0
+		    else
+			echo -en ",\n\t  $file1" >> $tmpdir/modified
+		    fi
+		elif test "$state" = "removed"; then
+		    changes=1
+		    if test "$noremoved" = "1"; then
+			echo -en "\t* $file1" >> $tmpdir/removed
+			noremoved=0
+		    else
+			echo -en ",\n\t  $file1" >> $tmpdir/removed
+		    fi
+		fi
+	    fi
+		# IFS=$endline
+	done
+
+	if test "$changes" = "1"; then
+	    # Add comment texts for ChangeLog
+	    if test -z "$ppdcommit"; then
+		if test "$noadded" = "0"; then
+		    echo -en ":\n\t  New entries added to the MySQL database.\n\n" >> $tmpdir/added
+		fi
+		if test "$nomodified" = "0"; then
+		    echo -en ":\n\t  Entries modified in the MySQL database.\n\n" >> $tmpdir/modified
+		fi
+		if test "$noremoved" = "0"; then
+		    echo -en ":\n\t  Entries removed from the MySQL database.\n\n" >> $tmpdir/removed
+		fi
+	    else
+		if test "$noadded" = "0"; then
+		    echo -en ":\n\t  New PPD files for driver \"$3\" added.\n\n" >> $tmpdir/added
+		fi
+		if test "$nomodified" = "0"; then
+		    echo -en ":\n\t  PPD files for driver \"$3\" modified.\n\n" >> $tmpdir/modified
+		fi
+		if test "$noremoved" = "0"; then
+		    echo -en ":\n\t  PPD files for driver \"$3\" removed.\n\n" >> $tmpdir/removed
+		fi
+	    fi
+
+	    # Put ChangeLog together
+	    echo -en `date --rfc-3339=date` > ChangeLog.new
+	    echo -en '  OpenPrinting Web Server <webmaster@openprinting.org>\n\n' >> ChangeLog.new
+	    cat $tmpdir/approved $tmpdir/added $tmpdir/modified $tmpdir/removed >> ChangeLog.new
+	    cat ChangeLog >> ChangeLog.new
+	    mv -f ChangeLog.new ChangeLog
+	    # Commit the changes to the local repository
+            if test -z "$ppdcommit"; then
+                git commit -a -m "Daily snapshot of `date`"
+            else
+                git commit -a -m "PPD files added for driver \"$3\""
+            fi
+
+	    # Push changes up to the server's repository
+	    git push &&pushed=1
+		#pushed=1
+	else
+	    # avoid infinite loop if there are no changes
+	    pushed=1
+	fi
+
+	popd > /dev/null 2>&1
+
+	rm -rf $tmpdir
+
+    done
+
+    if test "$pushed" = "0"; then
+	echo "ERROR: Did not succeed to commit the changes to the git repositories!"
+	exit 1;
+    fi
+
+done
