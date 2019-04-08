@@ -1,0 +1,105 @@
+#!/bin/sh
+if test "$1" = "-h" || test "$#" = "0"; then
+    echo "Usage: `basename $0` <repodir>"
+    echo "       `basename $0` <repodir> <rev>"
+    echo "       `basename $0` <repodir> <oldrev> <rev>"
+    echo
+    echo "       Import changes on the git repository of foomatic-db and"
+    echo "       foomatic-db-nonfree into the MySQL database."
+    echo
+    echo "       The first call imports the last commit, the second call"
+    echo "       exactly the commit <SHA>, and the third call all commits"
+    echo "       which lead from the old state <oldSHA> to the new state"
+    echo "       <newSHA>."
+    exit 1
+fi
+orgdir=`pwd`
+scriptdir=`dirname $0`
+repodir=$1
+if test "$#" = "1"; then
+    rev = `cd $repodir; git rev-parse --short HEAD`
+    oldrev=`git rev-parse --short HEAD~1`
+else
+    rev=$2
+    if test "$#" = "2"; then
+    oldrev=`git rev-parse --short HEAD~1`
+    else
+    oldrev=$rev
+    rev=$3
+    fi
+fi
+
+echo "Importing changes between revision $oldrev and $rev from $repodir ..." 1>&2
+op=:
+temp=:
+tempIFS=$IFS
+endline="
+"
+IFS=$endline
+for f in `cd $repodir; git diff --name-status --no-renames $oldrev $rev`; do
+    status="$(echo $f | head -c 1)"
+    if [ "$status" = "A" ]; then
+        op0=:
+        op1="php $scriptdir/xmltomysql.php"
+    elif [ "$status" = "M" ]; then
+     	op0=:
+     	op1="php $scriptdir/xmltomysql.php"
+    elif [ "$status" = "C" ]; then
+        op0=:
+        op1="php $scriptdir/xmltomysql.php"
+    elif [ "$status" = "D" ]; then
+        op0="php $scriptdir/remove.php"
+        op1=:
+    elif [ "$status" = "R" ]; then
+        op0="php $scriptdir/remove.php"
+        op1="php $scriptdir/xmltomysql.php"
+    else 
+        op0=:
+        op1=:
+    fi
+    file1=:
+    file2=:
+    if [ "$status" = "C" ] || [ "$status" = "R" ]; then
+        file2=` echo "$f" | awk -F"\t" 'END {print $2}' `
+        file1=` echo "$f" | awk -F"\t" 'END {print $3}' `
+    else
+        file1=` echo "$f" | awk -F"\t" 'END {print $2}' `
+    fi
+    IFS=$tempIFS
+    for f in $file1 $file2; do
+        if [ "$f" = ":" ]; then
+            continue
+        fi
+        if `echo $f | egrep -q '^db/source/printer/.*\.xml$'`; then
+            /bin/echo -en "  $f " 1>&2
+            if [ -f $repodir/$f ]; then
+                echo "" 1>&2
+                $op1 -p $repodir/$f
+            else
+                echo "X" 1>&2
+                $op0 -p $repodir/$f
+            fi
+        elif `echo $f | egrep -q '^db/source/driver/.*\.xml$'`; then
+            /bin/echo -en "  $f " 1>&2
+            if [ -f $repodir/$f ]; then
+                echo "" 1>&2
+                $op1 -d $repodir/$f
+            else
+                echo "X" 1>&2
+                $op0 -d $repodir/$f
+            fi
+        elif `echo $f | egrep -q '^db/source/opt/.*\.xml$'`; then
+            /bin/echo -en "  $f" 1>&2
+            if [ -f $repodir/$f ]; then
+                echo "" 1>&2
+                $op1 -o $repodir/$f
+            else
+                echo "X" 1>&2
+                $op0 -o $repodir/$f
+            fi
+        fi
+    done
+    IFS=$endline
+done
+IFS=$tempIFS
+echo "Done" 1>&2

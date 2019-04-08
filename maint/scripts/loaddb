@@ -1,0 +1,49 @@
+#!/bin/bash
+if test "$1" = "-h" || test "$#" = "0"; then
+    echo "Usage: `basename $0` <repodir>"
+    echo
+    echo "       Import git repository of foomatic-db and"
+    echo "       foomatic-db-nonfree into the blank MySQL database."
+    echo
+    exit 1
+fi
+orgdir=`pwd`
+scriptdir=`dirname $0`
+repodir=$1
+
+mapfile -t array < <(cd $repodir;find . -type d -name ".git" -prune -o -type f -print )
+
+for t in "${array[@]}"; do
+    f=${t:2}
+    op0=:
+    op1="php $scriptdir/xmltomysql.php"
+    if `echo $f | egrep -q '^db/source/printer/.*\.xml$'`; then
+        /bin/echo -en "  $f " 1>&2
+        if [ -f $repodir/$f ]; then
+            echo "" 1>&2
+            $op1 -p $repodir/$f
+        else
+            echo "X" 1>&2
+            $op0 -p $repodir/$f
+        fi
+    elif `echo $f | egrep -q '^db/source/driver/.*\.xml$'`; then
+        /bin/echo -en "  $f " 1>&2
+        if [ -f $repodir/$f ]; then
+            echo "" 1>&2
+            $op1 -d $repodir/$f
+        else
+            echo "X" 1>&2
+            $op0 -d $repodir/$f
+        fi
+    elif `echo $f | egrep -q '^db/source/opt/.*\.xml$'`; then
+        /bin/echo -en "  $f" 1>&2
+        if [ -f $repodir/$f ]; then
+            echo "" 1>&2
+            $op1 -o $repodir/$f
+        else
+            echo "X" 1>&2
+            $op0 -o $repodir/$f
+        fi
+    fi
+done
+echo "Done!" 1>&2

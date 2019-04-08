@@ -1,0 +1,224 @@
+#!/bin/sh
+
+www_group="www-data"
+downloads_dir="/srv/www/openprinting/download"
+git_repo="http://github.com/openprinting"
+
+# CUPS Filters
+# ------------
+
+version=1
+
+# Build development snapshots
+
+package=cups-filters
+dir=
+timestamp=`date +%Y%m%d`
+downloadpath=${downloads_dir}/cups-filters/
+mkdir -p $downloadpath
+filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
+oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
+currentlink=${downloadpath}${package}-${version}-current.tar.gz
+tmpdir=`mktemp -u snapshot-XXXXXX`
+mkdir $tmpdir
+cd $tmpdir
+git clone ${git_repo}/${package}.git > /dev/null 2>&1
+if [ $? = 0 ] && [ -d ${package} ]; then
+    cd ${package}
+    aclocal > /dev/null 2>&1
+    autoconf > /dev/null 2>&1
+    rm -rf .git
+    rm -rf autom*.cache
+    cd ..
+    ln -s ${package} ${package}-${version}-${timestamp}
+    tar -czf $filename --dereference ${package}-${version}-${timestamp}
+    if [ $? = 0 ] && [ -f ${filename} ]; then
+	rm -f $oldfiles
+	rm -f $currentlink
+	ln -s $filename $currentlink
+	#chgrp ${www_group} $filename $currentlink
+	chmod g+rw $filename $currentlink
+    else
+	rm -f $filename
+    fi
+fi
+cd ..
+rm -rf $tmpdir
+
+# Foomatic
+# --------
+
+# Build stable release snapshots 
+# for foomatic-db-engine and foomatic-filter
+
+version=4.0
+dir=foomatic-4.0
+timestamp=`date +%Y%m%d`
+downloadpath=${downloads_dir}/foomatic/
+mkdir -p $downloadpath
+
+#for package in foomatic-db-engine foomatic-filters
+for package in foomatic-db-engine
+do
+    filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
+    oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
+    currentlink=${downloadpath}${package}-${version}-current.tar.gz
+    tmpdir=`mktemp -u snapshot-XXXXXX`
+    mkdir $tmpdir
+    cd $tmpdir
+    git clone ${git_repo}/${package}-4.git > /dev/null 2>&1
+    if [ $? = 0 ] && [ -d ${package} ]; then
+	cd ${package}
+	./make_configure > /dev/null 2>&1
+	rm -rf .git
+	rm -rf autom*.cache
+	cd ..
+	ln -s ${package} ${package}-${version}-${timestamp}
+	tar -czf $filename --dereference ${package}-${version}-${timestamp}
+	if [ $? = 0 ] && [ -f ${filename} ]; then
+	    rm -f $oldfiles
+	    rm -f $currentlink
+	    ln -s $filename $currentlink
+	    #chgrp ${www_group} $filename $currentlink
+	    chmod g+rw $filename $currentlink
+        else
+	    rm -f $filename
+        fi
+    fi
+    cd ..
+    rm -rf $tmpdir
+done
+
+# Build development snapshots
+# for foomatic-db-engine and foomatic-filters
+
+version=4.1
+dir=foomatic
+timestamp=`date +%Y%m%d`
+downloadpath=${downloads_dir}/foomatic/
+mkdir -p $downloadpath
+
+#for package in foomatic-db-engine foomatic-filters
+for package in foomatic-db-engine
+do
+    filename=${downloadpath}${package}-devel-${version}-${timestamp}.tar.gz
+    oldfiles=`ls -1 ${downloadpath}${package}-devel-${version}-????????.tar.gz 2> /dev/null | grep -v $filename`
+    currentlink=${downloadpath}${package}-devel-${version}-current.tar.gz
+    tmpdir=`mktemp -u snapshot-XXXXXX`
+    mkdir $tmpdir
+    cd $tmpdir
+    git clone ${git_repo}/${package}.git > /dev/null 2>&1
+    if [ $? = 0 ] && [ -d ${package} ]; then
+        cd ${package}
+	./make_configure > /dev/null 2>&1
+	rm -rf .git
+	rm -rf autom*.cache
+	cd ..
+	ln -s ${package} ${package}-devel-${version}-${timestamp}
+	tar -czf $filename --dereference ${package}-devel-${version}-${timestamp}
+	if [ $? = 0 ] && [ -f ${filename} ]; then
+	    rm -f $oldfiles
+	    rm -f $currentlink
+	    ln -s $filename $currentlink
+	    #chgrp ${www_group} $filename $currentlink
+	    chmod g+rw $filename $currentlink
+	else
+	    rm -f $filename
+	fi
+    fi
+    cd ..
+    rm -rf $tmpdir
+done
+
+# Build database snapshots
+
+# foomatic-db
+
+version=4.0
+package=foomatic-db
+dir=foomatic
+timestamp=`date +%Y%m%d`
+downloadpath=${downloads_dir}/foomatic/
+mkdir -p $downloadpath
+filename=${downloadpath}${package}-${version}-${timestamp}.tar.gz
+filenamexz=${downloadpath}${package}-${version}-${timestamp}.tar.xz
+oldfiles=`ls -1 ${downloadpath}${package}-${version}-????????.tar.* 2> /dev/null | grep -v $filename | grep -v $filenamexz`
+currentlink=${downloadpath}${package}-${version}-current.tar.gz
+currentlink2=${downloadpath}${package}-current.tar.gz
+currentlinkxz=${downloadpath}${package}-${version}-current.tar.xz
+currentlinkxz2=${downloadpath}${package}-current.tar.xz
+tmpdir=`mktemp -u snapshot-XXXXXX`
+mkdir $tmpdir
+cd $tmpdir
+git clone ${git_repo}/${package}.git > /dev/null 2>&1
+if [ $? = 0 ] && [ -d ${package} ]; then
+    cd ${package}
+    ./make_configure > /dev/null 2>&1
+    rm -rf .git
+    rm -rf autom*.cache
+    cd ..
+    ln -s ${package} ${package}-${timestamp}
+    tar -czf $filename --dereference ${package}-${timestamp}
+    if [ $? = 0 ] && [ -f ${filename} ]; then
+	rm -f $oldfiles
+	rm -f $currentlink
+	rm -f $currentlink2
+	ln -s $filename $currentlink
+	ln -s $filename $currentlink2
+	#chgrp ${www_group} $filename $currentlink $currentlink2
+	chmod g+rw $filename $currentlink $currentlink2
+    else
+	rm -f $filename
+    fi
+    tar -cJf $filenamexz --dereference ${package}-${timestamp}
+    if [ $? = 0 ] && [ -f ${filenamexz} ]; then
+	rm -f $oldfiles
+	rm -f $currentlinkxz
+	rm -f $currentlinkxz2
+	ln -s $filenamexz $currentlinkxz
+	ln -s $filenamexz $currentlinkxz2
+	#chgrp ${www_group} $filenamexz $currentlinkxz $currentlinkxz2
+	chmod g+rw $filenamexz $currentlinkxz $currentlinkxz2
+    else
+	rm -f $filenamexz
+    fi
+fi
+cd ..
+rm -rf $tmpdir
+
+# foomatic-db-nonfree
+
+package=foomatic-db-nonfree
+dir=foomatic
+timestamp=`date +%Y%m%d`
+downloadpath=${downloads_dir}/foomatic/
+mkdir -p $downloadpath
+filename=${downloadpath}${package}-${timestamp}.tar.gz
+oldfiles=`ls -1 ${downloadpath}${package}-????????.tar.gz 2> /dev/null | grep -v $filename`
+currentlink=${downloadpath}${package}-current.tar.gz
+tmpdir=`mktemp -u snapshot-XXXXXX`
+mkdir $tmpdir
+cd $tmpdir
+git clone ${git_repo}/${package}.git > /dev/null 2>&1
+if [ $? = 0 ] && [ -d ${package} ]; then
+    cd ${package}
+    ./make_configure > /dev/null 2>&1
+    rm -rf .git
+    rm -rf autom*.cache
+    cd ..
+    ln -s ${package} ${package}-${timestamp}
+    tar -czf $filename --dereference ${package}-${timestamp}
+    if [ $? = 0 ] && [ -f ${filename} ]; then
+	rm -f $oldfiles
+	rm -f $currentlink
+	ln -s $filename $currentlink
+	#chgrp ${www_group} $filename $currentlink
+	chmod g+rw $filename $currentlink
+    else
+	rm -f $filename
+    fi
+fi
+cd ..
+rm -rf $tmpdir
+
+exit 0

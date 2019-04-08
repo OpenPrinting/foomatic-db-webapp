@@ -1,0 +1,59 @@
+How to setup openprinting site and database from bazaar branch
+==============================================================
+
+1) Copy the whole contents of the site branch to a folder where it is going to 
+be located I.e.,
+
+  # cp printing-new/* /srv/www/openprinting/
+
+2) Install the git and build-essential packages if you have not done so yet.
+
+3) Install Foomatic into the setup:
+
+  # export WORKDIR=/srv/www/openprinting/foomatic
+  # cd $WORKDIR
+  # git clone https://github.com/openprinting/foomatic-db-engine.git
+  # git clone https://github.com/openprinting/foomatic-db.git
+  # git clone https://github.com/openprinting/foomatic-db-nonfree.git
+  # cd foomatic-db-engine
+  # ./make_configure
+  # ./configure
+  # make inplace
+  # cd ../..
+
+4) Create "inc/siteconf.php" configuration file for the site. You can use
+siteconf-DEV.php or siteconf-PROD.php as a basis. In that file you should set
+access parameters for the MySQL database, LDAP server, mail addresses and some
+other settings.
+
+5) Edit the "build" script - set BASEDIR variable at the top of the script to the actual directory where the site is located
+
+6) Launch the build script:
+
+  # ./build
+
+Note that this script uses inc/siteconf.php to create mysql.conf file for
+foomatic.
+
+7) If you want to create openprinting database from scratch, launch setupdb.sh
+script from the maint/scripts folder:
+
+  # cd maint/scripts
+  # ./setupdb.sh
+
+
+Note that setupdb.sh uses inc/siteconf.php to get database access parameters.
+
+8) Now you can populate the database using the data from git using
+"importfromgit" script which tries to parse printer xml files and load them
+to the database. Let's try to import everything from foomatic-db and
+foomatic-db-nonfree:
+
+  # export WORKDIR=/srv/www/openprinting/foomatic
+  # maint/scripts/loaddb $WORKDIR/foomatic-db
+  # maint/scripts/loaddb $WORKDIR/foomatic-db-nonfree
+
+Note: In git, revno is denoted by the SHA hash of the commit.
+
+======
+That's all. Now you should be able to access your copy of the openprinting site.
