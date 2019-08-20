@@ -2,7 +2,7 @@
 
 www_group="www-data"
 downloads_dir="/srv/www/openprinting/download"
-git_repo="http://github.com/openprinting"
+git_repo="git@github.com:OpenPrinting"
 
 # CUPS Filters
 # ------------
