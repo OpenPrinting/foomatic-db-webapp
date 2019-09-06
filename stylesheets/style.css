@@ -162,11 +162,14 @@ body #footer-links a:hover { text-decoration: underline; }
 	padding-right:15px !important;
 }
 
-#site-logo a {
+#site-logo{
 	float: left;
-	height: 44px;
+	height: 60px;
 	width: 200px;
-	background: url(../images/layout/openprinting-logo.jpg);
+}
+.op-logo{
+	height: 60px;
+	width: 200px;
 }
 
 #lf-logo a:hover {

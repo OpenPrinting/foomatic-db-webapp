@@ -5,7 +5,7 @@
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
 		<title>{$PAGE->getPageTitle()}</title>
-		<link rel="shortcut icon" href="{$BASEURL}images/layout/favicon.png" type="image/x-icon" />
+		<link rel="shortcut icon" href="{$BASEURL}images/layout/favicon.ico" type="image/x-icon" />
 		
 		<link href="{$BASEURL}stylesheets/style.css" rel="stylesheet" type="text/css" />
 		<link href="{$BASEURL}stylesheets/ajax.css" rel="stylesheet" type="text/css" />
@@ -118,12 +118,15 @@
 					</div>
 					
 					<div id="site-logo">
-						<a href="{$BASEURL}"></a>			
+						<a href="{$BASEURL}">
+							<image class="op-logo" src="/images/layout/openprinting-logo.png">
+						</a>			
 					</div>
-					
+					<!--
 					<div id="lf-logo">
 						<a href="{$MAINURL}"></a>
-					</div>				
+					</div>		
+					-->		
 				</div>
 				
 				<div id="navbar">

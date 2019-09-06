@@ -23,9 +23,8 @@ class Page {
 		$m = $CONF->mainURL;		
 		// Main openprinting workgroup base URL
 		$mb = $CONF->mainURL . $CONF->mainURI;
-
+		$mb = "https://openprinting.github.io";
 		// Add initial breadcrumb items
-		$this->addBreadcrumb('The Linux Foundation',$m);
 		$this->addBreadcrumb('OpenPrinting',$mb);
 
 		// Add second level navigation items
