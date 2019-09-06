@@ -7,8 +7,8 @@ class SiteConfig {
   // %s will be replaced with the page title as set per page
 		
 	public $baseURL = '/'; // with tailing slash, from document root
-	public $mainURL = 'http://www.linuxfoundation.org'; //main site for tabs
-	public $mainURI = '/collaborate/workgroups/openprinting/'; // with tailing slash, from document root
+	public $mainURL = 'http://openprinting.github.io'; //main site for tabs
+	public $mainURI = '/'; // with tailing slash, from document root
 
 	/*public $dbUser = 'opuser';
     public $dbPass = 'Goose5ai';
