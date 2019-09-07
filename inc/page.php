@@ -70,15 +70,15 @@ class Page {
 		// Most of this points to the corporate site static pages for openprinting
 		// Only Printers and Drivers are "local"
 		$this->addGNavItem('OpenPrinting',$mb,'home');
-		$this->addGNavItem('Database',$mb.'database/databaseintro','db');
+		$this->addGNavItem('News and Events',$mb.'news/','news');
+		$this->addGNavItem('Projects',$mb.'projects/','projects');
+		$this->addGNavItem('Downloads',$mb.'downloads/','downloads');
+		$this->addGNavItem('Driverless',$mb.'driverless/','driverless');
+		$this->addGNavItem('Database',$mb.'databaseintro','db');
 		$this->addGNavItem('Printers',$b.'printers','printer');
 		$this->addGNavItem('Drivers',$b.'drivers','driver');
-		$this->addGNavItem('FAQ',$mb.'database/indexfaq','faq');
-		$this->addGNavItem('Foomatic',$mb.'database/foomatic','foo');
-		$this->addGNavItem('Articles',$mb.'database/articles','articles');
-		$this->addGNavItem('Projects',$mb.'database/projects','projects');
-		$this->addGNavItem('Documentation',$mb.'database/documentation','doc');
-		$this->addGNavItem('Developers',$mb.'development','dev');
+		$this->addGNavItem('Contact Us',$mb.'contact/','contact');
+		$this->addGnavItem('Donations',$mb.'donations/','donation');
 	}
 }
 

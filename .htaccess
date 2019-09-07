@@ -48,7 +48,7 @@ RewriteRule ^forums.cgi/? http://forums.openprinting.org/ [L,R=301]
 # Main App OpenPrinting
 ######################################################
 
-RewriteRule ^$ https://wiki.linuxfoundation.org/openprinting/start [L,R=301]
+RewriteRule ^$ https://openprinting.github.io/ [L,R=301]
 
 RewriteRule ^home/?$ index.php		[L]
 RewriteRule ^login/?$ login.php		[L]
