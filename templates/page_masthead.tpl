@@ -120,13 +120,13 @@
 					<div id="site-logo">
 						<a href="{$BASEURL}">
 							<image class="op-logo" src="/images/layout/openprinting-logo.png">
-						</a>			
+						</a>
 					</div>
 					<!--
 					<div id="lf-logo">
 						<a href="{$MAINURL}"></a>
-					</div>		
-					-->		
+					</div>
+					-->
 				</div>
 				
 				<div id="navbar">
