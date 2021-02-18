@@ -4,6 +4,8 @@ ErrorDocument 404 /404.php
 
 AddType application/x-httpd-php .php .phtml .php3 .cgi
 
+RedirectMatch 404 /\.git
+
 # The order of the rewrites is significant
 
 ######################################################
