@@ -2,17 +2,19 @@
 include('inc/common.php');
 include('inc/login.php');
 
+$escapedManufacturer = htmlspecialchars($_GET['manufacturer'], ENT_QUOTES, 'UTF-8');
+
 $PAGE->setPageTitle('Printers by Manufacturer');
 $PAGE->setActiveID('printer');
 $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
-$PAGE->addBreadCrumb($_GET['manufacturer']);
+$PAGE->addBreadCrumb($escapedManufacturer);
 
 if($_GET['manufacturer'] ==""){
 	header('location: /printers');
 	
 }
 
-$SMARTY->assign('manufacturer',$_GET['manufacturer']);
+$SMARTY->assign('manufacturer',$escapedManufacturer);
 
 		$resPerfect = $DB->query("
 		    SELECT printer.id AS id, make, model,
