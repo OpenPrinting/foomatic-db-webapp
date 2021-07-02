@@ -41,6 +41,7 @@ class SiteConfig {
 	public $casServer = 'cas.example.com';
 	public $casPort = 443;
 	public $casContext = '/cas';
+	public $casCaCert = '/etc/ssl/certs/ca-certificates.crt';
 
   //Set size for pagination for printer and driver queue
   public $printer_queue_pagesize = 5;
