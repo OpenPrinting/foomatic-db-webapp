@@ -30,7 +30,7 @@ class Session {
 	public function startCAS() {
 		global $CONF;
 		phpCAS::client(CAS_VERSION_2_0, $CONF->casServer, $CONF->casPort, $CONF->casContext);
-		phpCAS::setCasServerCACert('/etc/ssl/certs/ca-certificates.crt');
+		phpCAS::setCasServerCACert($CONF->casCaCert);
 	}
 
 	public function authenticate() {
