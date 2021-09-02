@@ -2,11 +2,11 @@
 
 # Declare vars
 TIMESTAMP=`date +%Y%m%d%H%M%S`
-BASE=/srv/www/openprinting
+BASE=/var/www/openprinting.org/openprinting
 
 echo "Removing Cache and Template Cache Directories from $BASE"
-sudo rm -rf $BASE/templates_c/*
-sudo rm -rf $BASE/cache/*
+rm -rf $BASE/templates_c/*
+rm -rf $BASE/cache/*
 echo
 
 # Prepare Foomatic-based backend scripts
@@ -62,7 +62,7 @@ SITECONFPHP="../inc/siteconf.php"
 )
 
 # Create upload directory
-sudo mkdir -p $BASE/upload
+mkdir -p $BASE/upload
 
 # Chown files
 #echo "Chown files..."
