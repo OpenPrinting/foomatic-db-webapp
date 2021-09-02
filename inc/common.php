@@ -1,7 +1,7 @@
 <?php
 
 // TODO: do we have to include PHPMailer on every page?
-include('libphp-phpmailer/class.phpmailer.php');
+include('PHPMailer/class.phpmailer.php');
 
 include('inc/siteconf.php');
 $CONF = new SiteConfig();
