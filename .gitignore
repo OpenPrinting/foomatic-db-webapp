@@ -1,0 +1,13 @@
+# Ignore these on production system
+download/
+foomatic-db
+foomatic/driverpackages.pm
+foomatic/foomatic-db-engine/
+foomatic/foomatic-db-nonfree/
+foomatic/foomatic-db/
+foomatic/foomatic-generate-package
+foomatic/foomatic-generate-ppd-package
+foomatic/mysql.conf
+foomatic/query
+inc/siteconf.php
+templates_c/
