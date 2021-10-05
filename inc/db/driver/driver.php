@@ -575,20 +575,36 @@ class Driver
     $props['driver_group'] = $this->driver_group;
     $props['locales'] = $this->locales;
     $props['obsolete'] = $this->obsolete;
-    $props['pcdriver']= $this->pcdriver;
+    $props['pcdriver'] = $this->pcdriver;
     $props['url'] = $this->url;
     $props['supplier'] = $this->supplier;
-    $props['thirdpartysupplied'] = $this->thirdpartysupplied;
+    if ($this->thirdpartysupplied == '') {
+      $props['thirdpartysupplied'] = 0;
+    } else {
+      $props['thirdpartysupplied'] = $this->thirdpartysupplied;
+    }
     $props['manufacturersupplied'] = $this->manufacturersupplied;
     $props['license'] = $this->license;
     $props['licensetext'] = $this->licensetext;
     $props['licenselink'] = $this->licenselink;
-    $props['nonfreesoftware'] = $this->nonfreesoftware;
-    $props['patents'] = $this->patents;
+    if ($this->nonfreesoftware == '') {
+      $props['nonfreesoftware'] = 0;
+    } else {
+      $props['nonfreesoftware'] = $this->nonfreesoftware;
+    }
+    if ($this->patents == '') {
+      $props['patents'] = 0;
+    } else {
+      $props['patents'] = $this->patents;
+    }
     $props['shortdescription'] = $this->shortdescription;
     $props['max_res_x'] = $this->max_res_x;
     $props['max_res_y'] = $this->max_res_y;
-    $props['color'] = $this->color;
+    if ($this->color == '') {
+      $props['color'] = 0;
+    } else {
+      $props['color'] = $this->color;
+    }
     $props['text'] = $this->text;
     $props['lineart'] = $this->lineart;
     $props['graphics'] = $this->graphics;
@@ -596,8 +612,16 @@ class Driver
     $props['load_time'] = $this->load_time;
     $props['speed'] = $this->speed;
     $props['execution'] = $this->execution;
-    $props['no_pjl'] = $this->nopjl;
-    $props['no_pageaccounting'] = $this->nopageaccounting;
+    if ($this->nopjl == '') {
+      $props['no_pjl'] = 0;
+    } else {
+      $props['no_pjl'] = $this->nopjl;
+    }
+    if ($this->nopageaccounting == '') {
+      $props['no_pageaccounting'] = 0;
+    } else {
+      $props['no_pageaccounting'] = $this->nopageaccounting;
+    }
     $props['prototype'] = $this->prototype;
     $props['pdf_prototype'] = $this->pdf_prototype;
     $props['ppdentry'] = $this->ppdentry;
@@ -625,9 +649,16 @@ class Driver
     $values = "\"{$this->id}\",";
     foreach($props as $key=>$value) {
       $fields .= "$key,";
-      if (((string)gettype($value) == 'integer') and
-	  ((int)$value == -1)) {
-	$values .= "NULL,";
+      // check if type is integer or boolean and adds to DB string (0 is
+      // falsy, >=1 is truthy) boolean values will be auto cast to 0 or 1
+      // depending on value
+      if (((string)gettype($value) == 'integer') or ((string)gettype($value) == 'bool')) {
+        if ((int)$value != -1) {
+          $values .= (int)$value.",";
+        } else {
+          // sets to null otherwise
+          $values .= "NULL,";
+        }
       } else {
 	$values .= "\"".mysql_real_escape_string($value)."\",";
       }
