@@ -465,21 +465,69 @@ class Printer
     $props['ppdentry'] = (string)$this->ppdentry;
     $props['contrib_url'] = (string)$this->contrib_url;
     $props['comments'] = (string)$this->comments;
-    $props['unverified'] = (string)$this->unverified;
+    if ($this->unverified == '') {
+      $props['unverified'] = 0;
+    } else {
+      $props['unverified'] = (bool)$this->unverified;
+    }
     $props['mechanism'] = (string)$this->mechanism['type'];
-    $props['color'] = (string)$this->mechanism['color'];
+    if ($this->mechanism['color'] == '') {
+      $props['color'] = 0;
+    } else {
+      $props['color'] = (bool)$this->mechanism['color'];
+    }
     $props['res_x'] = (string)$this->mechanism['resx'];
     $props['res_y'] = (string)$this->mechanism['resy'];
-    $props['postscript'] = (string)$this->lang['postscript'];
-    $props['pdf'] = (string)$this->lang['pdf'];
-    $props['pcl'] = (string)$this->lang['pcl'];
-    $props['lips'] = (string)$this->lang['lips'];
-    $props['escp'] = (string)$this->lang['escp'];
-    $props['escp2'] = (string)$this->lang['escp2'];
-    $props['hpgl2'] = (string)$this->lang['hpgl2'];
-    $props['tiff'] = (string)$this->lang['tiff'];
-    $props['proprietary'] = (string)$this->lang['proprietary'];
-    $props['pjl'] = (string)$this->lang['pjl'];
+    if ($this->lang['postscript'] == '') {
+      $props['postscript'] = 0;
+    } else {
+      $props['postscript'] = (bool)lang['postscript'];
+    }
+    if ($this->lang['pdf'] == '') {
+      $props['pdf'] = 0;
+    } else {
+      $props['pdf'] = (bool)lang['pdf'];
+    }
+    if ($this->lang['pcl'] == '') {
+      $props['pcl'] = 0;
+    } else {
+      $props['pcl'] = (bool)lang['pcl'];
+    }
+    if ($this->lang['lips'] == '') {
+      $props['lips'] = 0;
+    } else {
+      $props['lips'] = (bool)lang['lips'];
+    }
+    if ($this->lang['escp'] == '') {
+      $props['escp'] = 0;
+    } else {
+      $props['escp'] = (bool)lang['escp'];
+    }
+    if ($this->lang['escp2'] == '') {
+      $props['escp2'] = 0;
+    } else {
+      $props['escp2'] = (bool)lang['escp2'];
+    }
+    if ($this->lang['hpgl2'] == '') {
+      $props['hpgl2'] = 0;
+    } else {
+      $props['hpgl2'] = (bool)lang['hpgl2'];
+    }
+    if ($this->lang['tiff'] == '') {
+      $props['tiff'] = 0;
+    } else {
+      $props['tiff'] = (bool)lang['tiff'];
+    }
+    if ($this->lang['proprietary'] == '') {
+      $props['proprietary'] = 0;
+    } else {
+      $props['proprietary'] = (bool)lang['proprietary'];
+    }
+    if ($this->lang['pjl'] == '') {
+      $props['pjl'] = 0;
+    } else {
+      $props['pjl'] = (bool)lang['pjl'];
+    }
     $props['postscript_level'] = (string)$this->lang['postscript_level'];
     $props['pdf_level'] = (string)$this->lang['pdf_level'];
     $props['pcl_level'] = (string)$this->lang['pcl_level'];
