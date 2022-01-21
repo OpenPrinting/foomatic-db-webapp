@@ -4,7 +4,6 @@ ini_set("memory_limit","128M");
 require_once("opdb.php");
 require_once("driver/driver.php");
 require_once("printer/printer.php");
-require_once("option/option.php");
 include('inc/siteconf.php');
 $CONF = new SiteConfig();
 
@@ -40,7 +39,6 @@ if ($basedir != "")
 //$foomatic_dir = "../../foomatic-db";
 $driver_dir = $foomatic_dir."/db/source/driver";
 $printer_dir = $foomatic_dir."/db/source/printer";
-$option_dir = $foomatic_dir."/db/source/opt";
 $source_dir = $foomatic_dir."/db/source";
 
 if ($selection == 'nonfree') {
@@ -74,7 +72,6 @@ $querydrivers = "select driver.id from " .
   "(driver_approval.showentry is null or driver_approval.showentry='' or " .
   "driver_approval.showentry=1 or " .
   "driver_approval.showentry<=CAST(NOW() AS DATE))));";
-$queryoptions = "select id from options;";
 $queryppdlist = "select driver_printer_assoc.ppd from " .
   "driver_printer_assoc, driver " .
   "where " . $nonfree . "driver_printer_assoc.driver_id=driver.id;";
@@ -162,48 +159,6 @@ while($row = mysql_fetch_array($result)) {
 if ($error) {
   fwrite(STDERR, "[FATAL ERROR]: Something went wrong while exporting driver data\n");
   exit;
-}
-
-if ($selection != 'nonfree') {
-  # export the option data
-  $error = false;
-  $dir = $option_dir;
-  $result = $db->query($queryoptions);
-  if ($result == null) {
-    fwrite(STDERR, "[ERROR] Unable to get list of options to be exported: ".$db->getError()."\n");
-    exit;
-  }
-  $dircreated = 0;
-  while($row = mysql_fetch_array($result)) {
-    $id = $row['id'];
-    fwrite(STDERR, "Exporting option \"$id\" ...\n");
-    $option = new Option();
-    $error = !$option->loadDB($id);
-    if (!$error) {
-      $xml = $option->toXML();
-      $filename = "$id.xml";
-      if ($dircreated == 0) {
-	exec ("mkdir -p $dir");
-	$dircreated = 1;
-      }
-      $fh = fopen("$dir/$filename", "w");
-      if ($fh) {
-	$written = fwrite($fh, $xml);
-	if (!$written or $written < strlen($xml)) {
-	  $error = true;
-	  break;
-	}
-      } else {
-	$error = true;
-	break;
-      }
-    }
-  }
-
-  if ($error) {
-    fwrite(STDERR, "[FATAL ERROR]: Something went wrong while exporting option data\n");
-    exit;
-  }
 }
 
 if ($ppdsource) {

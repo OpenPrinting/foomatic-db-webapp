@@ -22,11 +22,6 @@ for i in \
     CreateDriverSupportContactsTranslationTable \
     CreateDriverTranslationTable \
     CreateMarginsTable \
-    CreateOptionsTable \
-    CreateOptionChoicesTable \
-    CreateOptionChoicesTranslationTable \
-    CreateOptionConstraintsTable \
-    CreateOptionTranslationTable \
     CreatePrinterTable \
     CreatePrinterApprovalTable \
     CreatePrinterTranslationTable \
