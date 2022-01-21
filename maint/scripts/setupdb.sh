@@ -21,7 +21,6 @@ for i in \
     CreateDriverSupportContactsTable \
     CreateDriverSupportContactsTranslationTable \
     CreateDriverTranslationTable \
-    CreateMarginsTable \
     CreatePrinterTable \
     CreatePrinterApprovalTable \
     CreatePrinterTranslationTable \
