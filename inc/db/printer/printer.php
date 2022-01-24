@@ -1,7 +1,6 @@
 <?php
 require_once("opdb.php");
 require_once("translation.php");
-require_once("margin.php");
 require_once("driver_printer_association.php");
 
 class Printer
@@ -17,7 +16,6 @@ class Printer
   public $model;
   public $pcmodel;
   public $mechanism;
-  public $margins = "";
   public $url;
   public $obsolete = "";
   public $lang;
@@ -82,14 +80,13 @@ class Printer
 		  $this->comments .= "\n$consumables\n";
 		}
 	      }
-	      if ($mechanism->margins != false) {
-		$this->margins = new Margin($mechanism->margins, $this->id);
-	      }
 	      unset ($mechanism->color);
 	      unset ($mechanism->resolution);
 	      unset ($mechanism->consumables);
-	      unset ($mechanism->margins);
 	      $this->mechanism['type'] = (string)key($mechanism);
+	      if (empty($this->mechanism['type'])) {
+                $this->mechanism['type'] = 'unknown';
+	      }
 	    }
 	  // </mechanism>
 
@@ -268,8 +265,6 @@ class Printer
     if ($res)
       $mechanism .= "$is    <resolution>\n$is      <dpi>\n$res" .
 	"$is      </dpi>\n$is    </resolution>\n";
-    if ($this->margins)
-      $mechanism .= $this->margins->toXML($indent + 4);
     if ($mechanism)
       $xmlstr .= "$is  <mechanism>\n$mechanism$is  </mechanism>\n";
     if (strlen($this->url))
@@ -439,10 +434,6 @@ class Printer
     }
     mysql_free_result($result);
 
-    // Load margin info
-    $this->margins = new Margin(null, $id, null);
-    $this->margins->loadDB($id, null);
-
     $this->loaded = true;
     return true;
   }
@@ -584,9 +575,6 @@ class Printer
       }
     }
 
-    // Trigger the save of margins data	
-    if ($this->margins) $this->margins->saveDB($db);
-
     // Trigger the save of associated drivers data	
     foreach($this->drivers as $driver) {
       $driver->saveDB($db);
@@ -614,19 +602,6 @@ class Printer
     if ($result == null) {
       echo "[ERROR] While deleting printer data...\n".$db->getError()."\n";
       return false;
-    }
-
-    // Now delete the unprintable margin data. All printer-specific (not
-    // the printer/driver-combo-specific) definitions belong to the printer
-    // entry. This means that we have to delete all margin definitions with
-    // the ID of this printer and no driver ID
-    $query = "delete from margin where printer_id=\"$id\"" .
-      "and (driver_id is null or driver_id=\"\");";
-    // Execute the deletion of margin definitions. This does not delete any
-    // items in other tables
-    $result = $db->query($query);
-    if ($result == null) {
-      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
     }
 
     // Complete the deletion by removing the printer-related printer/driver

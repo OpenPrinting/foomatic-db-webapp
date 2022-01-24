@@ -1,7 +1,6 @@
 <?php
 include_once("opdb.php");
 include_once("translation.php");
-include_once("margin.php");
 
 class DriverPrinterAssociation
 {
@@ -9,7 +8,6 @@ class DriverPrinterAssociation
   private $loaded;
 
   public $data;
-  public $margins = null;
   public $translation = null;
 
   public function __construct($id, $data, $is_printer = false) {
@@ -104,7 +102,6 @@ class DriverPrinterAssociation
 	    $this->data['ppdentry'] = -1;
 	  }
 
-	  if ($data->margins != false) $this->margins = new Margin($data->margins, $this->data['printer_id'], $this->data['driver_id']);
 	  $this->data['comments'] = (string)$data->comments->en;
 	  $this->data['fromdriver'] = true;
 	}
@@ -211,8 +208,6 @@ class DriverPrinterAssociation
 	$func .= "$is    <speed>{$this->data['speed']}</speed>\n";
       if (strlen($func))
 	  $xmlstr .= "$is  <functionality>\n$func$is  </functionality>\n";
-      if ($this->margins)
-	  $xmlstr .= $this->margins->toXML($indent + 2);
       if (strlen($this->data['ppdentry']) and
 	  $this->data['ppdentry'] != -1)
 	$xmlstr .= "$is  <ppdentry>" .
@@ -235,7 +230,6 @@ class DriverPrinterAssociation
     // Clear any previous data present
     unset($this->translation);
     unset($this->data);
-    $this->margins = null;
     
     $driver_id = mysql_real_escape_string($driver_id);
     $printer_id = mysql_real_escape_string($printer_id);
@@ -262,10 +256,6 @@ class DriverPrinterAssociation
     }
     mysql_free_result($result);
 
-    // Load margin info
-    $this->margins = new Margin(null, $printer_id, $driver_id);
-    $this->margins->loadDB($printer_id, $driver_id);
-    
   }
 
   public function saveDB(OPDB $db = null) {
@@ -319,14 +309,6 @@ class DriverPrinterAssociation
     if ($result == null) {
       echo "[ERROR] Unable to save driver & printer association data: ".$db->getError()."\n";
       return false;
-    }
-
-    // Save the margins data
-    if ($this->margins) {
-      if (!$this->margins->saveDB($db)) {
-	echo "[ERROR] While saving driver/printer association's margin specs...\n".$db->getError()."\n";
-	return false;
-      }
     }
 
     // Trigger the save of translation data
