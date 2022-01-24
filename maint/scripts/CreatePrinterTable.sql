@@ -5,7 +5,7 @@ CREATE TABLE printer
 	model VARCHAR(40) NOT NULL,
 	pcmodel VARCHAR(6),
 	functionality ENUM('A', 'B', 'D', 'F') NOT NULL,
-	mechanism ENUM('laser', 'led', 'dotmatrix', 'inkjet', 'impact', 'sublimation', 'transfer') NOT NULL,
+	mechanism ENUM('laser', 'led', 'dotmatrix', 'inkjet', 'impact', 'sublimation', 'transfer', 'unknown') NOT NULL DEFAULT 'unknown',
 	color BOOL NOT NULL DEFAULT FALSE,
 	res_x SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 	res_y SMALLINT UNSIGNED NOT NULL DEFAULT 0,
