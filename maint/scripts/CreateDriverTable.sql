@@ -25,7 +25,7 @@ CREATE TABLE driver
 	photo TINYINT UNSIGNED,
 	load_time TINYINT UNSIGNED,
 	speed TINYINT UNSIGNED,
-	execution ENUM('ghostscript','ijs','cups','opvp','uniprint','filter','postscript') NOT NULL,
+	execution ENUM('ghostscript','ijs','cups','opvp','uniprint','filter','postscript','pdf','pcl5','unknown') NOT NULL DEFAULT 'unknown',
 	no_pjl BOOL NOT NULL,
 	no_pageaccounting BOOL NOT NULL,
 	prototype TEXT,

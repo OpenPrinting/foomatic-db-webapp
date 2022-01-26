@@ -600,6 +600,9 @@ class Driver
     $props['load_time'] = $this->load_time;
     $props['speed'] = $this->speed;
     $props['execution'] = $this->execution;
+    if ($props['execution'] == '') {
+      $props['execution'] = "unknown";
+    }
     if ($this->nopjl == '') {
       $props['no_pjl'] = 0;
     } else {
