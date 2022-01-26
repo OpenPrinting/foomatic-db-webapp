@@ -471,7 +471,13 @@ class Printer
       $props['color'] = (bool)$this->mechanism['color'];
     }
     $props['res_x'] = (string)$this->mechanism['resx'];
+    if ($props['res_x'] == '') {
+       $props['res_x'] = '0';
+    }
     $props['res_y'] = (string)$this->mechanism['resy'];
+    if ($props['res_y'] == '') {
+      $props['res_y'] = '0';
+    }
     if ($this->lang['postscript'] == '') {
       $props['postscript'] = 0;
     } else {
