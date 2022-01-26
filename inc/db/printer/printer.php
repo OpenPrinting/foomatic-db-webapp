@@ -462,6 +462,9 @@ class Printer
       $props['unverified'] = (bool)$this->unverified;
     }
     $props['mechanism'] = (string)$this->mechanism['type'];
+    if ($props['mechanism'] == '') {
+      $props['mechanism'] = "unknown";
+    }
     if ($this->mechanism['color'] == '') {
       $props['color'] = 0;
     } else {
