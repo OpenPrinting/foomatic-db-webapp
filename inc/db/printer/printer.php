@@ -84,9 +84,6 @@ class Printer
 	      unset ($mechanism->resolution);
 	      unset ($mechanism->consumables);
 	      $this->mechanism['type'] = (string)key($mechanism);
-	      if (empty($this->mechanism['type'])) {
-                $this->mechanism['type'] = 'unknown';
-	      }
 	    }
 	  // </mechanism>
 
