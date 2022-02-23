@@ -31,10 +31,7 @@ WORKDIR=$BASE/ppd/foomatic
     if test "$rev" != "$oldrev"; then
       (
         cd $WORKDIR/foomatic-db-engine || exit 1
-	# Currently just recompiles everything if a git commit occurred
-	./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/ppd-files
-	# TODO collate changed files
-	# TODO regenerate PPDs based on changed files
+        ./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/ppd-files
       )
     fi
     cd ..
@@ -49,10 +46,7 @@ WORKDIR=$BASE/ppd/foomatic
     if test "$rev" != "$oldrev"; then
       (
         cd $WORKDIR/foomatic-db-engine || exit 1
-	# Currently just recompiles everything if a git commit occurred
-	./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/ppd-files
-	# TODO collate changed files
-	# TODO regenerate PPDs based on changed files
+        ./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/ppd-files
       )
     fi
     cd ..
