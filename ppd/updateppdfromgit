@@ -31,7 +31,14 @@ WORKDIR=$BASE/ppd/foomatic
     if test "$rev" != "$oldrev"; then
       (
         cd $WORKDIR/foomatic-db-engine || exit 1
-        ./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/ppd-files
+        ./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/new-ppd-files
+
+	# Update live copy on success
+	if [ $0 -eq 0 ]; then
+	  mv $BASE/ppd/new-ppd-files/* $BASE/ppd/ppd-files
+        else
+          rm -rf $BASE/ppd/new-ppd-files
+        fi
       )
     fi
     cd ..
@@ -46,7 +53,14 @@ WORKDIR=$BASE/ppd/foomatic
     if test "$rev" != "$oldrev"; then
       (
         cd $WORKDIR/foomatic-db-engine || exit 1
-        ./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/ppd-files
+        ./foomatic-compiledb -j 4 -t ppd -f -d $BASE/ppd/new-ppd-files
+
+	# Update live copy on success
+	if [ $0 -eq 0 ]; then
+	  mv $BASE/ppd/new-ppd-files/* $BASE/ppd/ppd-files
+        else
+          rm -rf $BASE/ppd/new-ppd-files
+        fi
       )
     fi
     cd ..
