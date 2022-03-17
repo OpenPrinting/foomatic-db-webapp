@@ -21,6 +21,21 @@ be located I.e.,
   # make inplace
   # cd ../..
 
+4) Install a secondary copy of Foomatic for maintaining pre-built ppd files:
+
+  # export WORKDIR=/srv/www/openprinting/ppd/foomatic
+  # mkdir -p $WORKDIR
+  # cd $WORKDIR
+  # bzr branch http://bzr.linuxfoundation.org/openprinting/foomatic/foomatic-db-engine
+  # bzr branch http://bzr.linuxfoundation.org/openprinting/foomatic/foomatic-db
+  # bzr branch http://bzr.linuxfoundation.org/openprinting/foomatic/foomatic-db-nonfree
+  # cd foomatic-db-engine
+  # ./make_configure
+  # ./configure
+  # make inplace
+  # ./foomatic-compiledb -j 4 -t ppd -f -d $WORKDIR/ppd/ppd-files
+  # cd ../../..
+
 4) Create "inc/siteconf.php" configuration file for the site. You can use
 siteconf-DEV.php or siteconf-PROD.php as a basis. In that file you should set
 access parameters for the MySQL database, LDAP server, mail addresses and some
