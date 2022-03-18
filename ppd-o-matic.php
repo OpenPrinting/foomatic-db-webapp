@@ -22,7 +22,7 @@ if ($_GET['show'] == "1") {
   header("Content-Disposition: attachment; filename=\"$printer-$driver.ppd\"");
 }
 
-$ppdcmdline = "cd foomatic/foomatic-db-engine; ./foomatic-ppdfile -p " . escapeshellarg($printer) . " -d " . escapeshellarg($driver);
+$ppdcmdline = "cat ppd/ppd-files/" . escapeshellarg($printer) . "-" . escapeshellarg($driver) . ".ppd";
 if (isset($_GET['shortgui'])) {
   if ($_GET['shortgui'] == "on") {
     $ppdcmdline .= " -w";

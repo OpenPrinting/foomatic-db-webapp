@@ -1,6 +1,5 @@
 <?php
 require_once("opdb.php");
-require_once("margin.php");
 require_once("translation.php");
 require_once("driver_dependency.php");
 require_once("driver_package.php");
@@ -50,14 +49,12 @@ class Driver
   public $packages;
   public $dependencies;
   public $supportcontacts;
-  public $margins;
   public $printers;
 
   public function __construct($data = null) {
     $this->packages = null;
     $this->dependencies = null;
     $this->supportcontacts = null;
-    $this->margins = null;
     $this->printers = null;
 	
     if ($data != null) {
@@ -199,7 +196,6 @@ class Driver
 	    $this->prototype = (string)$data->execution->prototype;
 	    $this->pdf_prototype = (string)$data->execution->prototype_pdf;
 	    $this->ppdentry = (string)$data->execution->ppdentry;
-	    if ($data->execution->margins != false) $this->margins = new Margin($data->execution->margins, null, $this->id);
 	    if ($data->execution->requires != false) {
 	      $i = 0;
 	      $this->dependencies = array();
@@ -214,7 +210,6 @@ class Driver
 	    unset($data->execution->prototype);
 	    unset($data->execution->prototype_pdf);
 	    unset($data->execution->ppdentry);
-	    unset($data->execution->margins);
 	    unset($data->execution->requires);
 	    // Remove also the entry coming from lines which are commented
 	    // out in the XML file
@@ -451,8 +446,6 @@ class Driver
       $execution .= "$is    <prototype_pdf>" .
         htmlspecialchars($this->pdf_prototype) .
         "</prototype_pdf>\n";
-    if ($this->margins)
-      $execution .= $this->margins->toXML($indent + 4);
     if (strlen($this->ppdentry))
       $execution .= "$is    <ppdentry>" . htmlspecialchars($this->ppdentry) .
 	"</ppdentry>\n";
@@ -494,7 +487,6 @@ class Driver
     unset($this->dependencies);
     unset($this->printers);
     unset($this->packages);
-    $this->margins = null;
 	
     $id = mysql_real_escape_string($id);
 
@@ -556,10 +548,6 @@ class Driver
     }
     mysql_free_result($result);
 	
-    // Load margin info
-    $this->margins = new Margin(null, null, $id);
-    $this->margins->loadDB(null, $id);
-
     return true;
   }
 
@@ -612,6 +600,9 @@ class Driver
     $props['load_time'] = $this->load_time;
     $props['speed'] = $this->speed;
     $props['execution'] = $this->execution;
+    if ($props['execution'] == '') {
+      $props['execution'] = "unknown";
+    }
     if ($this->nopjl == '') {
       $props['no_pjl'] = 0;
     } else {
@@ -722,14 +713,6 @@ class Driver
       }
     }
 	
-    // Trigger the save of the margins
-    if ($this->margins) {
-      if (!$this->margins->saveDB($db)) {
-	echo "[ERROR] While saving driver's margin specs...\n".$db->getError()."\n";
-	return false;
-      }
-    }
-
     return true;
   }
 
@@ -752,20 +735,6 @@ class Driver
     if ($result == null) {
       echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
       return false;
-    }
-
-    // Now delete the unprintable margin data. All driver-specific and
-    // printer/driver-combo-specific definitions belong to the driver entry.
-    // This means that we have to delete all margin definitions with the ID
-    // of this driver
-	
-    // Execute the deletion of margin definitions. This does not delete any
-    // items in other tables
-    $query = 'DELETE FROM margin WHERE driver_id = \'' . $id . '\''; 
-    $result = $db->query($query);
-	
-    if ($result == null) {
-      echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
     }
 
     // Complete the deletion by removing the driver-related printer/driver

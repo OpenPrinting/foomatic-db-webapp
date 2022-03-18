@@ -4,11 +4,10 @@ ini_set("memory_limit","128M");
 require_once("opdb.php");
 require_once("driver/driver.php");
 require_once("printer/printer.php");
-require_once("option/option.php");
 include('inc/siteconf.php');
 $CONF = new SiteConfig();
 
-$options = getopt("p:d:o:");
+$options = getopt("p:d:");
 
 foreach (array_keys($options) as $opt) switch ($opt) {
 case 'p':
@@ -47,26 +46,6 @@ case 'd':
   }
   if ($error) {
     print "[ERROR]: Failed importing driver XML file $filename into the MySQL database\n";
-    exit;
-  }
-  break;
-
-case 'o':
-  $filename = $options['o'];
-  $fh = fopen($filename, 'r');
-  if ($fh) {
-    $xml = fread($fh, filesize($filename));
-    $option = new Option();
-    $error = !$option->loadXMLString($xml);
-    if (!$error) {
-      $error = !$option->saveDB();
-    }
-  } else {
-    print "[ERROR]: Unable to open $filename\n";
-    $error = true;
-  }
-  if ($error) {
-    print "[ERROR]: Failed importing option XML file $filename into the MySQL database\n";
     exit;
   }
   break;

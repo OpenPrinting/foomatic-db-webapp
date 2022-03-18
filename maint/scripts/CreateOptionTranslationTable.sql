@@ -1,9 +1,0 @@
-CREATE TABLE options_translation
-(
-	id VARCHAR(50) NOT NULL,
-	lang VARCHAR(8),
-	longname VARCHAR(50),
-	comments TEXT,
-	CONSTRAINT pkey PRIMARY KEY(id, lang),
-	FOREIGN KEY(id) REFERENCES options(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB;

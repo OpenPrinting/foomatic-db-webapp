@@ -21,21 +21,36 @@ be located I.e.,
   # make inplace
   # cd ../..
 
-4) Create "inc/siteconf.php" configuration file for the site. You can use
+4) Install a secondary copy of Foomatic for maintaining pre-built ppd files:
+
+  # export WORKDIR=/srv/www/openprinting/ppd/foomatic
+  # mkdir -p $WORKDIR
+  # cd $WORKDIR
+  # git clone https://github.com/openprinting/foomatic-db-engine.git
+  # git clone https://github.com/openprinting/foomatic-db.git
+  # git clone https://github.com/openprinting/foomatic-db-nonfree.git
+  # cd foomatic-db-engine
+  # ./make_configure
+  # ./configure
+  # make inplace
+  # ./foomatic-compiledb -j 4 -t ppd -f -d $WORKDIR/ppd/ppd-files
+  # cd ../../..
+
+5) Create "inc/siteconf.php" configuration file for the site. You can use
 siteconf-DEV.php or siteconf-PROD.php as a basis. In that file you should set
 access parameters for the MySQL database, LDAP server, mail addresses and some
 other settings.
 
-5) Edit the "build" script - set BASEDIR variable at the top of the script to the actual directory where the site is located
+6) Edit the "build" script - set BASEDIR variable at the top of the script to the actual directory where the site is located
 
-6) Launch the build script:
+7) Launch the build script:
 
   # ./build
 
 Note that this script uses inc/siteconf.php to create mysql.conf file for
 foomatic.
 
-7) If you want to create openprinting database from scratch, launch setupdb.sh
+8) If you want to create openprinting database from scratch, launch setupdb.sh
 script from the maint/scripts folder:
 
   # cd maint/scripts
@@ -44,7 +59,7 @@ script from the maint/scripts folder:
 
 Note that setupdb.sh uses inc/siteconf.php to get database access parameters.
 
-8) Now you can populate the database using the data from git using
+9) Now you can populate the database using the data from git using
 "importfromgit" script which tries to parse printer xml files and load them
 to the database. Let's try to import everything from foomatic-db and
 foomatic-db-nonfree:
@@ -54,6 +69,11 @@ foomatic-db-nonfree:
   # maint/scripts/loaddb $WORKDIR/foomatic-db-nonfree
 
 Note: In git, revno is denoted by the SHA hash of the commit.
+
+10) You can update the pre-built ppd files by running:
+
+  # cd /srv/www/openprinting/ppd/
+  # ./updateppdfromgit
 
 ======
 That's all. Now you should be able to access your copy of the openprinting site.

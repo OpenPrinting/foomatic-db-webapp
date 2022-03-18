@@ -35,15 +35,6 @@ for t in "${array[@]}"; do
             echo "X" 1>&2
             $op0 -d $repodir/$f
         fi
-    elif `echo $f | egrep -q '^db/source/opt/.*\.xml$'`; then
-        /bin/echo -en "  $f" 1>&2
-        if [ -f $repodir/$f ]; then
-            echo "" 1>&2
-            $op1 -o $repodir/$f
-        else
-            echo "X" 1>&2
-            $op0 -o $repodir/$f
-        fi
     fi
 done
 echo "Done!" 1>&2
