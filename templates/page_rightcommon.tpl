@@ -15,13 +15,6 @@
 		        	<h4 class="color_site_1 b_color_site_1">Your Account</h4>
 					<div>
 						<ul>
-							{if $SESSION->checkPermission('driver_upload')}
-								<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
-							{/if}
-							{if $SESSION->checkPermission('printer_upload')}
-								<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
-							{/if}
-
 							{if $isAdmin }
               <li><a href="{$BASEURL}admin/notifications">Notifications</a></li>
 							<li><a href="{$BASEURL}admin/queue" >Queue Administration</a></li>

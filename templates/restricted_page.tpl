@@ -7,8 +7,6 @@
 	
 	<p>Please make sure that you are logged in and are authorized to access the requested page. If you believe 
 		this is an error, please contact us.</p>
-	<p><a href="/login" title="login">Login here</a></p>
-	
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
 {include file="page_conclusion.tpl"}
