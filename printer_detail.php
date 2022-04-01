@@ -28,18 +28,6 @@ $driverparameters = array(
     "load_time" => 'System Load',
     "speed" => 'Speed');
 
-if($SESSION->isloggedIn()){
-	
-    $SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
-    $auth = $USER->fetchUserRoles();
-
-    $adminPerms = $USER->getPerms();
-    $SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
-
-    $SMARTY->assign('isUploader', $USER->isUploader($auth) );
-    $SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
-}
-
 // Check whether we can already show this printer or whether it is not
 // yet released. In contrary to drivers we show unapproved printers but
 // add a remark that they are not approved.

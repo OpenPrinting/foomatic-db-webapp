@@ -16,8 +16,6 @@ $PAGE->setPageTitle('Printer Driver List');
 $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');
 
-if($SESSION->checkPermission('driver_upload')) $SMARTY->assign("UPLOAD_ALLOWED",1);
-
 $res = $DB->query("
 	SELECT dra.id AS id, name, execution, shortdescription, printerCount,
 	       package FROM
