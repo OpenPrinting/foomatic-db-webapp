@@ -154,14 +154,6 @@ class Session {
 		$this->startCAS();
 		//@TODO Need to login and return to the page you logged in from
 		
-		if(isset($_GET['doLogin']) && !empty($_POST) && !$this->loggedIn) {
-			if($this->authenticate()) {
-				$this->loadUser();
-				header('Location: /account/myuploads');
-				exit;
-			}
-		}
-		
 		if(isset($_GET['doLogout'])) {
 			$desturl = $this->getReferrer();
 			$this->logout();

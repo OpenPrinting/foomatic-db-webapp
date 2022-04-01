@@ -59,8 +59,6 @@ RewriteRule ^admin/?$ admin_home.php		[L]
 RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^admin/([^/]+)$ admin_$1.php?%1 [L]
 
-RewriteRule ^account/myuploads/?$ account_myuploads.php		[L]
-
 RewriteRule ^printers/?$ printer_list.php		[L]
 
 RewriteCond %{QUERY_STRING} ^(.*)$

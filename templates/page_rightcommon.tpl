@@ -15,7 +15,6 @@
 		        	<h4 class="color_site_1 b_color_site_1">Your Account</h4>
 					<div>
 						<ul>
-							<li> <a href="{$BASEURL}account/myuploads" >Your Uploads</a></li>
 							{if $SESSION->checkPermission('driver_upload')}
 								<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
 							{/if}
