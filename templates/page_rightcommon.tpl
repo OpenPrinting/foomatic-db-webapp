@@ -10,22 +10,6 @@
 			</div>
 		</form>	
 	
-		{if $isLoggedIn == "1"}
-		        <div class="section">
-		        	<h4 class="color_site_1 b_color_site_1">Your Account</h4>
-					<div>
-						<ul>
-							{if $isAdmin }
-              <li><a href="{$BASEURL}admin/notifications">Notifications</a></li>
-							<li><a href="{$BASEURL}admin/queue" >Queue Administration</a></li>
-							<li><a href="{$BASEURL}admin/roleadmin" >Roles Administration</a></li>
-							{/if}
-						</ul>
-						<br>
-					</div>
-		        </div>
-		{/if}
-
         <div class="section">
         	<!--<h4>Resources</h4>
             <ul class="list_none left halfwidth">

@@ -102,16 +102,6 @@
 		<div id="page">
 			<div id="page-inner">
 				<div id="page-header" class="clearfix">
-					<div id="util-nav">
-						<ul id="user-nav">
-							{if $SESSION->isLoggedIn() }
-								{if $SHOW_ADMIN_UI }
-									<li><a class="list-link flag" href="{$BASEURL}admin/" >Site Admin</a></li>
-								{/if}
-							{/if}
-						</ul>
-					</div>
-					
 					<div id="site-logo">
 						<a href="{$BASEURL}">
 							<image class="op-logo" src="/images/layout/openprinting-logo.png">

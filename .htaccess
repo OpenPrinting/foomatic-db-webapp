@@ -49,11 +49,6 @@ RewriteRule ^$ https://openprinting.github.io/ [L,R=301]
 
 RewriteRule ^home/?$ index.php		[L]
 
-RewriteRule ^admin/?$ admin_home.php		[L]
-
-RewriteCond %{QUERY_STRING} ^(.*)$
-RewriteRule ^admin/([^/]+)$ admin_$1.php?%1 [L]
-
 RewriteRule ^printers/?$ printer_list.php		[L]
 
 RewriteCond %{QUERY_STRING} ^(.*)$
