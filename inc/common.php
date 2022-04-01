@@ -11,9 +11,6 @@ include('inc/db.php');
 include('inc/smarty/SmartyBC.class.php');
 include('inc/page.php');
 include('inc/ldap.php');
-include('inc/user.php');
-include('inc/userrole.php');
-include('inc/uploadmgr.php');
 include('inc/rss/rss_fetch.inc');
 
 session_start();
