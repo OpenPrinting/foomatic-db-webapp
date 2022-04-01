@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 
 $escapedManufacturer = htmlspecialchars($_GET['manufacturer'], ENT_QUOTES, 'UTF-8');
 

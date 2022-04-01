@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 include('inc/notifications.php');
 
 $SESSION->pageLock('notifications');

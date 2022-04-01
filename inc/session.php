@@ -236,15 +236,6 @@ class Session {
 		die();
 	}	
 	
-	public function requireLogin() {
-		if(!$this->isLoggedIn() || empty($this->user)) {
-			global $CONF;
-			header('Location: '.$CONF->baseURL.'login.php');
-			exit;
-		}
-		return true;
-	}	
-	
 	public function checkPermission($permission) {
 		if(!$this->isLoggedIn() || empty($this->user) || !$this->user->checkPermission($permission)) return false;
 		else return true;

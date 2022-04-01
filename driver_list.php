@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 
 $drivertypes = array(
     "ghostscript" => 'Ghostscript&nbsp;built-in',

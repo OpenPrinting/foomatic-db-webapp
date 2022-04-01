@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 
 if(empty($_GET['driver'])) {
 	header('Location: /drivers');

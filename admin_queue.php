@@ -1,7 +1,6 @@
 <?php
   
   include('inc/common.php');
-  include('inc/login.php');
 
   // TODO: use queue_admin or similar global role
   $SESSION->pageLock('driver_queue_adm');

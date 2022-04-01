@@ -1,7 +1,6 @@
 <?php
   
   include('inc/common.php');
-  include('inc/login.php');
   
   $SESSION->pageLock('printer_delete');
   

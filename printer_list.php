@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 
 $PAGE->setPageTitle('Printer List');
 $PAGE->setActiveID('printer');
