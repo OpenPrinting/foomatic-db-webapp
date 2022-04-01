@@ -23,20 +23,6 @@ class SiteConfig {
 
   public $authType = 'cas';
 
-  public $ldapServer = '140.211.169.120';
-  public $ldapServer2 = false;
-  public $ldapBaseDN = 'dc=lf,dc=org';
-  public $ldapUserBaseDN = 'ou=Users,dc=lf,dc=org';
-  public $ldapUsernameField = 'uid';
-  public $ldapMailField = 'mail';
-
-  /*public $ldapServer = 'ldap1.linux-foundation.org';
-  public $ldapServer2 = 'ldap2.linux-foundation.org';
-  public $ldapBaseDN = 'dc=freestandards,dc=org';
-  public $ldapUserBaseDN = 'ou=Users,dc=freestandards,dc=org';
-  public $ldapUsernameField = 'uid';
-  public $ldapMailField = 'mail';	*/
-
   public $casModulePath = '/path/to/cas/module';
   public $casServer = 'cas.example.com';
   public $casPort = 443;

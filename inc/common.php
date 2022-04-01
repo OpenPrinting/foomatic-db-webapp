@@ -10,7 +10,6 @@ include($CONF->casModulePath . '/CAS.php');
 include('inc/db.php');
 include('inc/smarty/SmartyBC.class.php');
 include('inc/page.php');
-include('inc/ldap.php');
 include('inc/rss/rss_fetch.inc');
 
 session_start();
