@@ -18,13 +18,6 @@
 	</p>
 	
 
-	{if isset($loginMessage)}
-		<div class="error">
-			<strong>{$loginMessage}</strong>
-		</div>
-	{/if}
-		
-
 	<form id="login-form" method="post" action="?doLogin">
 		<fieldset>
 			<legend>User authentication</legend>
