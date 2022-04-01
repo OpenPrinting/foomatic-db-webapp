@@ -66,12 +66,6 @@
 			</table>
 			</form>
 		</fieldset>
-
-	
-
-	<h2>Add a new printer</h2>
-  {* 05-23-2010 PCN Added logic to toggle message for loggedin and not loggedin users *}
-	
 </div>
 {include file="page_rightcommon.tpl" classtype="two_col_col_2"}
 {include file="page_conclusion.tpl"}
