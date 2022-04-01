@@ -58,8 +58,6 @@ RewriteRule ^admin/?$ admin_home.php		[L]
 
 RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^admin/([^/]+)$ admin_$1.php?%1 [L]
-RewriteRule ^driver/([^/]*)/edit/?$ driver_edit.php?driver=$1 [L]
-RewriteRule ^driver/([^/]*)/delete/?$ driver_delete.php?driver=$1 [L]
 
 RewriteRule ^account/myuploads/?$ account_myuploads.php		[L]
 
@@ -74,7 +72,6 @@ RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*) /printer_detail.php
 
 RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^drivers/?$ driver_list.php		[L]
-RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
 RewriteRule ^driver/([^/]*)/?$ driver_detail.php?driver=$1		[L]
 RewriteRule ^driver/([^/]*)/license/?$ driver_license.php?driver=$1		[L]
 
