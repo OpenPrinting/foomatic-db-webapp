@@ -10,7 +10,6 @@ include($CONF->casModulePath . '/CAS.php');
 include('inc/db.php');
 include('inc/smarty/SmartyBC.class.php');
 include('inc/page.php');
-include('inc/rss/rss_fetch.inc');
 
 session_start();
 error_reporting(E_ALL);
@@ -35,12 +34,5 @@ $SMARTY->assign('CONF',$CONF);
 $SMARTY->assign('PAGE',$PAGE);
 $SMARTY->assign('BASEURL',$CONF->baseURL);
 $SMARTY->assign('MAINURL',$CONF->mainURL);
-
-// OpenPrinting RSS for right pane
-//$rss = fetch_rss('http://forums.freestandards.org/rss.php?21');
-//$rss = array_slice($rss->items,0,4);
-//foreach($rss as &$r) { $r['pubdate'] = date('M d, Y',strtotime($r['pubdate'])); }
-//$SMARTY->assign('AnnouncementsRSS',$rss);
-//unset($rss);
 
 ?>
