@@ -24,13 +24,6 @@ for i in \
     CreatePrinterTable \
     CreatePrinterApprovalTable \
     CreatePrinterTranslationTable \
-    CreateWebNotifications \
-    CreateWebPermissions \
-    CreateWebRoles \
-    CreateWebRoleUserAssign \
-    createweb_user \
-    CreateWebRolePrivAssign \
-    UpdateWebPermissions
 do
     echo Processing ${i}.sql
     mysql $DBPARAMS $database < ${i}.sql
