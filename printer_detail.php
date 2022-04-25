@@ -635,8 +635,6 @@ if (count($driverinfoboxes) > 0) {
 	"<td colspan=\"2\">" .
 	"Generic Instructions: " .
 	"<a href=\"/cups-doc.html\">CUPS</a>, " .
-	"<a href=\"/lpd-doc.html\">LPD</a>, " .
-	"<a href=\"/lpd-doc.html\">LPRng</a>, " .
 	"<a href=\"/ppr-doc.html\">PPR</a>, " .
 	"<a href=\"/pdq-doc.html\">PDQ</a>, " .
 	"<a href=\"/direct-doc.html\">no spooler</a>" .

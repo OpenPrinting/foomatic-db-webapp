@@ -116,8 +116,6 @@ RewriteRule ^foomatic.html/?$  https://wiki.linuxfoundation.org/openprinting/dat
 RewriteRule ^gswrapper.html/?$  https://wiki.linuxfoundation.org/openprinting/database/foomaticgswrapper [L,R=301]
 RewriteRule ^linux-kongress-tutorial-2002.html/?$  https://wiki.linuxfoundation.org/openprinting/database/linuxkongresstutorial2002 [L,R=301]
 RewriteRule ^linuxworld-2001.html/?$  https://wiki.linuxfoundation.org/openprinting/database/linuxWorld2001 [L,R=301]
-RewriteRule ^lpd-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/lpddocumentation [L,R=301]
-RewriteRule ^lpd-must-die.html/?$  https://wiki.linuxfoundation.org/openprinting/database/lpdmustdie [L,R=301]
 RewriteRule ^pdq-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/pdqdocumentation [L,R=301]
 RewriteRule ^ppd-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/ppddocumentation [L,R=301]
 RewriteRule ^ppr-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/pprdocumentation [L,R=301]
