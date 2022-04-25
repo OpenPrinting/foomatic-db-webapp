@@ -10,7 +10,6 @@
 			<p>
 			Generic Instructions: 
 			<a href="/cups-doc.html">CUPS</a>,  
-			<a href="/ppr-doc.html">PPR</a>, 
 			<a href="/pdq-doc.html">PDQ</a>, 
 			<a href="/direct-doc.html">no spooler</a>,
 			<a href="/ppd-doc.html">PPD aware applications/clients</a>,

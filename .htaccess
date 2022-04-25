@@ -118,7 +118,6 @@ RewriteRule ^linux-kongress-tutorial-2002.html/?$  https://wiki.linuxfoundation.
 RewriteRule ^linuxworld-2001.html/?$  https://wiki.linuxfoundation.org/openprinting/database/linuxWorld2001 [L,R=301]
 RewriteRule ^pdq-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/pdqdocumentation [L,R=301]
 RewriteRule ^ppd-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/ppddocumentation [L,R=301]
-RewriteRule ^ppr-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/pprdocumentation [L,R=301]
 RewriteRule ^printing-summit-2001.html/?$  https://wiki.linuxfoundation.org/openprinting/database/printingsummit2001 [L,R=301]
 RewriteRule ^projects.html/?$  https://wiki.linuxfoundation.org/openprinting/database/projects [L,R=301]
 RewriteRule ^suggested.html/?$  https://wiki.linuxfoundation.org/openprinting/database/suggestedprinters [L,R=301]
