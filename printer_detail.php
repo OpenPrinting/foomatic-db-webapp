@@ -28,46 +28,17 @@ $driverparameters = array(
     "load_time" => 'System Load',
     "speed" => 'Speed');
 
-// Check whether we can already show this printer or whether it is not
-// yet released. In contrary to drivers we show unapproved printers but
-// add a remark that they are not approved.
-$res = $DB->query("
-    SELECT id FROM printer_approval
-    WHERE id=? AND
-    ((rejected IS NOT NULL AND rejected!=0 AND
-    rejected!='') OR
-    (showentry IS NOT NULL AND
-    showentry!='' AND
-    showentry!=1 AND
-    showentry>CAST(NOW() AS DATE)))
-", $_GET['id']);
-$notreleased = 0;
-$row = $res->getRow();
-if (!$row) {
-    // Printer data (Load only if the printer is not unreleased)
-    $res = $DB->query("SELECT * FROM printer WHERE make = ? AND id = ?", $_GET['manufacturer'], $_GET['id']);
-    $makes = array();
-    $data = array();
-    while($row = $res->getRow()){
-	$data = $row;
-	$printer_model = $row['model'];
-	$printer_id = $row['id'];
-	$default_driver = $row['default_driver'];
-    }
-    // Is the printer entry not yet approved?
-    $res = $DB->query("
-        SELECT id FROM printer_approval
-        WHERE id=? AND
-        (approved IS NULL OR approved=0 OR approved='')
-    ", $_GET['id']);
-    $row = $res->getRow();
-    if ($row) {
-	$data['unverified'] = "1";
-    }
-} else {
-    $data = null;
-    $notreleased = 1;
+// Printer data
+$res = $DB->query("SELECT * FROM printer WHERE make = ? AND id = ?", $_GET['manufacturer'], $_GET['id']);
+$makes = array();
+$data = array();
+while($row = $res->getRow()){
+    $data = $row;
+    $printer_model = $row['model'];
+    $printer_id = $row['id'];
+    $default_driver = $row['default_driver'];
 }
+
 $printer_id = $_GET['id'];
 $printer_make = $_GET['manufacturer'];
 if (count($data) == 0) {
@@ -82,9 +53,6 @@ if (count($data) == 0) {
     $data['res_y'] = "";
     $data['functionality'] = "";
     $data['noentry'] = "1";
-    if ($notreleased == 1) {
-	$data['notreleased'] = "1";
-    }
 }
 
 /**
@@ -102,23 +70,13 @@ $PAGE->addBreadCrumb($printer_model);
 
 /**
  * Get list of drivers which support this printer via driver_printer_assoc
- * table. Exclude unapproved or not yet released drivers using the
- * driver_approval table
+ * table.
  */
 
 $resDriverList = $DB->query("
     SELECT driver_printer_assoc.driver_id AS id
-    FROM driver_printer_assoc LEFT JOIN driver_approval 
-    ON driver_printer_assoc.driver_id=driver_approval.id
-    WHERE driver_printer_assoc.printer_id=? AND
-    (driver_approval.id IS NULL OR
-    (driver_approval.approved IS NOT NULL AND
-    driver_approval.approved!=0 AND driver_approval.approved!='' AND
-    (driver_approval.rejected IS NULL OR driver_approval.rejected=0 OR
-    driver_approval.rejected='') AND
-    (driver_approval.showentry IS NULL OR driver_approval.showentry='' OR
-    driver_approval.showentry=1 OR
-    driver_approval.showentry<=CAST(NOW() AS DATE))))
+    FROM driver_printer_assoc
+    WHERE driver_printer_assoc.printer_id=?
     ORDER BY id
 ", $printer_id);
 

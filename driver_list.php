@@ -31,17 +31,6 @@ $res = $DB->query("
 		       ON pj.driver_id = driver.id) AS dr
 	       LEFT JOIN driver_package 
 	       ON dr.id=driver_package.driver_id) AS dra
-	LEFT JOIN driver_approval
-	ON dra.id=driver_approval.id
-	WHERE (driver_approval.id IS NULL OR
-	(driver_approval.approved IS NOT NULL AND
-	driver_approval.approved!=0 AND driver_approval.approved!='' AND
-	(driver_approval.rejected IS NULL OR driver_approval.rejected=0 OR
-	driver_approval.rejected='') AND
-	(driver_approval.showentry IS NULL OR
-	driver_approval.showentry='' OR
-	driver_approval.showentry=1 OR
-	driver_approval.showentry<=CAST(NOW() AS DATE))))
 	ORDER BY name
 	");
 $r = $res->toArray('id');

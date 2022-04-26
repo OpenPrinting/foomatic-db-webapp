@@ -28,24 +28,9 @@ $PAGE->setActiveID('driver');
 $PAGE->addBreadCrumb('Drivers',$CONF->baseURL.'drivers/');	
 $PAGE->addBreadCrumb($_GET['driver']);	
 
-// Check if the driver is already accepted, released, and not rejected
-$res = $DB->query("
-    SELECT id FROM driver_approval
-    WHERE id=? AND
-    (approved IS NULL OR approved=0 OR approved='' OR
-     (rejected IS NOT NULL AND rejected!=0 AND rejected!='') OR
-     (showentry IS NOT NULL AND showentry!='' AND showentry!=1 AND
-      showentry>CAST(NOW() AS DATE)))
-", $_GET['driver']);
-$row = $res->getRow();
-if (!$row) {
-    // Driver data (Load only if the driver is accepted, not rejected, and 
-    // released)
-    $res = $DB->query("SELECT * FROM driver WHERE id = ?", $_GET['driver']);
-    $driver = $res->getRow();
-} else {
-    $driver = null;
-}
+// Driver data
+$res = $DB->query("SELECT * FROM driver WHERE id = ?", $_GET['driver']);
+$driver = $res->getRow();
 $SMARTY->assign('driver',$driver);
 
 // Load driver printer assoc
@@ -63,17 +48,7 @@ $res = $DB->query("
 	      FROM driver_printer_assoc dpa
 	      LEFT JOIN printer p 
 		       ON p.id = dpa.printer_id 
-	      WHERE dpa.driver_id = ?) AS pr
-        LEFT JOIN printer_approval
-        ON pr.id=printer_approval.id                           
-        WHERE (printer_approval.id IS NULL OR     
-         ((printer_approval.rejected IS NULL OR         
-           printer_approval.rejected=0 OR   
-           printer_approval.rejected='') AND
-          (printer_approval.showentry IS NULL OR        
-           printer_approval.showentry='' OR 
-           printer_approval.showentry=1 OR  
-           printer_approval.showentry<=CAST(NOW() AS DATE))))       
+	      WHERE dpa.driver_id = ?) AS pr 
 	ORDER BY pr.id, pr.make, pr.model ", $_GET['driver']);
 $printers = $res->toArray('id');
 // For unregistered printers (only mentioned in driver's printer list)
