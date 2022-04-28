@@ -13,7 +13,6 @@ mysql $DBPARAMS -e "CREATE DATABASE $database"
 # Preserver correct table order so foreign key can be created!
 for i in \
     CreateDriverTable \
-    CreateDriverApprovalTable \
     CreateDriverDependency \
     CreateDriverPackagesTable \
     CreateDriverPrinterAssociationTable \
@@ -22,7 +21,6 @@ for i in \
     CreateDriverSupportContactsTranslationTable \
     CreateDriverTranslationTable \
     CreatePrinterTable \
-    CreatePrinterApprovalTable \
     CreatePrinterTranslationTable \
 do
     echo Processing ${i}.sql
