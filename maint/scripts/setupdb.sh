@@ -21,7 +21,7 @@ for i in \
     CreateDriverSupportContactsTranslationTable \
     CreateDriverTranslationTable \
     CreatePrinterTable \
-    CreatePrinterTranslationTable \
+    CreatePrinterTranslationTable
 do
     echo Processing ${i}.sql
     mysql $DBPARAMS $database < ${i}.sql
