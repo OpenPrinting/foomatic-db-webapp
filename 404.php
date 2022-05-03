@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 
 $PAGE->setPageTitle('404');
 $PAGE->addBreadCrumb('Page not found');

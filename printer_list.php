@@ -1,6 +1,5 @@
 <?php
 include('inc/common.php');
-include('inc/login.php');
 
 $PAGE->setPageTitle('Printer List');
 $PAGE->setActiveID('printer');
@@ -21,16 +20,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 				// Load manufacturers
 				$res = $DB->query("
 				    SELECT DISTINCT make
-				    FROM printer LEFT JOIN printer_approval
-				    ON printer.id=printer_approval.id
-				    WHERE (printer_approval.id IS NULL OR
-				    ((printer_approval.rejected IS NULL OR
-				      printer_approval.rejected=0 OR
-				      printer_approval.rejected='') AND
-				     (printer_approval.showentry IS NULL OR
-				      printer_approval.showentry='' OR
-				      printer_approval.showentry=1 OR
-				      printer_approval.showentry<=CAST(NOW() AS DATE))))
+				    FROM printer
 				    ORDER BY make");
 				$makes = array();
 				while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
@@ -49,16 +39,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 			else{
 				$res = $DB->query("
 				    SELECT DISTINCT make
-				    FROM printer LEFT JOIN printer_approval
-				    ON printer.id=printer_approval.id
-				    WHERE (printer_approval.id IS NULL OR
-				    ((printer_approval.rejected IS NULL OR
-				      printer_approval.rejected=0 OR
-				      printer_approval.rejected='') AND
-				     (printer_approval.showentry IS NULL OR
-				      printer_approval.showentry='' OR
-				      printer_approval.showentry=1 OR
-				      printer_approval.showentry<=CAST(NOW() AS DATE))))
+				    FROM printer
 				    ORDER BY make");
 				$makes = array();
 				while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
@@ -76,16 +57,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 		// Load manufacturers
 		$res = $DB->query("
 				    SELECT DISTINCT make
-				    FROM printer LEFT JOIN printer_approval
-				    ON printer.id=printer_approval.id
-				    WHERE (printer_approval.id IS NULL OR
-				    ((printer_approval.rejected IS NULL OR
-				      printer_approval.rejected=0 OR
-				      printer_approval.rejected='') AND
-				     (printer_approval.showentry IS NULL OR
-				      printer_approval.showentry='' OR
-				      printer_approval.showentry=1 OR
-				      printer_approval.showentry<=CAST(NOW() AS DATE))))
+				    FROM printer
 				    ORDER BY make");
 		$makes = array();
 		while($r = $res->getRow()) $makes[$r['make']] = $r['make'];

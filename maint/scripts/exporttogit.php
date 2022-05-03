@@ -42,39 +42,23 @@ $printer_dir = $foomatic_dir."/db/source/printer";
 $source_dir = $foomatic_dir."/db/source";
 
 if ($selection == 'nonfree') {
-  $nonfree = "driver.nonfreesoftware=1 and ";
+  $nonfree_and = "driver.nonfreesoftware=1 and";
+  $nonfree = "where driver.nonfreesoftware=1 ";
 } elseif ($selection == 'free') {
-  $nonfree = "driver.nonfreesoftware=0 and ";
+  $nonfree_and = "driver.nonfreesoftware=0 and ";
+  $nonfree = "where driver.nonfreesoftware=0 ";
 } else {
+  $nonfree_and = "";
   $nonfree = "";
 }
 
-$queryprinters = "select printer.id from " .
-  "printer left join printer_approval on printer.id=printer_approval.id " .
+$queryprinters = "select printer.id from printer " .
   "where (printer.unverified is null or printer.unverified=0 or " .
-  "printer.unverified='') and " .
-  "(printer_approval.id is null or " .
-  "(printer_approval.approved is not null and " .
-  "printer_approval.approved!=0 and printer_approval.approved!='' and " .
-  "(printer_approval.rejected is null or printer_approval.rejected=0 or " .
-  "printer_approval.rejected='') and " .
-  "(printer_approval.showentry is null or printer_approval.showentry='' or " .
-  "printer_approval.showentry=1 or " .
-  "printer_approval.showentry<=CAST(NOW() AS DATE))));";
-$querydrivers = "select driver.id from " .
-  "driver left join driver_approval on driver.id=driver_approval.id " .
-  "where " . $nonfree .
-  "(driver_approval.id is null or " .
-  "(driver_approval.approved is not null and " .
-  "driver_approval.approved!=0 and driver_approval.approved!='' and " .
-  "(driver_approval.rejected is null or driver_approval.rejected=0 or " .
-  "driver_approval.rejected='') and " .
-  "(driver_approval.showentry is null or driver_approval.showentry='' or " .
-  "driver_approval.showentry=1 or " .
-  "driver_approval.showentry<=CAST(NOW() AS DATE))));";
+  "printer.unverified='');";
+$querydrivers = "select driver.id from driver " . $nonfree . ";";
 $queryppdlist = "select driver_printer_assoc.ppd from " .
   "driver_printer_assoc, driver " .
-  "where " . $nonfree . "driver_printer_assoc.driver_id=driver.id;";
+  "where " . $nonfree_and . "driver_printer_assoc.driver_id=driver.id;";
 
 # Connect to MySQL database
 $db = OPDB::getInstance();

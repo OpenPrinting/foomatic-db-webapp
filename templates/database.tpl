@@ -30,7 +30,7 @@
 	    <p>These printers don't work at all. They may work in the future, but don't count on it.</p> 
 	
 	
-	<p>This is an interactive database; if you know anything useful that isn't represented here, please add your knowledge to the pool -- post anything you know to the forum for your printer or use our add printer form, and one of our editors will incorporate your information into the data. If you printer is already listed, enter your contribution to the "User Notes" section of the existing entry.</p>
+	<p>This is an interactive database; if you know anything useful that isn't represented here, please add your knowledge to the pool -- post anything you know to the foomatic repository, and one of our editors will incorporate your information into the data.</p>
 	
 	<p>This entire database (except the driver packages) is available in an XML format as part of the Foomatic system, which provides configuration tools and filter scripts for a variety of spoolers. All driver packages and the LSB DDK are in this directory.</p> 
 	

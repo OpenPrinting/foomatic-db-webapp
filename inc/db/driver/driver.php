@@ -780,15 +780,6 @@ class Driver
         echo "[ERROR] Could not remove attached tarball. " .
 	    "Error code: $return_value\n";
       }
-
-      // Delete the driver approval data
-      $query = "delete from driver_approval where id=\"$id\";";
-      // Execute the deletion of approval data. This does not delete any
-      // items in other tables
-      $result = $db->query($query);
-      if ($result == null) {
-	echo "[ERROR] While deleting driver approval data...\n".$db->getError()."\n";
-      }
     }
 
     return true;

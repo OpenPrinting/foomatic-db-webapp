@@ -8,21 +8,6 @@
 	<p>This is our list of printer drivers for Linux and Unix. You may view information for any given driver and download
 		available files by clicking the relevant links. If you know of any driver not represented here, please let us know!</p>
 	
-	<div class="section" id="for-devs">
-		
-		{if isset($UPLOAD_ALLOWED)}
-			<h2>Upload a driver tarball</h2>
-			<p>To upload your driver or check the status of one of your previous uploads, please visit	
-				<a href="{$BASEURL}account/myuploads">uploads &amp; statuses</a>.
-			</p>	
-		{else}
-			<p><strong>Driver developers/printer manufacturers:</strong> you may upload printer drivers directly through 
-				our website to have them included on our download pages as well as repositories for Linux distros. Register 
-				for a LinuxFoundation.org account and contact the OpenPrinting staff to enable this feature.</strong>
-			</p>	
-		{/if}
-	</div>
-	
 	<h2>List of available drivers</h2>
 	
 	<table class="data">

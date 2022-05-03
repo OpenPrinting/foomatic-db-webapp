@@ -10,30 +10,6 @@
 			</div>
 		</form>	
 	
-		{if $isLoggedIn == "1"}
-		        <div class="section">
-		        	<h4 class="color_site_1 b_color_site_1">Your Account</h4>
-					<div>
-						<ul>
-							<li> <a href="{$BASEURL}account/myuploads" >Your Uploads</a></li>
-							{if $SESSION->checkPermission('driver_upload')}
-								<li> <a href="{$BASEURL}drivers/upload" >Upload New Driver</a></li>
-							{/if}
-							{if $SESSION->checkPermission('printer_upload')}
-								<li> <a href="{$BASEURL}printers/upload" >Upload New Printer</a></li>
-							{/if}
-
-							{if $isAdmin }
-              <li><a href="{$BASEURL}admin/notifications">Notifications</a></li>
-							<li><a href="{$BASEURL}admin/queue" >Queue Administration</a></li>
-							<li><a href="{$BASEURL}admin/roleadmin" >Roles Administration</a></li>
-							{/if}
-						</ul>
-						<br>
-					</div>
-		        </div>
-		{/if}
-
         <div class="section">
         	<!--<h4>Resources</h4>
             <ul class="list_none left halfwidth">
@@ -71,41 +47,5 @@
 			</div>
 			<br>
         </div>
-			
-        <div class="section">
-        	<h4>News &amp; announcements 
-				<a href="http://forums.freestandards.org/rss.php?21"><img src="{$BASEURL}images/icons/rss.png" alt="RSS" title="RSS" /></a>
-			</h4>
-			
-			{if isset($AnnouncementsRSS)}
-				<div class="section">
-				{foreach from=$AnnouncementsRSS item=i}
-					<p>
-						<a href="{$i.link}">{$i.title}</a><br /><small>({$i.pubdate} by {$i.author})</small>
-					</p>
-				 
-				{/foreach}
-				</div>
-			{/if}
-			
-            {*<ul>
-            	<li><a class="list-link-2 youtube" href="#">Linux Foundation Channel</a></li>
-                <li><a class="list-link-2 twitter" href="#">Follow us on Twitter</a></li>
-                <li><a class="list-link-2 facebook" href="#">Linux Foundation Group on Facebook</a></li>
-                <li><a class="list-link-2 rss" href="#">Linux Foundation News Feeds</a></li>
-
-            </ul>*}
-        </div>
-
-        <div class="section">
-        	<h4 class="color_site_1 b_color_site_1">Latest Comments</h4>
-			<div>
-				{literal}
-					<!--<script src='http://www.intensedebate.com/widgets/acctComment/164938/5' defer="defer" type='text/javascript'> </script>-->
-					<div id="recentcomments" class="dsq-widget"><script type="text/javascript" src="http://disqus.com/forums/openprintingorg/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div><a href="http://disqus.com/">Powered by Disqus</a>
-				{/literal}
-			</div>
-        </div>
-		
 
 	</div>

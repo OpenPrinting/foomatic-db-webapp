@@ -24,12 +24,7 @@ RewriteCond %{QUERY_STRING} recnum=([\w\d_:]+)-([\w\d_:-]+)&?
 RewriteRule ^show_printer.cgi /printer/%1/%1-%2? [L,R=301]
 
 RewriteCond %{QUERY_STRING} id=printer:([\w\d_:]+)-([\w\d_:-]+)&?
-RewriteRule ^edit.cgi /printer/%1/%1-%2? [L,R=301]
-
-RewriteCond %{QUERY_STRING} id=printer:([\w\d_:]+)-([\w\d_:-]+)&?
 RewriteRule ^wikish_history.cgi /printer/%1/%1-%2? [L,R=301]
-
-RewriteRule edit_printer.cgi/?$ /printers/upload? [L,R=301]
 
 RewriteCond %{QUERY_STRING} make=([\w\d_:+\/-]+)&?
 RewriteRule ^printer_list.cgi /printers/manufacturer/%1? [L,R=301]
@@ -42,8 +37,6 @@ RewriteRule ^driver_list.cgi/?$ /drivers? [L,R=301]
 
 #RewriteRule ^query.cgi/?$ /query.php               [L,R=301]
 RewriteRule ^ppd-o-matic.cgi/?$ /ppd-o-matic.php               [L,R=301]
-
-RewriteRule ^forums.cgi/? http://forums.openprinting.org/ [L,R=301]
 ######################################################
 
 ######################################################
@@ -53,22 +46,8 @@ RewriteRule ^forums.cgi/? http://forums.openprinting.org/ [L,R=301]
 RewriteRule ^$ https://openprinting.github.io/ [L,R=301]
 
 RewriteRule ^home/?$ index.php		[L]
-RewriteRule ^login/?$ login.php		[L]
-RewriteRule ^logout/?$ login.php?doLogout		[L]
-
-RewriteRule ^admin/?$ admin_home.php		[L]
-
-RewriteCond %{QUERY_STRING} ^(.*)$
-RewriteRule ^admin/([^/]+)$ admin_$1.php?%1 [L]
-RewriteRule ^driver/([^/]*)/edit/?$ driver_edit.php?driver=$1 [L]
-RewriteRule ^driver/([^/]*)/delete/?$ driver_delete.php?driver=$1 [L]
-RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*)/edit/?$ printer_edit.php?manufacturer=$1&id=$2 [L]
-RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*)/delete/?$ printer_delete.php?manufacturer=$1&id=$2 [L]
-
-RewriteRule ^account/myuploads/?$ account_myuploads.php		[L]
 
 RewriteRule ^printers/?$ printer_list.php		[L]
-RewriteRule ^printers/upload/?(\?[^/]*)?$ printer_upload.php$1		[L]
 
 RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^printers/manufacturer/([\w\d\s_+.,()%-]*) printer_manufacturer.php?manufacturer=$1&%1 [L]
@@ -79,7 +58,6 @@ RewriteRule ^printer/([\w\d\s_+.,()%-]*)/([\w\d\s_+.,()%-]*) /printer_detail.php
 
 RewriteCond %{QUERY_STRING} ^(.*)$
 RewriteRule ^drivers/?$ driver_list.php		[L]
-RewriteRule ^drivers/upload/?(\?[^/]*)?$ driver_upload.php$1		[L]
 RewriteRule ^driver/([^/]*)/?$ driver_detail.php?driver=$1		[L]
 RewriteRule ^driver/([^/]*)/license/?$ driver_license.php?driver=$1		[L]
 
@@ -138,11 +116,7 @@ RewriteRule ^foomatic.html/?$  https://wiki.linuxfoundation.org/openprinting/dat
 RewriteRule ^gswrapper.html/?$  https://wiki.linuxfoundation.org/openprinting/database/foomaticgswrapper [L,R=301]
 RewriteRule ^linux-kongress-tutorial-2002.html/?$  https://wiki.linuxfoundation.org/openprinting/database/linuxkongresstutorial2002 [L,R=301]
 RewriteRule ^linuxworld-2001.html/?$  https://wiki.linuxfoundation.org/openprinting/database/linuxWorld2001 [L,R=301]
-RewriteRule ^lpd-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/lpddocumentation [L,R=301]
-RewriteRule ^lpd-must-die.html/?$  https://wiki.linuxfoundation.org/openprinting/database/lpdmustdie [L,R=301]
-RewriteRule ^pdq-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/pdqdocumentation [L,R=301]
 RewriteRule ^ppd-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/ppddocumentation [L,R=301]
-RewriteRule ^ppr-doc.html/?$  https://wiki.linuxfoundation.org/openprinting/database/pprdocumentation [L,R=301]
 RewriteRule ^printing-summit-2001.html/?$  https://wiki.linuxfoundation.org/openprinting/database/printingsummit2001 [L,R=301]
 RewriteRule ^projects.html/?$  https://wiki.linuxfoundation.org/openprinting/database/projects [L,R=301]
 RewriteRule ^suggested.html/?$  https://wiki.linuxfoundation.org/openprinting/database/suggestedprinters [L,R=301]

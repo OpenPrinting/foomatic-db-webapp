@@ -10,18 +10,9 @@ if ($_GET['_name'] == 'manufacturer') {
 	
 	$resModel = $DB->query("
             SELECT printer.id AS id, make, model
-            FROM printer LEFT JOIN printer_approval
-            ON printer.id=printer_approval.id
-            WHERE printer.make = '".$_GET['_value']."' AND
-            (printer_approval.id IS NULL OR
-             ((printer_approval.rejected IS NULL OR
-               printer_approval.rejected=0 OR
-               printer_approval.rejected='') AND
-              (printer_approval.showentry IS NULL OR
-               printer_approval.showentry='' OR
-               printer_approval.showentry=1 OR
-               printer_approval.showentry<=CAST(NOW() AS DATE))))
-            ORDER BY make, model");
+            FROM printer
+            WHERE printer.make = ?
+            ORDER BY make, model", $_GET['_value']);
 	
 	while($rModel = $resModel->getRow()){
 

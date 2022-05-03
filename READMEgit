@@ -38,8 +38,7 @@ be located I.e.,
 
 5) Create "inc/siteconf.php" configuration file for the site. You can use
 siteconf-DEV.php or siteconf-PROD.php as a basis. In that file you should set
-access parameters for the MySQL database, LDAP server, mail addresses and some
-other settings.
+access parameters for the MySQL database, mail addresses and some other settings.
 
 6) Edit the "build" script - set BASEDIR variable at the top of the script to the actual directory where the site is located
 

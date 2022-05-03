@@ -28,58 +28,17 @@ $driverparameters = array(
     "load_time" => 'System Load',
     "speed" => 'Speed');
 
-if($SESSION->isloggedIn()){
-	
-    $SMARTY->assign('isLoggedIn', $SESSION->isloggedIn() );
-    $auth = $USER->fetchUserRoles();
-
-    $adminPerms = $USER->getPerms();
-    $SMARTY->assign('isAdmin', $adminPerms['roleadmin']);
-
-    $SMARTY->assign('isUploader', $USER->isUploader($auth) );
-    $SMARTY->assign('isTrustedUploader', $USER->isTrustedUploader($auth) );
+// Printer data
+$res = $DB->query("SELECT * FROM printer WHERE make = ? AND id = ?", $_GET['manufacturer'], $_GET['id']);
+$makes = array();
+$data = array();
+while($row = $res->getRow()){
+    $data = $row;
+    $printer_model = $row['model'];
+    $printer_id = $row['id'];
+    $default_driver = $row['default_driver'];
 }
 
-// Check whether we can already show this printer or whether it is not
-// yet released. In contrary to drivers we show unapproved printers but
-// add a remark that they are not approved.
-$res = $DB->query("
-    SELECT id FROM printer_approval
-    WHERE id=? AND
-    ((rejected IS NOT NULL AND rejected!=0 AND
-    rejected!='') OR
-    (showentry IS NOT NULL AND
-    showentry!='' AND
-    showentry!=1 AND
-    showentry>CAST(NOW() AS DATE)))
-", $_GET['id']);
-$notreleased = 0;
-$row = $res->getRow();
-if (!$row) {
-    // Printer data (Load only if the printer is not unreleased)
-    $res = $DB->query("SELECT * FROM printer WHERE make = ? AND id = ?", $_GET['manufacturer'], $_GET['id']);
-    $makes = array();
-    $data = array();
-    while($row = $res->getRow()){
-	$data = $row;
-	$printer_model = $row['model'];
-	$printer_id = $row['id'];
-	$default_driver = $row['default_driver'];
-    }
-    // Is the printer entry not yet approved?
-    $res = $DB->query("
-        SELECT id FROM printer_approval
-        WHERE id=? AND
-        (approved IS NULL OR approved=0 OR approved='')
-    ", $_GET['id']);
-    $row = $res->getRow();
-    if ($row) {
-	$data['unverified'] = "1";
-    }
-} else {
-    $data = null;
-    $notreleased = 1;
-}
 $printer_id = $_GET['id'];
 $printer_make = $_GET['manufacturer'];
 if (count($data) == 0) {
@@ -94,9 +53,6 @@ if (count($data) == 0) {
     $data['res_y'] = "";
     $data['functionality'] = "";
     $data['noentry'] = "1";
-    if ($notreleased == 1) {
-	$data['notreleased'] = "1";
-    }
 }
 
 /**
@@ -114,23 +70,13 @@ $PAGE->addBreadCrumb($printer_model);
 
 /**
  * Get list of drivers which support this printer via driver_printer_assoc
- * table. Exclude unapproved or not yet released drivers using the
- * driver_approval table
+ * table.
  */
 
 $resDriverList = $DB->query("
     SELECT driver_printer_assoc.driver_id AS id
-    FROM driver_printer_assoc LEFT JOIN driver_approval 
-    ON driver_printer_assoc.driver_id=driver_approval.id
-    WHERE driver_printer_assoc.printer_id=? AND
-    (driver_approval.id IS NULL OR
-    (driver_approval.approved IS NOT NULL AND
-    driver_approval.approved!=0 AND driver_approval.approved!='' AND
-    (driver_approval.rejected IS NULL OR driver_approval.rejected=0 OR
-    driver_approval.rejected='') AND
-    (driver_approval.showentry IS NULL OR driver_approval.showentry='' OR
-    driver_approval.showentry=1 OR
-    driver_approval.showentry<=CAST(NOW() AS DATE))))
+    FROM driver_printer_assoc
+    WHERE driver_printer_assoc.printer_id=?
     ORDER BY id
 ", $printer_id);
 
@@ -647,10 +593,6 @@ if (count($driverinfoboxes) > 0) {
 	"<td colspan=\"2\">" .
 	"Generic Instructions: " .
 	"<a href=\"/cups-doc.html\">CUPS</a>, " .
-	"<a href=\"/lpd-doc.html\">LPD</a>, " .
-	"<a href=\"/lpd-doc.html\">LPRng</a>, " .
-	"<a href=\"/ppr-doc.html\">PPR</a>, " .
-	"<a href=\"/pdq-doc.html\">PDQ</a>, " .
 	"<a href=\"/direct-doc.html\">no spooler</a>" .
 	"</td><td width=\"2%\"></td></tr>";
 }
@@ -661,43 +603,6 @@ $printerinfobox .= "<tr>" .
     "</table></p><p></p>";
 
 $SMARTY->assign('printerinfobox', $printerinfobox);
-
-$forumurl = "http://forums.openprinting.org/list.php?33";
-$forummake = "various manufacturers";
-if (preg_match("/^(brother)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?24";
-    $forummake = "Brother";
-} elseif (preg_match("/^(canon)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?25";
-    $forummake = "Canon";
-} elseif (preg_match("/^(epson)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?26";
-    $forummake = "Epson";
-} elseif (preg_match("/^(apollo|hp)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?20";
-    $forummake = "HP and Apollo";
-} elseif (preg_match("/(konica|minolta|qms)/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?27";
-    $forummake = "Konica Minolta, Minolta, and QMS";
-} elseif (preg_match("/^(kyocera)/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?28";
-    $forummake = "Kyocera and Kyocera-Mita";
-} elseif (preg_match("/^(lexmark|ibm)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?29";
-    $forummake = "Lexmark and IBM";
-} elseif (preg_match("/^(ricoh|gestetner|infoprint|infotec|lanier|nrg|savin)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?30";
-    $forummake = "Ricoh family and OEMs (Gestetner, Infoprint, Infotec, Lanier, NRG, Ricoh, Savin)";
-} elseif (preg_match("/^(samsung)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?31";
-    $forummake = "Samsung";
-} elseif (preg_match("/^(xerox|tektronix)$/i", $printer_make) != 0) {
-    $forumurl = "http://forums.openprinting.org/list.php?32";
-    $forummake = "Xerox and Tektronix";
-}
-
-$SMARTY->assign('forumurl',$forumurl);
-$SMARTY->assign('forummake',$forummake);
 
 $SMARTY->assign('manufacturer',$printer_make);
 $SMARTY->assign('model',$printer_model);
