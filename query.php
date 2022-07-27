@@ -10,22 +10,54 @@
 //   RewriteRule ^query.cgi/?$ query.php               [L]
 // needs to be added to .htaccess
 
-if ($_GET['format'] == "xml") {
-  header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
-  header("Content-Disposition: inline; filename=\"query.xml\"");
+if ($_GET['papps'] == "true") {
+  // Printer apps are stored in priority order in snap/printer-apps.txt
+  $dir = getcwd();
+  chdir('snap');
+
+  $papp_args = "";
+  foreach($_GET as $k => $v) {
+    $papp_args .= " -o " . escapeshellarg($k) . "=" . escapeshellarg($v);
+  }
+
+  if ($papp_list = fopen("printer-apps.txt", "r")) {
+    while(!feof($papp_list)) {
+      $papp_name = fgets($papp_list);
+      $querycmdline = escapeshellarg($papp_name);
+      $querycmdline .= " drivers";
+      $querycmdline .= $papp_args;
+      $querycmdline .= " 2>/dev/null";
+
+      $result = null;
+      $status = null;
+      exec($querycmdline, $result, $status);
+
+      if ($status == 0) {
+        // todo: filter?
+        echo $papp_name . ": " . $result;
+      }
+    }
+  }
+
+  chdir($dir)
 } else {
-  header("Content-Type: text/plain; name=query.txt; charset=UTF-8");
-  header("Content-Disposition: inline; filename=\"query.txt\"");
-}
+  if ($_GET['format'] == "xml") {
+    header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
+    header("Content-Disposition: inline; filename=\"query.xml\"");
+  } else {
+    header("Content-Type: text/plain; name=query.txt; charset=UTF-8");
+    header("Content-Disposition: inline; filename=\"query.txt\"");
+  }
 
-$dir = getcwd();
-$querycmdline = "/usr/bin/perl ./query";
-foreach($_GET as $k => $v) {
-  $querycmdline .= " " . escapeshellarg($k) . "=" . escapeshellarg($v);
-}
+  $dir = getcwd();
+  $querycmdline = "/usr/bin/perl ./query";
+  foreach($_GET as $k => $v) {
+    $querycmdline .= " " . escapeshellarg($k) . "=" . escapeshellarg($v);
+  }
 
-chdir('foomatic');
-passthru($querycmdline);
-chdir($dir);
+  chdir('foomatic');
+  passthru($querycmdline);
+  chdir($dir);
+}
 
 ?>
