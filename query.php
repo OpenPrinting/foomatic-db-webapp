@@ -17,12 +17,13 @@ if ($_GET['papps'] == "true") {
 
   $papp_args = "";
   foreach($_GET as $k => $v) {
-    $papp_args .= " -o " . escapeshellarg($k) . "=" . escapeshellarg($v);
+    $wrappedv = "'" . '"' . htmlspecialchars($v) . '"' . "'"
+    $papp_args .= " -o " . escapeshellarg($k) . "=" . $wrappedv;
   }
 
   if ($papp_list = fopen("printer-apps.txt", "r")) {
     while(!feof($papp_list)) {
-      $papp_name = fgets($papp_list);
+      $papp_name = "/var/lib/snapd/snap/bin/" . fgets($papp_list);
       $querycmdline = escapeshellarg($papp_name);
       $querycmdline .= " drivers";
       $querycmdline .= $papp_args;
