@@ -10,14 +10,17 @@
 //   RewriteRule ^query.cgi/?$ query.php               [L]
 // needs to be added to .htaccess
 
-if ($_GET['papps'] == "true") {
+if (isset($_GET['papps']) && $_GET['papps'] == "true") {
+  header("Content-Type: text/plain; name=query.txt; charset=UTF-8");
+  header("Content-Disposition: inline; filename=\"query.txt\"");
+
   // Printer apps are stored in priority order in snap/printer-apps.txt
   $dir = getcwd();
   chdir('snap');
 
   $papp_args = "";
   foreach($_GET as $k => $v) {
-    $wrappedv = "'" . '"' . htmlspecialchars($v) . '"' . "'"
+    $wrappedv = "'" . '"' . htmlspecialchars($v) . '"' . "'";
     $papp_args .= " -o " . escapeshellarg($k) . "=" . $wrappedv;
   }
 
@@ -39,8 +42,7 @@ if ($_GET['papps'] == "true") {
       }
     }
   }
-
-  chdir($dir)
+  chdir($dir);
 } else {
   if ($_GET['format'] == "xml") {
     header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
