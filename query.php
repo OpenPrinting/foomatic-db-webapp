@@ -21,13 +21,19 @@ if (isset($_GET['papps']) && $_GET['papps'] == "true") {
   $papp_args = "";
   foreach($_GET as $k => $v) {
     $wrappedv = "'" . '"' . htmlspecialchars($v) . '"' . "'";
-    $papp_args .= " -o " . escapeshellarg($k) . "=" . $wrappedv;
+    $papp_args .= " -o " . $k . "=" . $wrappedv;
   }
 
   if ($papp_list = fopen("printer-apps.txt", "r")) {
     while(!feof($papp_list)) {
       $papp_name = "/var/lib/snapd/snap/bin/" . fgets($papp_list);
-      $querycmdline = escapeshellarg($papp_name);
+      $papp_name = str_replace(array("\r", "\n"), '', $papp_name);
+
+      if (empty($papp_name)) {
+        continue;
+      }
+
+      $querycmdline = $papp_name;
       $querycmdline .= " drivers";
       $querycmdline .= $papp_args;
       $querycmdline .= " 2>/dev/null";
@@ -38,7 +44,7 @@ if (isset($_GET['papps']) && $_GET['papps'] == "true") {
 
       if ($status == 0) {
         // todo: filter?
-        echo $papp_name . ": " . $result;
+        echo $papp_name . ": " . $result[0] . "\n";
       }
     }
   }
