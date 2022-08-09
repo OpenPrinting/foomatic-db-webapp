@@ -22,9 +22,14 @@ if ($_GET['show'] == "1") {
   header("Content-Disposition: attachment; filename=\"$printer-$driver.ppd\"");
 }
 
-$ppdcmdline = "cat ppd/ppd-files/" . escapeshellarg($printer) . "-" . escapeshellarg($driver) . ".ppd";
-if (isset($_GET['shortgui'])) {
-  if ($_GET['shortgui'] == "on") {
+$dir = getcwd();
+$filename = $dir . "/ppd/ppd-files/" . escapeshellarg($printer) . "-" . escapeshellarg($driver) . ".ppd";
+
+$ppdcmdline = "cat " . $filename;
+
+if (!file_exists($filename)) {
+  $ppdcmdline = "cd ppd/foomatic/foomatic-db-engine && ./foomatic-ppdfile -p " . escapeshellarg($printer) . " -d " . escapeshellarg($driver);
+  if (isset($_GET['shortgui']) && $_GET['shortgui'] == "on") {
     $ppdcmdline .= " -w";
   }
 }
