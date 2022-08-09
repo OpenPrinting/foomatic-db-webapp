@@ -5,11 +5,6 @@
 
 	<h1>{$manufacturer}</h1>
 
-	<p><sup>*</sup>: User-contributed printer entry which is not yet
-	verified and/or proofread. The printer entry is not included in the
-	<a href="http://www.openprinting.org/foomatic.html">Foomatic</a>
-	packages yet.</p>
-	
 	<br>	
 		
 	{if $dataPerfectCnt != "0"}
@@ -22,9 +17,6 @@
 			{assign var='printerPerfectUrl' value="`$BASEURL`printer/`$dataPerfect[printerPerfect].make`/`$dataPerfect[printerPerfect].id`"}
 			<a href="{$printerPerfectUrl|replace:"
 			":"+"}">{$dataPerfect[printerPerfect].model}</a>
-			{if $dataPerfect[printerPerfect].approved == 0}
-				<sup>*</sup>
-			{/if}
 			<br />
 		{/section}
 	{/if}
@@ -37,9 +29,6 @@
 				
 			{assign var='printerMostlyUrl' value="`$BASEURL`printer/`$dataMostly[printerMostly].make`/`$dataMostly[printerMostly].id`"}
 			<a href="{$printerMostlyUrl|replace:" ":"+"}">{$dataMostly[printerMostly].model}</a>
-			{if $dataMostly[printerMostly].approved == 0}
-				<sup>*</sup>
-			{/if}
 			<br />
 		{/section}
 	{/if}
@@ -52,9 +41,6 @@
 				
 			{assign var='printerPartiallyUrl' value="`$BASEURL`printer/`$dataPartially[printerPartially].make`/`$dataPartially[printerPartially].id`"}
 			<a href="{$printerPartiallyUrl|replace:" ":"+"}">{$dataPartially[printerPartially].model}</a>
-			{if $dataPartially[printerPartially].approved == 0}
-				<sup>*</sup>
-			{/if}
 			<br />
 		{/section}
 	{/if}
@@ -67,9 +53,6 @@
 				
 			{assign var='printerUnknownUrl' value="`$BASEURL`printer/`$dataUnknown[printerUnknown].make`/`$dataUnknown[printerUnknown].id`"}
 			<a href="{$printerUnknownUrl|replace:" ":"+"}">{$dataUnknown[printerUnknown].model}</a>
-			{if $dataUnknown[printerUnknown].approved == 0}
-				<sup>*</sup>
-			{/if}
 			<br />
 		{/section}
 	{/if}
@@ -82,9 +65,6 @@
 				
 			{assign var='printerPaperweightUrl' value="`$BASEURL`printer/`$dataPaperweight[printerPaperweight].make`/`$dataPaperweight[printerPaperweight].id`"}
 			<a href="{$printerPaperweightUrl|replace:" ":"+"}">{$dataPaperweight[printerPaperweight].model}</a>
-			{if $dataPaperweight[printerPaperweight].approved == 0}
-				<sup>*</sup>
-			{/if}
 			<br />
 		{/section}
 	{/if}
