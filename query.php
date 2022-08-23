@@ -15,40 +15,15 @@ if (isset($_GET['papps']) && $_GET['papps'] == "true") {
   header("Content-Disposition: inline; filename=\"query.txt\"");
 
   // Printer apps are stored in priority order in snap/printer-apps.txt
-  $dir = getcwd();
-  chdir('snap');
-
   $papp_args = "";
   foreach($_GET as $k => $v) {
-    $wrappedv = "'" . '"' . htmlspecialchars($v) . '"' . "'";
-    $papp_args .= " -o " . $k . "=" . $wrappedv;
+    $wrappedk = escapeshellarg(htmlspecialchars($k));
+    $wrappedv = escapeshellarg(htmlspecialchars($v));
+    $papp_args .= " " . $wrappedk . "=" . $wrappedv;
   }
 
-  if ($papp_list = fopen("printer-apps.txt", "r")) {
-    while(!feof($papp_list)) {
-      $papp_name = "/var/lib/snapd/snap/bin/" . fgets($papp_list);
-      $papp_name = str_replace(array("\r", "\n"), '', $papp_name);
-
-      if (empty($papp_name)) {
-        continue;
-      }
-
-      $querycmdline = $papp_name;
-      $querycmdline .= " drivers";
-      $querycmdline .= $papp_args;
-      $querycmdline .= " 2>/dev/null";
-
-      $result = null;
-      $status = null;
-      exec($querycmdline, $result, $status);
-
-      if ($status == 0) {
-        // todo: filter?
-        echo $papp_name . ": " . $result[0] . "\n";
-      }
-    }
-  }
-  chdir($dir);
+  $querycmdline = "sudo /var/www/openprinting.org/openprinting/query.sh" . $papp_args;
+  passthru($querycmdline);
 } else {
   if ($_GET['format'] == "xml") {
     header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
