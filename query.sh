@@ -1,5 +1,6 @@
 #!/bin/bash
 cd /var/www/openprinting.org/openprinting/snap || exit
+exec 2>>error.log
 SNAP_DIR=/var/lib/snapd/snap/bin/
 
 if [ ! -f printer-apps.txt ]; then
