@@ -10,22 +10,38 @@
 //   RewriteRule ^query.cgi/?$ query.php               [L]
 // needs to be added to .htaccess
 
-if ($_GET['format'] == "xml") {
-  header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
-  header("Content-Disposition: inline; filename=\"query.xml\"");
-} else {
+if (isset($_GET['papps']) && $_GET['papps'] == "true") {
   header("Content-Type: text/plain; name=query.txt; charset=UTF-8");
   header("Content-Disposition: inline; filename=\"query.txt\"");
-}
 
-$dir = getcwd();
-$querycmdline = "/usr/bin/perl ./query";
-foreach($_GET as $k => $v) {
-  $querycmdline .= " " . escapeshellarg($k) . "=" . escapeshellarg($v);
-}
+  // Printer apps are stored in priority order in snap/printer-apps.txt
+  $papp_args = "";
+  foreach($_GET as $k => $v) {
+    $wrappedk = escapeshellarg(htmlspecialchars($k));
+    $wrappedv = escapeshellarg(htmlspecialchars($v));
+    $papp_args .= " " . $wrappedk . "=" . $wrappedv;
+  }
 
-chdir('foomatic');
-passthru($querycmdline);
-chdir($dir);
+  $querycmdline = "sudo /var/www/openprinting.org/openprinting/query.sh" . $papp_args;
+  passthru($querycmdline);
+} else {
+  if ($_GET['format'] == "xml") {
+    header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
+    header("Content-Disposition: inline; filename=\"query.xml\"");
+  } else {
+    header("Content-Type: text/plain; name=query.txt; charset=UTF-8");
+    header("Content-Disposition: inline; filename=\"query.txt\"");
+  }
+
+  $dir = getcwd();
+  $querycmdline = "/usr/bin/perl ./query";
+  foreach($_GET as $k => $v) {
+    $querycmdline .= " " . escapeshellarg($k) . "=" . escapeshellarg($v);
+  }
+
+  chdir('foomatic');
+  passthru($querycmdline);
+  chdir($dir);
+}
 
 ?>
