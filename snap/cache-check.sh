@@ -34,7 +34,7 @@ done < printer-apps.txt
 
 # If there are changes, clear the cache
 diff -u applist-version.txt applist-version-new.txt > applist-version.diff
-rm -f applist-version-new.txt
+rm -f applist-version.txt && mv -f applist-version-new.txt applist-version.txt
 if [ -s applist-version.diff ]; then
   rm -f cache/*.out
 fi

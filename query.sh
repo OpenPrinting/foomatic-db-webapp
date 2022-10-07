@@ -36,7 +36,7 @@ if [ ! -f "cache/$DEVICE_ID.out" ]; then
     fi
 
     OUTPUT=$("$SNAP_DIR$PAPP" drivers "${ARGS[@]}")
-    echo "$PAPP: $OUTPUT" > "cache/$DEVICE_ID.out"
+    echo "$PAPP: $OUTPUT" >> "cache/$DEVICE_ID.out"
   done < printer-apps.txt
 fi
 
