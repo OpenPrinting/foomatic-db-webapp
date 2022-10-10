@@ -103,6 +103,8 @@ only one name needs to be specified.
 
 14) Create cron jobs to run the following:
 
+  snap/cache-check.sh          Checks if the output cache has been invalidated,
+                               and if so clears the cache.
   snap/error-report.sh         Reports errors periodically via email.
   snap/printer-app-check.sh    Checks the snap store for new printer apps,
                                reports the new apps via email.
