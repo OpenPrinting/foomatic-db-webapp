@@ -71,6 +71,45 @@ foomatic-db-nonfree:
   # revno=`cd $WORKDIR/foomatic-db-nonfree && bzr revno`
   # maint/scripts/importfrombzr $WORKDIR/foomatic-db-nonfree 1 $revno
 
+10) The next step is setting up the management for printer driver querying.
+Install snap on your system and ensure it is running. Additionally install
+mailx for automatic reporting of information related to this feature.
+
+11) Create "snap/papp_list_recipient.txt". Each line of this file should be
+one email address which will receive updates about new potential printer
+applications in the snap store as well as any errors reported by the querying
+scripts.
+
+12) Modify "snap/error-report.sh" and "snap/printer-app-check.sh" to change
+the sender email from "nobody@osuosl.org" to one owned by you and attached
+to your mail relay.
+
+13) Create "snap/printer-apps.txt". Each line of this file should be the name
+of a printer application found on the snap store that you wish to have
+installed for use in printer driver querying. These should be in priority
+order. If desired, each line can additionally have a second application name
+that specifies the actual binary name to be called.
+
+Example:
+
+  # cat snap/printer-apps.txt
+    hplip-printer-app hplip-printer-app
+    gutenprint-printer-app
+
+The first "hplip-printer-app" is the name of the application on the snap store.
+The second on the same line is the actual snap binary that will be called. If
+there is no need to specify separate snap store name and binary name, then
+only one name needs to be specified.
+
+14) Create cron jobs to run the following:
+
+  snap/cache-check.sh          Checks if the output cache has been invalidated,
+                               and if so clears the cache.
+  snap/error-report.sh         Reports errors periodically via email.
+  snap/printer-app-check.sh    Checks the snap store for new printer apps,
+                               reports the new apps via email.
+  snap/update-printer-apps.sh  Ensures the desired printer apps are installed
+                               and in the correct state.
 
 ======
 That's all. Now you should be able to access your copy of the openprinting site.
