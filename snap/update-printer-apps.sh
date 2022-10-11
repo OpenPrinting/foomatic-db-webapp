@@ -21,6 +21,7 @@ do
   then
     snap install --edge "$package"
     snap stop "$package"
+    rm -f cache/*.out  # Clear the cache on new papp
   else
     enabled=$(snap services | grep -E -c "$package.*\s+enabled")
     if [ "$enabled" -eq 0 ]
