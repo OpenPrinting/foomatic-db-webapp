@@ -50,6 +50,7 @@ SITECONFPHP="../inc/siteconf.php"
 	    perl -p -e "s:\@DRIVERDIR\@:$DRIVERDIR:" | \
 	    perl -p -e "s:\@DRIVERDIRURL\@:$DRIVERDIRURL:" | \
 	    perl -p -e "s:\@PPDDIRURL\@:$PPDDIRURL:" | \
+	    perl -p -e "s:\@WORKDIR\@:$WORKDIR:" | \
 	    perl -p -e "s:\@LIBDIR\@:$ALIBDIR:" > ${file%.in}
 	chmod +x ${file%.in}
     done
