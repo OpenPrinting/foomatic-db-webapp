@@ -10,20 +10,20 @@ class Option
   private $loaded;
 
   // Supported option types
-  public static $types = array('enum', 'bool', 'int', 'float', 'string', 'password');
+  public static $types = ['enum', 'bool', 'int', 'float', 'string', 'password'];
 
   // Support execution models
-  public static $execution_types = array('substitution', 'postscript', 'pjl', 'composite', 'forced_composite');
+  public static $execution_types = ['substitution', 'postscript', 'pjl', 'composite', 'forced_composite'];
 
   // This contains the XML data
-  public $data = array();
+  public $data = [];
 
   // Contains of list of objects of respective data
-  public $choice = array();
-  public $constraint = array();
+  public $choice = [];
+  public $constraint = [];
 
   public function __construct($data = null) {
-    $this->loaded = false;		
+    $this->loaded = false;
     if ($data != null) {
       switch((string)gettype($data)) {
       case 'object':
@@ -77,10 +77,10 @@ class Option
 
       // Prepare the translation data
       if ($this->data['longname']) {
-	$this->translation["longname"] = new Translation($data->arg_longname, "options", array("id" => $this->data['id']), "longname");
+	$this->translation["longname"] = new Translation($data->arg_longname, "options", ["id" => $this->data['id']], "longname");
       }
       if ($this->data['comments']) {
-	$this->translation["comments"] = new Translation($data->comments, "options", array("id" => $this->data['id']), "comments");
+	$this->translation["comments"] = new Translation($data->comments, "options", ["id" => $this->data['id']], "comments");
       }
 
       // The option's enumerated values
@@ -117,7 +117,7 @@ class Option
     }
 
     $this->__construct($xml);
-	
+
     return $this->loaded;
   }
 
@@ -239,52 +239,52 @@ class Option
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
+
     // Clear any previous data present
     unset($this->constraint);
     unset($this->choice);
 
-    $id = mysql_real_escape_string($id);
-	
+    $id = $db->mysqli_real_escape_string($id);
+
     // Load the translations
-    foreach(array('longname', 'comments') as $field) {
-      $this->translation[$field] = new Translation(null, "option", array("id" => $id), $field);
-      $this->translation[$field]->loadDB("option", array("id" => $id), $field, $db);
+    foreach(['longname', 'comments'] as $field) {
+      $this->translation[$field] = new Translation(null, "option", ["id" => $id], $field);
+      $this->translation[$field]->loadDB("option", ["id" => $id], $field, $db);
     }
 
     // Prepare the query string for extracting main option details
     $query = "select * from options where id=\"$id\"";
     $result = $db->query($query);
-	
+
     if ($result == null) {
       return false;
     }
-    $row = mysql_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);
     $this->__construct($row);
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     // Query string for extracting details about the option's choices
     $query = "select * from option_choice where option_id=\"{$this->data['id']}\"";
     $result = $db->query($query);
-	
+
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->choice[sizeof($this->choice)] = new OptionChoice($this->data['id'], $row);
 	$this->choice[sizeof($this->choice)-1]->loadDB($this->data['id'], $row['id']);
       }
     }
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     // Query string for extracting details about the option's constraints
     $query = "select * from option_constraint where option_id=\"{$this->data['id']}\" and is_choice_constraint=0";
     $result = $db->query($query);
-	
+
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->constraint[sizeof($this->constraint)] = new OptionConstraint($this->data['id'], $row);
       }
     }
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
     return true;
   }
@@ -293,20 +293,20 @@ class Option
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
+
     if (!$this->loaded) {
       print "[ERROR] Option data not loaded...\n";
       return false;
     }
-	
-    $this->data['id'] = mysql_real_escape_string($this->data['id']);
+
+    $this->data['id'] = $db->mysqli_real_escape_string($this->data['id']);
     // Find out if there is already an entry present
     $query = "select * from options where id=\"{$this->data['id']}\"";
     $result = $db->query($query);
     $count = 0;
     if ($result) {
-      $count = mysql_num_rows($result);
-      mysql_free_result($result);
+      $count = mysqli_num_rows($result);
+      mysqli_free_result($result);
     } else {
       echo "[ERROR] Option :: ".$db->getError()."\n";
       return false;
@@ -328,7 +328,7 @@ class Option
 	  ($value == "")) {
 	$values .= "NULL,";
       } else {
-	$values .= "\"".mysql_real_escape_string($value)."\",";
+	$values .= "\"".$db->mysqli_real_escape_string($value)."\",";
       }
     }
     $fields[strlen($fields) - 1] = ')';
@@ -380,12 +380,12 @@ class Option
     if ($id == null) {
       return false;
     }
-	
+
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
-    $id = mysql_real_escape_string($id);
+
+    $id = $db->mysqli_real_escape_string($id);
 
     // Prepare the query string for removing the main printer entry
     $query = "delete from options where id=\"$id\";";
@@ -396,7 +396,7 @@ class Option
       echo "[ERROR] While deleting printer data...\n".$db->getError()."\n";
       return false;
     }
-	
+
     return true;
   }
 }

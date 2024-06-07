@@ -21,7 +21,7 @@ $SMARTY->assign('manufacturer',$escapedManufacturer);
 		    WHERE printer.make=? AND
 		    printer.functionality='A'
 		    ORDER BY model", $_GET['manufacturer']);
-		$dataPerfect = array();
+		$dataPerfect = [];
 		while($rowPerfect = $resPerfect->getRow()){
 			 $dataPerfect[] = $rowPerfect;
 		}
@@ -32,7 +32,7 @@ $SMARTY->assign('manufacturer',$escapedManufacturer);
 		    WHERE printer.make=? AND
 		    printer.functionality='B'
 		    ORDER BY model", $_GET['manufacturer']);
-		$dataMostly = array();
+		$dataMostly = [];
 		while($rowMostly = $resMostly->getRow()){
 			 $dataMostly[] = $rowMostly;
 		}
@@ -43,7 +43,7 @@ $SMARTY->assign('manufacturer',$escapedManufacturer);
 		    WHERE printer.make=? AND
 		    printer.functionality='D'
 		    ORDER BY model", $_GET['manufacturer']);
-		$dataPartially = array();
+		$dataPartially = [];
 		while($rowPartially = $resPartially->getRow()){
 			 $dataPartially[] = $rowPartially;
 		}
@@ -54,7 +54,7 @@ $SMARTY->assign('manufacturer',$escapedManufacturer);
 		    WHERE printer.make=? AND
 		    printer.functionality=''
 		    ORDER BY model", $_GET['manufacturer']);
-		$dataUnknown = array();
+		$dataUnknown = [];
 		while($rowUnknown = $resUnknown->getRow()){
 			 $dataUnknown[] = $rowUnknown;
 		}
@@ -65,7 +65,7 @@ $SMARTY->assign('manufacturer',$escapedManufacturer);
 		    WHERE printer.make=? AND
 		    printer.functionality='F'
 		    ORDER BY model", $_GET['manufacturer']);
-		$dataPaperweight = array();
+		$dataPaperweight = [];
 		while($rowPaperweight = $resPaperweight->getRow()){
 			 $dataPaperweight[] = $rowPaperweight;
 		}

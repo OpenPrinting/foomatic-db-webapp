@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . '/../vendor/autoload.php';
+
 // TODO: do we have to include PHPMailer on every page?
 include('PHPMailer/class.phpmailer.php');
 
@@ -8,14 +10,13 @@ $CONF = new SiteConfig();
 include($CONF->casModulePath . '/CAS.php');
 
 include('inc/db.php');
-include('inc/smarty/SmartyBC.class.php');
 include('inc/page.php');
 
 session_start();
 error_reporting(E_ALL);
 
-$SMARTY = new SmartyBC();
-$SMARTY->clear_compiled_tpl();
+use Smarty\Smarty;
+$SMARTY = new Smarty();
 
 $PAGE = Page::getInstance();
 $PAGE->setSmarty($SMARTY);

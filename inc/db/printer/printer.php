@@ -9,8 +9,8 @@ class Printer
   private $loaded;
 
   // Static data
-  public static $types = array('laser', 'led', 'inkjet', 'dotmatrix', 'impact', 'sublimation', 'transfer');
-    
+  public static $types = ['laser', 'led', 'inkjet', 'dotmatrix', 'impact', 'sublimation', 'transfer'];
+
   public $id;
   public $make;
   public $model;
@@ -145,11 +145,11 @@ class Printer
 	    }
 	  }
 	  // </lang>
-							
+
 	  // <autodetect>
 	  if ($xml->autodetect != false) {
 	    if ($xml->autodetect->general != false && sizeof($xml->autodetect->general) >= 1) {
-	      $this->autodetect['general'] = array();
+	      $this->autodetect['general'] = [];
 	      $temp = &$this->autodetect['general'];
 	      $temp['model'] = (string)$xml->autodetect->general->model;
 	      $temp['ieee1284'] = (string)$xml->autodetect->general->ieee1284;
@@ -158,7 +158,7 @@ class Printer
 	      $temp['manufacturer'] = (string)$xml->autodetect->general->manufacturer;
 	    }
 	    if ($xml->autodetect->parallel != false && sizeof($xml->autodetect->parallel) >= 1) {
-	      $this->autodetect['parallel'] = array();
+	      $this->autodetect['parallel'] = [];
 	      $temp = &$this->autodetect['parallel'];
 	      $temp['model'] = (string)$xml->autodetect->parallel->model;
 	      $temp['ieee1284'] = (string)$xml->autodetect->parallel->ieee1284;
@@ -167,7 +167,7 @@ class Printer
 	      $temp['manufacturer'] = (string)$xml->autodetect->parallel->manufacturer;
 	    }
 	    if ($xml->autodetect->usb != false && sizeof($xml->autodetect->usb) >= 1) {
-	      $this->autodetect['usb'] = array();
+	      $this->autodetect['usb'] = [];
 	      $temp = &$this->autodetect['usb'];
 	      $temp['model'] = (string)$xml->autodetect->usb->model;
 	      $temp['ieee1284'] = (string)$xml->autodetect->usb->ieee1284;
@@ -176,7 +176,7 @@ class Printer
 	      $temp['manufacturer'] = (string)$xml->autodetect->usb->manufacturer;
 	    }
 	    if ($xml->autodetect->snmp != false && sizeof($xml->autodetect->snmp) >= 1) {
-	      $this->autodetect['snmp'] = array();
+	      $this->autodetect['snmp'] = [];
 	      $temp = &$this->autodetect['snmp'];
 	      $temp['model'] = (string)$xml->autodetect->snmp->model;
 	      $temp['ieee1284'] = (string)$xml->autodetect->snmp->ieee1284;
@@ -192,13 +192,13 @@ class Printer
       }
       // Prepare the translation data
       if ($data->comments) {
-	$this->translation["comments"] = new Translation($data->comments, "printer", array("id" => $this->id), "comments");
+	$this->translation["comments"] = new Translation($data->comments, "printer", ["id" => $this->id], "comments");
       }
-      
+
       // <drivers>
       if ($data->drivers != false && $data->drivers->driver != false) {
 	$i = 0;
-	$this->drivers = array();
+	$this->drivers = [];
 	foreach($data->drivers->driver as $driver) {
 	  $this->drivers[$i] = new DriverPrinterAssociation($this->id, $driver, true);
 	  $i ++;
@@ -207,7 +207,7 @@ class Printer
       // </drivers>
     }
   }
-    
+
   /**
    * Initialize class from an XML string
    * @return bool True if initialization was successful
@@ -220,12 +220,12 @@ class Printer
     }
 
     $this->__construct($xml);
-		
+
     $this->loaded = true;
-		
+
     return true;
   }
-    
+
   public function loadXMLFile($filename) {
     if (!file_exists($filename)) {
       return false;
@@ -237,14 +237,14 @@ class Printer
     }
     return false;
   }
-	
+
   public function toXML($indent = 0) {
     $is = str_pad("", $indent);
     if (!$this->id) return false;
     $xmlstr = "$is<printer id=\"printer/{$this->id}\">\n";
     if (strlen($this->make))
 	$xmlstr .= "$is  <make>" . htmlspecialchars($this->make) . "</make>\n";
-    if (strlen($this->model)) 
+    if (strlen($this->model))
       $xmlstr .= "$is  <model>" . htmlspecialchars($this->model) .
 	"</model>\n";
     if (strlen($this->pcmodel))
@@ -267,8 +267,8 @@ class Printer
     if (strlen($this->url))
       $xmlstr .= "$is  <url>" . htmlspecialchars($this->url) . "</url>\n";
     $lang = "";
-    foreach(array('postscript', 'pdf', 'pcl', 'lips', 'escp', 'escp2',
-		  'hpgl2', 'tiff') as $pdl) {
+    foreach(['postscript', 'pdf', 'pcl', 'lips', 'escp', 'escp2',
+		  'hpgl2', 'tiff'] as $pdl) {
 	if ($this->lang[$pdl]) {
 	$lang .= "$is    <{$pdl} ";
 	if (strlen($this->lang["{$pdl}_level"]))
@@ -285,10 +285,10 @@ class Printer
     if ($lang)
 	$xmlstr .= "$is  <lang>\n$lang$is  </lang>\n";
     $autodetect = "";
-    foreach(array('general', 'parallel', 'usb', 'snmp') as $connection) {
+    foreach(['general', 'parallel', 'usb', 'snmp'] as $connection) {
       $components = "";
-      foreach(array('ieee1284', 'commandset', 'description',
-		    'manufacturer', 'model') as $component) {
+      foreach(['ieee1284', 'commandset', 'description',
+		    'manufacturer', 'model'] as $component) {
 	  if (strlen($this->autodetect[$connection][$component]))
 	  $components .= "$is      <$component>" .
 	    htmlspecialchars($this->autodetect[$connection][$component]) .
@@ -338,13 +338,13 @@ class Printer
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-		
+
     if ($id == "") {
       $this->loaded = false;
       return false;
     }
-		
-    $id = mysql_real_escape_string($id);
+
+    $id = $db->mysqli_real_escape_string($id);
     $query = "select * from printer where id=\"$id\";";
     $result = $db->query($query);
     if ($result == null) {
@@ -355,10 +355,10 @@ class Printer
     unset($this->translation);
 
     // Load the translations
-    $this->translation['comments'] = new Translation(null, "printer", array("id" => $id), 'comments');
-    $this->translation['comments']->loadDB("printer", array("id" => $id), 'comments', $db);
-		
-    while($row = mysql_fetch_assoc($result)) {
+    $this->translation['comments'] = new Translation(null, "printer", ["id" => $id], 'comments');
+    $this->translation['comments']->loadDB("printer", ["id" => $id], 'comments', $db);
+
+    while($row = mysqli_fetch_assoc($result)) {
       $this->id = (string)$row['id'];
       $this->make = (string)$row['make'];
       $this->model = (string)$row['model'];
@@ -395,7 +395,7 @@ class Printer
       $this->lang['proprietary'] = (bool)$row['proprietary'];
       $this->lang['pjl'] = (bool)$row['pjl'];
       $this->lang['text'] = (string)$row['text'];
-			
+
       $this->autodetect['general']['ieee1284'] = (string)$row['general_ieee1284'];
       $this->autodetect['general']['commandset'] = (string)$row['general_commandset'];
       $this->autodetect['general']['description'] = (string)$row['general_description'];
@@ -424,25 +424,25 @@ class Printer
     $result = $db->query($query);
 
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->drivers[sizeof($this->drivers)] = new DriverPrinterAssociation($this->id, $row, true);
 	$this->drivers[sizeof($this->drivers)-1]->loadDB($row['driver_id'], $this->id, true);
       }
     }
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
     $this->loaded = true;
     return true;
   }
-	
+
   public function saveDB(OPDB $db = null) {
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-		
+
     if (!$this->loaded) return false;
-		
-    $props = array();
+
+    $props = [];
     $props['id'] = (string)$this->id;
     $props['make'] = (string)$this->make;
     $props['model'] = (string)$this->model;
@@ -537,16 +537,16 @@ class Printer
     foreach ($this->autodetect as $k=>$v) {
       $tag = &$this->autodetect[$k];
       foreach($tag as $l=>$m) {
-	$props[$k."_".$l] = (string)$m; 
+	$props[$k."_".$l] = (string)$m;
       }
     }
-		
+
     // Find out if an entry of this printer exists. If yes, delete this entry
     // before creating a new one
     $query = "select make from printer where id=\"{$this->id}\"";
     $result = $db->query($query);
-    $count = mysql_num_rows($result);
-    mysql_free_result($result);
+    $count = mysqli_num_rows($result);
+    mysqli_free_result($result);
     if ($count) {
       if (!$this->removeFromDB($this->id, $db)) {
 	return false;
@@ -558,7 +558,7 @@ class Printer
     $fields = $values = "";
     foreach ($props as $key=>$value) {
       $fields .= "$key,";
-      $values .= "\"".mysql_real_escape_string($value)."\",";
+      $values .= "\"".$db->mysqli_real_escape_string($value)."\",";
     }
     $fields[strlen($fields) - 1] = ')';
     $values[strlen($values) - 1] = ')';
@@ -570,7 +570,7 @@ class Printer
       echo "[ERROR]: ".$db->getError()."\n";
       return false;
     }
-		
+
     // Trigger the save of translation data
     if ($this->translation) {
       foreach ($this->translation as $field => $trobj) {
@@ -581,7 +581,7 @@ class Printer
       }
     }
 
-    // Trigger the save of associated drivers data	
+    // Trigger the save of associated drivers data
     foreach($this->drivers as $driver) {
       $driver->saveDB($db);
     }
@@ -593,12 +593,12 @@ class Printer
     if ($id == null) {
       return false;
     }
-	
+
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
-    $id = mysql_real_escape_string($id);
+
+    $id = $db->mysqli_real_escape_string($id);
 
     // Prepare the query string for removing the main printer entry
     $query = "delete from printer where id=\"$id\";";

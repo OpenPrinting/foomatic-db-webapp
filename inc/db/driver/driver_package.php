@@ -47,7 +47,7 @@ class DriverPackage
 	"\"";
     }
     $xmlstr .= ">" . htmlspecialchars($this->name) . "</package>\n";
-    
+
     return $xmlstr;
   }
 
@@ -65,17 +65,17 @@ class DriverPackage
       echo __FILE__."[ERROR]".$db->getError()."\n";
       return false;
     }
-    $count = mysql_num_rows($result);
-    mysql_free_result($result);
+    $count = mysqli_num_rows($result);
+    mysqli_free_result($result);
 
     // Insert a new record only if there are no records
     if (!$count) {
       $query =
 	"insert into driver_package(driver_id,scope,fingerprint,name) values(";
-      $query .= "\"".mysql_real_escape_string($this->driver_id)."\",";
-      $query .= "\"".mysql_real_escape_string($this->scope)."\",";
-      $query .= "\"".mysql_real_escape_string($this->fingerprint)."\",";
-      $query .= "\"".mysql_real_escape_string($this->name)."\")";
+      $query .= "\"".$db->mysqli_real_escape_string($this->driver_id)."\",";
+      $query .= "\"".$db->mysqli_real_escape_string($this->scope)."\",";
+      $query .= "\"".$db->mysqli_real_escape_string($this->fingerprint)."\",";
+      $query .= "\"".$db->mysqli_real_escape_string($this->name)."\")";
     } else {
       $query = "update driver_package set name=\"{$this->name}\" where driver_id=\"{$this->driver_id}\" and scope=\"{$this->scope}\" and fingerprint=\"{$this->fingerprint}\"";
     }
