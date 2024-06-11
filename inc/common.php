@@ -7,8 +7,6 @@ include('PHPMailer/class.phpmailer.php');
 
 include('inc/siteconf.php');
 $CONF = new SiteConfig();
-include($CONF->casModulePath . '/CAS.php');
-
 include('inc/db.php');
 include('inc/page.php');
 
