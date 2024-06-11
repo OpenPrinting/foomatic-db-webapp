@@ -18,7 +18,7 @@ class DriverDependency
 
     $this->driver_id = $id;
     $this->version = (string)$data['version'];
-	
+
     switch((string)gettype($data)) {
     case 'object':
       if(get_class($data) == "SimpleXMLElement") {
@@ -60,17 +60,17 @@ class DriverDependency
       echo __FILE__."[ERROR]".$db->getError()."\n";
       return false;
     }
-    $count = mysql_num_rows($result);
-    mysql_free_result($result);
+    $count = mysqli_num_rows($result);
+    mysqli_free_result($result);
 
     // Insert a new record only if there are no records
     if ($count) {
       $query = "update driver_dependency set version=\"{$this->version}\" where driver_id=\"{$this->driver_id}\" and required_driver=\"{$this->required_driver}\"";
     } else {
       $query = "insert into driver_dependency(driver_id,required_driver,version) values(";
-      $query .= "\"".mysql_real_escape_string($this->driver_id)."\",";
-      $query .= "\"".mysql_real_escape_string($this->required_driver)."\",";
-      $query .= "\"".mysql_real_escape_string($this->version)."\")";
+      $query .= "\"".$db->mysqli_real_escape_string($this->driver_id)."\",";
+      $query .= "\"".$db->mysqli_real_escape_string($this->required_driver)."\",";
+      $query .= "\"".$db->mysqli_real_escape_string($this->version)."\")";
     }
 
     $result = $db->query($query);

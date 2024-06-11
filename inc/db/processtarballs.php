@@ -53,9 +53,9 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	fclose($lfh);
 	return -1;
     }
-    $file_list = array();
+    $file_list = [];
     if (is_dir($dir . "/$UNCOMPRESSEDDIR")) {
-	exec("rm -rf $dir/$UNCOMPRESSEDDIR", $out = array(), $ret_value);
+	exec("rm -rf $dir/$UNCOMPRESSEDDIR", $out = [], $ret_value);
 	if ($ret_value != 0) {
 	    fwrite($lfh,
 	       "ERROR: Cannot remove old \"$UNCOMPRESSEDDIR\" directory!\n");
@@ -65,7 +65,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
     }
     if (!is_dir($dir . "/$UNCOMPRESSEDDIR")) {
 	// Uncompress the tarball
-	exec("mkdir -p $dir/$UNCOMPRESSEDDIR", $out = array(), $ret_value);
+	exec("mkdir -p $dir/$UNCOMPRESSEDDIR", $out = [], $ret_value);
 	if ($ret_value == 0) {
 	    // Uncompress the archive and generate a list of files contained
 	    // in it
@@ -158,7 +158,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 		       "$file: WARNING - XML file of unknown type\n");
 		continue;
 	    }
-	    $result = array();
+	    $result = [];
 	    exec("xmllint --noout --schema $schemadir/$type.xsd " .
 		 "$dir/$UNCOMPRESSEDDIR/$file 2>&1",
 		 $result, $ret_value);
@@ -166,7 +166,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	    fwrite($lfh, "$file: " . ($ret_value == 0 ? "PASS" : "FAIL") .
 		   " -\n  " . implode("\n  ", $result) . "\n");
 	} elseif (preg_match("/\.ppd(|\.gz)$/i", $file)) {
-	    $result = array();
+	    $result = [];
 	    exec("cupstestppd -W filters -W profiles " .
 		 "$dir/$UNCOMPRESSEDDIR/$file 2>&1",
 		 $result, $ret_value);
@@ -213,11 +213,11 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 				}
 			    }
 			} else {
-			    $printer->drivers = array();
+			    $printer->drivers = [];
 			    $need_to_add = true;
 			}
 			if ($need_to_add == true) {
-			    $entry = array();
+			    $entry = [];
 			    $entry['driver_id'] = $driver;
 			    $entry['ppd'] = "";
 			    $entry['pcomments'] = "";
@@ -283,7 +283,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 		       $drivertype == "ghostscript") ? "-l" : "");
 		exec("$ppdtoxml -d $driver $l -b $ppdbasedir -f $dir -x " .
 		     "$dir/$UNCOMPRESSEDDIR/$file", 
-		     $out = array(), $ret_value);
+		     $out = [], $ret_value);
 		$ppdlocation = "";
 		if ($ret_value == 0) {
 		    if ($dh = opendir($dir)) {
@@ -307,7 +307,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 				continue;
 			    }
 			    $printermake = $printer->make;
-			    $result = array();
+			    $result = [];
 			    exec("$searchprinter -m4 -d1 " .
 				 "\"" . escapeshellarg($printer->make) . "|" . escapeshellarg($printer->model) . "\"",
 				 $result, $ret_value);
@@ -328,9 +328,9 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 				    continue;
 				}
 				$found = true;
-				foreach(array('postscript', 'pdf', 'pcl',
+				foreach(['postscript', 'pdf', 'pcl',
 					      'lips', 'escp', 'escp2',
-					      'hpgl2', 'tiff') as $pdl) {
+					      'hpgl2', 'tiff'] as $pdl) {
 				    if (!$printer2->lang[$pdl] and
 					$printer->lang[$pdl])
 					$printer2->lang[$pdl] =
@@ -346,9 +346,9 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 					$printer2->lang["{$pdl}_level"] =
 					    $printer->lang["{$pdl}_level"];
 				}
-				foreach(array('ieee1284', 'commandset',
+				foreach(['ieee1284', 'commandset',
 					      'description', 'manufacturer',
-					      'model') as $component) {
+					      'model'] as $component) {
 				    if (strlen($printer2->autodetect['general'][$component]) == 0 and
 					strlen($printer->autodetect['general'][$component]) != 0)
 					$printer2->autodetect['general'][$component] =
@@ -368,7 +368,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 						}
 					if (!$drvfound) {
 					    if ($printer2->drivers == false)
-						$printer2->drivers = array();
+						$printer2->drivers = [];
 					    $printer2->drivers[sizeof($printer2->drivers)] =
 						new DriverPrinterAssociation($printer2->id, null, true);
 					    $drv2 = $printer2->drivers[sizeof($printer2->drivers)-1];
@@ -420,12 +420,12 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 		    $ret_value = 0;
                     if (preg_match("/\.ppd\.gz$/i", $file)) {
                         exec("gunzip $dir/$UNCOMPRESSEDDIR/$file",
-			     $out = array(), $ret_value);
+			     $out = [], $ret_value);
 			if ($ret_value == 0)
 			    $file = substr($file, 0, -3);
 		    }
 		    if ($ret_value == 0) {
-			$result = array();
+			$result = [];
 			exec("mkdir -p $dir/" .
 			     preg_replace(":/[^/]+\.ppd$:", "",
 					  $ppdlocation) . " 2>&1",
@@ -433,7 +433,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 			if ($ret_value == 0)
 			    exec("mv $dir/$UNCOMPRESSEDDIR/$file " .
 				 "$dir/$ppdlocation 2>&1",
-				 $out = array(), $ret_value);
+				 $out = [], $ret_value);
 			if ($ret_value == 0) {
 			    $ppdstocheckin = true;
 			    fwrite($lfh,
@@ -453,7 +453,7 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	}
 	if ($ppdstocheckin == true) {
 	    // Make PPD tree group-writable
-	    $result = array();
+	    $result = [];
 	    exec("chmod -R g+rwX $dir/PPD", $result, $ret_value);
 	    if ($ret_value != 0) {
 		fwrite($lfh,
@@ -474,13 +474,13 @@ function processtarball($driver, $drivertype, $op, $nonfree=false) {
 	}
     }
     // Remove uncompressed files of the tarball and generated XML files
-    $result = array();
+    $result = [];
     exec("rm -rf $dir/$UNCOMPRESSEDDIR", $result, $ret_value);
     if ($ret_value != 0) {
 	fwrite($lfh,
 	       "ERROR: Cannot remove \"$UNCOMPRESSEDDIR\" directory!\n");
     }
-    $result = array();
+    $result = [];
     exec("rm -rf $dir/*.xml", $result, $ret_value);
     if ($ret_value != 0) {
 	fwrite($lfh,

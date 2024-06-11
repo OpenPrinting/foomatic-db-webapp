@@ -1,0 +1,21 @@
+{
+    "name": "openprinting/foomatic-db-webapp",
+    "description": "Web application for openprinting.org",
+    "type": "project",
+    "require": {
+        "smarty/smarty": "^5.3",
+        "apereo/phpcas": "^1.3"
+    },
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Lance Albertson",
+            "email": "lance@osuosl.org"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    }
+}

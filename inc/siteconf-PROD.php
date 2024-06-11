@@ -23,7 +23,6 @@ class SiteConfig {
 
   public $authType = 'cas';
 
-  public $casModulePath = '/path/to/cas/module';
   public $casServer = 'cas.example.com';
   public $casPort = 443;
   public $casContext = '/cas';

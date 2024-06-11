@@ -22,12 +22,12 @@ class Translation
       $this->loaded = false;
       return false;
     }
-            
+
     $this->table = $table;
     $this->pkeys = $pkeys;
     $this->field = $field;
-    $this->translations = array();
-	
+    $this->translations = [];
+
     if ($data != null) {
       switch((string)gettype($data)) {
       case 'array':
@@ -82,7 +82,7 @@ class Translation
   public function toXML($indent = 0, $link = False) {
     $xmlstr = "";
     $is = str_pad("", $indent);
-    foreach($this->translations as $lang => $trans) { 
+    foreach($this->translations as $lang => $trans) {
       if ($lang == "en" or !strlen($trans)) continue;
       if ($link == False) {
 	$xmlstr .= "$is<$lang>";
@@ -127,13 +127,13 @@ class Translation
       return false;
     }
 
-    $t = array();
-    while($row = mysql_fetch_assoc($result)) {
+    $t = [];
+    while($row = mysqli_fetch_assoc($result)) {
       $t[$row["lang"]] = $row[$field];
     }
 
     $this->__construct($t, $table, $pkeys, $field);
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
     return true;
   }
@@ -154,9 +154,9 @@ class Translation
     $pkeys_fields = "";
     $pkeys_values = "";
     foreach($pkeys as $key => $value) {
-      $pkeys_expr .= " $key=\"".mysql_real_escape_string($value)."\" and";
+      $pkeys_expr .= " $key=\"".$db->mysqli_real_escape_string($value)."\" and";
       $pkeys_fields .= "$key, ";
-      $pkeys_values .= "\"".mysql_real_escape_string($value)."\", ";
+      $pkeys_values .= "\"".$db->mysqli_real_escape_string($value)."\", ";
     }
     $pkeys_expr = substr($pkeys_expr, 1, -4);
     $pkeys_fields = substr($pkeys_fields, 0, -2);
@@ -166,21 +166,21 @@ class Translation
     // We must add the translations one by one as they go into
     // different lines
     foreach($t as $lang => $trans) {
-	
+
       // Find out if there is already an entry present
       $result = $db->query('SELECT lang FROM ' . $table . '_translation WHERE ' . $pkeys_expr . ' and lang = \'' . $lang . '\'');
 
       $count = 0;
       if ($result) {
-      	$count = mysql_num_rows($result);
-        mysql_free_result($result);
+      	$count = mysqli_num_rows($result);
+        mysqli_free_result($result);
       }
 
       // Prepare the query string. Update if data exists or insert a new record
       if ($count) {
-	$query = "update ${table}_translation set $field=\"".mysql_real_escape_string($trans)."\" where $pkeys_expr and lang=\"$lang\";";
+	$query = "update ${table}_translation set $field=\"".$db->mysqli_real_escape_string($trans)."\" where $pkeys_expr and lang=\"$lang\";";
       } else {
-	$query = "insert into ${table}_translation($pkeys_fields, lang, $field) values($pkeys_values, \"$lang\", \"".mysql_real_escape_string($trans)."\");";
+	$query = "insert into ${table}_translation($pkeys_fields, lang, $field) values($pkeys_values, \"$lang\", \"".$db->mysqli_real_escape_string($trans)."\");";
       }
       $result = $db->query($query);
       if ($result == null) {

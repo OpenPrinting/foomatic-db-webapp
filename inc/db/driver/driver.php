@@ -10,7 +10,7 @@ class Driver
 {
   // Boolean flag to determine if data is present
   private $loaded;
-	
+
   // This contains the XML data
   public $id;
   public $name;
@@ -56,7 +56,7 @@ class Driver
     $this->dependencies = null;
     $this->supportcontacts = null;
     $this->printers = null;
-	
+
     if ($data != null) {
       switch((string)gettype($data)) {
       case 'array':
@@ -94,7 +94,7 @@ class Driver
 	$this->comments = (string)$data['comments'];
 	$this->loaded = true;
 	break;
-			
+
       case 'object':
 	if (get_class($data) == "SimpleXMLElement") {
 	  list(,$this->id) = preg_split("/\//", $data['id']);
@@ -188,7 +188,7 @@ class Driver
 	    $this->speed = -1;
 	  }
 	  // </functionality>
-				
+
 	  // <execution>
 	  if ($data->execution != false) {
 	    $this->nopjl = (bool)array_key_exists('nopjl', $data->execution);
@@ -198,13 +198,13 @@ class Driver
 	    $this->ppdentry = (string)$data->execution->ppdentry;
 	    if ($data->execution->requires != false) {
 	      $i = 0;
-	      $this->dependencies = array();
+	      $this->dependencies = [];
 	      foreach ($data->execution->requires as $dependency) {
 		$this->dependencies[$i] = new DriverDependency($this->id, $dependency);
 		$i++;
 	      }
 	    }
-	
+
 	    unset($data->execution->nopjl);
 	    unset($data->execution->nopageaccounting);
 	    unset($data->execution->prototype);
@@ -223,38 +223,38 @@ class Driver
       }
       // Prepare the translation data
       if ($data->supplier) {
-	$this->translation["supplier"] = new Translation($data->supplier, "driver", array("id" => $this->id), "supplier");
+	$this->translation["supplier"] = new Translation($data->supplier, "driver", ["id" => $this->id], "supplier");
       }
       if ($data->license) {
-	$this->translation["license"] = new Translation($data->license, "driver", array("id" => $this->id), "license");
+	$this->translation["license"] = new Translation($data->license, "driver", ["id" => $this->id], "license");
       }
       if ($data->licensetext) {
-	$this->translation["licensetext"] = new Translation($data->licensetext, "driver", array("id" => $this->id), "licensetext");
+	$this->translation["licensetext"] = new Translation($data->licensetext, "driver", ["id" => $this->id], "licensetext");
       }
       if ($data->licensetext) {
-	$this->translation["licenselink"] = new Translation($data->licensetext, "driver", array("id" => $this->id), "licenselink");
+	$this->translation["licenselink"] = new Translation($data->licensetext, "driver", ["id" => $this->id], "licenselink");
       }
       if ($data->shortdescription) {
-	$this->translation["shortdescription"] = new Translation($data->shortdescription, "driver", array("id" => $this->id), "shortdescription");
+	$this->translation["shortdescription"] = new Translation($data->shortdescription, "driver", ["id" => $this->id], "shortdescription");
       }
       if ($data->comments) {
-	$this->translation["comments"] = new Translation($data->comments, "driver", array("id" => $this->id), "comments");
+	$this->translation["comments"] = new Translation($data->comments, "driver", ["id" => $this->id], "comments");
       }
 
       // Create supportcontacts list
       if ($data->supportcontacts && $data->supportcontacts->supportcontact) {
 	$i = 0;
-	$this->supportcontacts = array();
+	$this->supportcontacts = [];
 	foreach ($data->supportcontacts->supportcontact as $supportcontact) {
 	  $this->supportcontacts[$i] = new DriverSupportContact($this->id, $supportcontact);
 	  $i++;
 	}
       }
-	
+
       // Create packages list
       if ($data->packages && $data->packages->package) {
 	$i = 0;
-	$this->packages = array();
+	$this->packages = [];
 	foreach ($data->packages->package as $package) {
 	  $this->packages[$i] = new DriverPackage($this->id, $package);
 	  $i++;
@@ -264,7 +264,7 @@ class Driver
       // Create printers list
       if ($data->printers && $data->printers->printer) {
 	$i = 0;
-	$this->printers = array();
+	$this->printers = [];
 	foreach ($data->printers->printer as $printer) {
 	  $this->printers[$i] = new DriverPrinterAssociation($this->id, $printer);
 	  $i++;
@@ -296,7 +296,7 @@ class Driver
     if (!$xml) {
       return false;
     }
-	
+
     $this->__construct($xml);
 
     return $this->loaded;
@@ -476,24 +476,24 @@ class Driver
     if ($id == null) {
       return false;
     }
-	
+
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
+
     // Clear any previous data present
     unset($this->translation);
     unset($this->supportcontacts);
     unset($this->dependencies);
     unset($this->printers);
     unset($this->packages);
-	
-    $id = mysql_real_escape_string($id);
+
+    $id = $db->mysqli_real_escape_string($id);
 
     // Load the translations
-    foreach(array('supplier', 'license', 'licensetext', 'licenselink', 'shortdescription', 'comments') as $field) {
-      $this->translation[$field] = new Translation(null, "driver", array("id" => $id), $field);
-      $this->translation[$field]->loadDB("driver", array("id" => $id), $field, $db);
+    foreach(['supplier', 'license', 'licensetext', 'licenselink', 'shortdescription', 'comments'] as $field) {
+      $this->translation[$field] = new Translation(null, "driver", ["id" => $id], $field);
+      $this->translation[$field]->loadDB("driver", ["id" => $id], $field, $db);
     }
 
     // Prepare the query string for extracting main driver details
@@ -502,52 +502,52 @@ class Driver
     if ($result == null) {
       return false;
     }
-    $row = mysql_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);
     $this->__construct($row);
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     // Prepare the query string for extracting details about the driver's support contacts
     $result = $db->query('SELECT * FROM driver_support_contact WHERE driver_id = ?', $this->id);
-	
+
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->supportcontacts[sizeof($this->supportcontacts)] = new DriverSupportContact($this->id, $row);
 	$this->supportcontacts[sizeof($this->supportcontacts)-1]->loadDB($this->id, $row['url'], $row['level']);
       }
     }
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     // Prepare the query string for extracting details about the driver's dependencies
     $result = $db->query('SELECT * FROM driver_dependency WHERE driver_id = ?', $this->id);
-	
+
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->dependencies[sizeof($this->dependencies)] = new DriverDependency($this->id, $row);
       }
     }
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     // Prepare the query string for extracting details about the driver's packages
     $result = $db->query('SELECT * FROM driver_package WHERE driver_id = ?', $this->id);
 
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->packages[sizeof($this->packages)] = new DriverPackage($this->id, $row);
       }
     }
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     // Prepare the query string for extracting details about the printers that work with this driver
     $result = $db->query('SELECT * FROM driver_printer_assoc WHERE driver_id = ?', $this->id);
-	
+
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	$this->printers[sizeof($this->printers)] = new DriverPrinterAssociation($this->id, $row);
         $this->printers[sizeof($this->printers)-1]->loadDB($this->id, $row['printer_id']);
       }
     }
-    mysql_free_result($result);
-	
+    mysqli_free_result($result);
+
     return true;
   }
 
@@ -557,8 +557,8 @@ class Driver
     }
 
     if (!$this->loaded) return false;
-	
-    $props = array();
+
+    $props = [];
     $props['name'] = $this->name;
     $props['driver_group'] = $this->driver_group;
     $props['locales'] = $this->locales;
@@ -617,15 +617,15 @@ class Driver
     $props['pdf_prototype'] = $this->pdf_prototype;
     $props['ppdentry'] = $this->ppdentry;
     $props['comments'] = $this->comments;
-	
+
     // Find out if there is already an entry present and if so, remove it
     // before creating a new one
     $query = 'SELECT * FROM driver WHERE id = \'' . $this->id . '\'';
     $result = $db->query($query);
 
     if ($result) {
-      $count = mysql_num_rows($result);
-      mysql_free_result($result);
+      $count = mysqli_num_rows($result);
+      mysqli_free_result($result);
       if ($count) {
         if (!$this->removeFromDB($this->id, $db)) {
 	  return false;
@@ -651,7 +651,7 @@ class Driver
           $values .= "NULL,";
         }
       } else {
-	$values .= "\"".mysql_real_escape_string($value)."\",";
+	$values .= "\"".$db->mysqli_real_escape_string($value)."\",";
       }
     }
     $fields[strlen($fields) - 1] = ')';
@@ -662,7 +662,7 @@ class Driver
       echo "[ERROR] While saving driver data...\n".$db->getError()."\n";
       return false;
     }
-	
+
     // Trigger the save of translation data
     if (property_exists($this, 'translation')) {
       foreach ($this->translation as $field => $trobj) {
@@ -672,7 +672,7 @@ class Driver
 	}
       }
     }
-			
+
     // Trigger the save of package data
     if ($this->packages) {
       foreach ($this->packages as $package) {
@@ -682,7 +682,7 @@ class Driver
 	}
       }
     }
-	
+
     // Trigger the save of support contact data
     if ($this->supportcontacts) {
       foreach ($this->supportcontacts as $supportcontact) {
@@ -692,7 +692,7 @@ class Driver
 	}
       }
     }
-	
+
     // Trigger the save of dependency data
     if ($this->dependencies) {
       foreach ($this->dependencies as $dependency) {
@@ -702,7 +702,7 @@ class Driver
 	}
       }
     }
-	
+
     // Trigger the save of associated printers data
     if ($this->printers) {
       foreach ($this->printers as $printer) {
@@ -712,7 +712,7 @@ class Driver
 	}
       }
     }
-	
+
     return true;
   }
 
@@ -720,12 +720,12 @@ class Driver
     if ($id == null) {
       return false;
     }
-	
+
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
-    $id = mysql_real_escape_string($id);
+
+    $id = $db->mysqli_real_escape_string($id);
 
     // Prepare the query string for removing the main driver entry
     $query = "delete from driver where id=\"$id\";";
@@ -754,7 +754,7 @@ class Driver
     // Remove driver-specific items from the printer/driver association
     // otherwise
     $query = "update driver_printer_assoc set " .
-      "max_res_x=NULL, max_res_y=NULL, color=NULL, text=NULL, lineart=NULL, " . 
+      "max_res_x=NULL, max_res_y=NULL, color=NULL, text=NULL, lineart=NULL, " .
       "graphics=NULL, photo=NULL, load_time=NULL, speed=NULL, ppdentry=NULL, " .
       "comments=NULL, fromdriver=false " .
       "where driver_id=\"$id\";";
@@ -769,13 +769,13 @@ class Driver
     if ($result == null) {
       echo "[ERROR] While deleting driver data...\n".$db->getError()."\n";
     }
-	
+
     if ($completeentry) {
       // Delete an uploaded tarball
       $dir = "upload/driver/$id";
       $pwd = exec("pwd");
       exec("rm -rf $pwd/$dir",
-         $output = array(), $return_value);
+         $output = [], $return_value);
       if ($return_value != 0) {
         echo "[ERROR] Could not remove attached tarball. " .
 	    "Error code: $return_value\n";

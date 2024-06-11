@@ -1,7 +1,7 @@
 <?php
 include('inc/common.php');
 
-$printertypes = array(
+$printertypes = [
     "inkjet" => 'inkjet',
     "laser" => 'laser',
     "impact" => 'impact',
@@ -9,29 +9,29 @@ $printertypes = array(
     "dotmatrix" => 'dot matrix',
     "led" => 'LED',
     "sublimation" => 'dye sublimation',
-    "transfer" => 'thermal transfer');
+    "transfer" => 'thermal transfer'];
 
-$drivertypes = array(
+$drivertypes = [
     "ghostscript" => 'Ghostscript built-in',
     "uniprint" => 'Ghostscript Uniprint',
     "filter" => 'Filter',
     "ijs" => 'IJS',
     "cups" => 'CUPS Raster',
     "opvp" => 'OpenPrinting Vector',
-    "postscript" => 'PostScript');
+    "postscript" => 'PostScript'];
 
-$driverparameters = array(
+$driverparameters = [
     "text" => 'Text',
     "lineart" => 'Line Art',
     "graphics" => 'Graphics',
     "photo" => 'Photo',
     "load_time" => 'System Load',
-    "speed" => 'Speed');
+    "speed" => 'Speed'];
 
 // Printer data
 $res = $DB->query("SELECT * FROM printer WHERE make = ? AND id = ?", $_GET['manufacturer'], $_GET['id']);
-$makes = array();
-$data = array();
+$makes = [];
+$data = [];
 while($row = $res->getRow()){
     $data = $row;
     $printer_model = $row['model'];
@@ -86,7 +86,7 @@ $resDriverList = $DB->query("
  * the array
  */
 
-$driverinfoboxes = array();
+$driverinfoboxes = [];
 $havedefdrv = 0;
 $defdrvhomepage = "";
 $defdrvppdlink = "";
@@ -136,7 +136,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    $mask = "{$driver_id};openprinting-{$driver_id};" .
 		"openprinting-ppds-{$driver_id}";
 	}
-	$out = array();
+	$out = [];
 	exec("cd foomatic; ./packageinfo " . escapeshellarg($mask), $out, $ret_value);
 	if (sizeof($out) > 0)
 	    $packagedownloads = $out[0];
@@ -171,7 +171,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 		"{$driver['name']}</a>";
 	}
 	$infobox .= "</b></font><font size=\"-2\">";
-	if ($driver['url']) {
+	if ($driver['url'] ?? null) {
 	    $drvhomepage = $driver['url'];
 	    $infobox .= "&nbsp;&nbsp(<a href=\"{$drvhomepage}\">" .
 	    "driver home page</a>)";
@@ -183,7 +183,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    "</font></td><td width=\"2%\"></td></tr>" .
 	    "</table>" .
 	    "</td></tr>";
-	if ($driver['obsolete']) {
+	if ($driver['obsolete'] ?? null) {
 	    $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
 		"<td width=\"96%\" colspan=\"6\"><b><i><font size=\"-2\">" .
 		"This driver is obsolete. " .
@@ -193,17 +193,17 @@ while ($rowDriver = $resDriverList->getRow()) {
 		"</font></i></b></td>" .
 		"<td width=\"2%\"></td></tr>";
 	}
-	if ($driver['shortdescription'] or
+	if ($driver['shortdescription'] ?? null or
 	    strlen($driverPrinterAssoc['comments']) > 0 or
 	    strlen($driverPrinterAssoc['pcomments']) > 0 or
-	    $driver['supplier'] or
-	    (strlen($driver['manufacturersupplied']) > 0 and 
+	    $driver['supplier'] ?? null or
+	    (strlen($driver['manufacturersupplied'] ?? null) > 0 and 
 	     strpos($driver['manufacturersupplied'],
 		    $printer_make) !== false) or
-	    $driver['license'] or
-	    $driver['licensetext'] or $driver['licenselink'] or
-	    strlen($driver['nonfreesoftware']) > 0 or
-	    (strlen($driver['patents']) > 0 and
+	    $driver['license'] ?? null or
+	    $driver['licensetext'] ?? null or $driver['licenselink'] ?? null or
+	    strlen($driver['nonfreesoftware'] ?? null) > 0 or
+	    (strlen($driver['patents'] ?? null) > 0 and
 	     $driver['patents'] != "0")) {
 	    $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
 		"<td width=\"96%\" colspan=\"6\"><font size=\"-2\">";
@@ -317,8 +317,8 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    $infobox .= "</td>" .
 		"<td width=\"2%\"></td></tr>";
 	}
-	if ($driver['max_res_x'] or $driver['max_res_y'] or
-	    strlen($driver['color']) > 0 or strlen($driver['execution']) > 0 or
+	if ($driver['max_res_x'] ?? null or $driver['max_res_y'] ?? null or
+	    strlen($driver['color'] ?? null) > 0 or strlen($driver['execution'] ?? null) > 0 or
 	    $driverPrinterAssoc['max_res_x'] or
 	    $driverPrinterAssoc['max_res_y'] or 
 	    strlen($driverPrinterAssoc['color']) > 0) {
@@ -362,9 +362,9 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    $infobox .= "</font></td>" .
 		"<td width=\"2%\"></td></tr>";
 	}
-	if (strlen($driver['text']) > 0 or strlen($driver['lineart']) > 0 or
-	    strlen($driver['graphics']) > 0 or strlen($driver['photo']) > 0 or
-	    strlen($driver['load_time']) > 0 or strlen($driver['speed']) > 0 or
+	if (strlen($driver['text'] ?? null) > 0 or strlen($driver['lineart'] ?? null) > 0 or
+	    strlen($driver['graphics'] ?? null) > 0 or strlen($driver['photo'] ?? null) > 0 or
+	    strlen($driver['load_time'] ?? null) > 0 or strlen($driver['speed'] ?? null) > 0 or
 	    strlen($driverPrinterAssoc['text']) > 0 or
 	    strlen($driverPrinterAssoc['lineart']) > 0 or
 	    strlen($driverPrinterAssoc['graphics']) > 0 or
@@ -372,8 +372,8 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    strlen($driverPrinterAssoc['load_time']) > 0 or
 	    strlen($driverPrinterAssoc['speed']) > 0) {
 	    $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>";
-	    foreach(array('text', 'graphics', 'load_time',
-			  'lineart', 'photo', 'speed') as $par) {
+	    foreach(['text', 'graphics', 'load_time',
+			  'lineart', 'photo', 'speed'] as $par) {
 		$infobox .= "<td width=\"16%\"><font size=\"-2\">" .
 		    "{$driverparameters[$par]}:</font></td>" .
 		    "<td width=\"16%\"><font size=\"-2\">";
@@ -408,7 +408,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 	    $infobox .= "<td width=\"2%\"></td></tr>";
 	}
 	if ($packagedownloads != "" or
-	    $driver['prototype'] or $driverPrinterAssoc['ppd']) {
+	    $driver['prototype'] ?? null or $driverPrinterAssoc['ppd']) {
 	    $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
 		"<td width=\"16%\"><font size=\"-2\"><b>" .
 		"Download:" .
@@ -421,7 +421,7 @@ while ($rowDriver = $resDriverList->getRow()) {
 		    "How to install</a>)</font>";
 		$infobox .= "Driver packages: " . $drvpackages . "<br>";
 	    }
-	    if ($driver['prototype'] or $driverPrinterAssoc['ppd']) {
+	    if ($driver['prototype'] ?? null or $driverPrinterAssoc['ppd']) {
 		$drvppdlink = "<a href=\"{$CONF->baseURL}ppd-o-matic.php?" .
 		    "driver={$driver['id']}&printer={$printer_id}&" .
 		    "show=1\">View PPD</a>, " .
