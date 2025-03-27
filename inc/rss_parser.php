@@ -13,13 +13,13 @@ class RSS_Parser {
 	private static $title = false;
 	private static $desc = false;
 	private static $link = false;
-	private static $elems = array();
+	private static $elems = [];
 
 	public static function parse($feed) {
-		RSS_Parser::$elems = array();
+		RSS_Parser::$elems = [];
 		$xml_parser = xml_parser_create();
-		xml_set_element_handler($xml_parser, array('RSS_Parser','startElement'), array('RSS_Parser','endElement'));
-		xml_set_character_data_handler($xml_parser, array('RSS_Parser',"characterData"));
+		xml_set_element_handler($xml_parser, ['RSS_Parser','startElement'], ['RSS_Parser','endElement']);
+		xml_set_character_data_handler($xml_parser, ['RSS_Parser',"characterData"]);
 		$fp = fopen($feed,"r")
 			   or die("Error reading RSS feed $feed");
 

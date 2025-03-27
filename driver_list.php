@@ -1,14 +1,14 @@
 <?php
 include('inc/common.php');
 
-$drivertypes = array(
+$drivertypes = [
     "ghostscript" => 'Ghostscript&nbsp;built-in',
     "uniprint" => 'Ghostscript&nbsp;Uniprint',
     "filter" => 'Filter',
     "ijs" => 'IJS',
     "cups" => 'CUPS&nbsp;Raster',
     "opvp" => 'OpenPrinting&nbsp;Vector',
-    "postscript" => 'PostScript');
+    "postscript" => 'PostScript'];
 
 $SMARTY->assign("drivertypes",$drivertypes);
 

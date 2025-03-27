@@ -40,7 +40,7 @@ if (is_dir($dir)) {
 		    }
 		    fwrite($lfh,
 			   "\nGit check-in of the PPD files via cron job\n");
-		    $result = array();
+		    $result = [];
 		    exec("$BASE/maint/scripts/updategitfrommysql --ppd-$f " .
 			 "$dir/$driver/PPD $driver",
 			 $result, $ret_value);
@@ -53,13 +53,13 @@ if (is_dir($dir)) {
 		    if ($ret_value == 0) {
 			fwrite($lfh,
 			       "   --> SUCCESS\n");
-			$result = array();
+			$result = [];
 			exec("rm -rf $dir/$driver/PPD", $result, $ret_value);
 			if ($ret_value != 0) {
 			    fwrite($lfh,
 				   "ERROR: Cannot remove \"PPD\" directory for driver \"$driver\"!\n");
 			}
-			$result = array();
+			$result = [];
 			exec("rm $dir/$driver/ppdcommit", $result, $ret_value);
 			if ($ret_value != 0) {
 			    fwrite($lfh,

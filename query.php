@@ -25,7 +25,7 @@ if (isset($_GET['papps']) && $_GET['papps'] == "true") {
   $querycmdline = "sudo /var/www/openprinting.org/openprinting/query.sh" . $papp_args;
   passthru($querycmdline);
 } else {
-  if ($_GET['format'] == "xml") {
+  if (isset($_GET['format']) && $_GET['format'] == "xml") {
     header("Content-Type: text/xml; name=query.xml; charset=UTF-8");
     header("Content-Disposition: inline; filename=\"query.xml\"");
   } else {

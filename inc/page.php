@@ -6,8 +6,8 @@ class Page {
 
 	private $pageTitle = 'Untitled';
 	// Holds the array of breadcrumbs
-	private $breadcrumbs = array();
-	private $gNavItems = array();
+	private $breadcrumbs = [];
+	private $gNavItems = [];
 	private $activeID = '';
 	private $smarty = false;
 	

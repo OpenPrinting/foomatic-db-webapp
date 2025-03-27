@@ -73,7 +73,7 @@ if ($selection != 'nonfree') {
     exit;
   }
   $dircreated = 0;
-  while($row = mysql_fetch_array($result)) {
+  while($row = mysql_fetch_[$result]) {
     $id = $row['id'];
     fwrite(STDERR, "Exporting printer $id ...\n");
     $printer = new Printer();
@@ -114,7 +114,7 @@ if ($result == null) {
   exit;
 }
 $dircreated = 0;
-while($row = mysql_fetch_array($result)) {
+while($row = mysql_fetch_[$result]) {
   $id = $row['id'];
   fwrite(STDERR, "Exporting driver \"$id\" ...\n");
   $driver = new Driver();
@@ -154,7 +154,7 @@ if ($ppdsource) {
     fwrite(STDERR, "[ERROR] Unable to get list of PPDs to be copied: ".$db->getError()."\n");
     exit;
   }
-  while($row = mysql_fetch_array($result)) {
+  while($row = mysql_fetch_[$result]) {
     $file = $row['ppd'];
     if ($file == NULL) continue;
     $destdir = $source_dir . "/" . dirname($file);

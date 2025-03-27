@@ -6,22 +6,22 @@ if(empty($_GET['driver'])) {
 	exit;
 }
 
-$drivertypes = array(
+$drivertypes = [
     "ghostscript" => 'Ghostscript built-in',
     "uniprint" => 'Ghostscript Uniprint',
     "filter" => 'Filter',
     "ijs" => 'IJS',
     "cups" => 'CUPS Raster',
     "opvp" => 'OpenPrinting Vector',
-    "postscript" => 'PostScript');
+    "postscript" => 'PostScript'];
 
-$driverparameters = array(
+$driverparameters = [
     "text" => 'Text',
     "lineart" => 'Line Art',
     "graphics" => 'Graphics',
     "photo" => 'Photo',
     "load_time" => 'System Load',
-    "speed" => 'Speed');
+    "speed" => 'Speed'];
 
 $PAGE->setPageTitle('Driver: ' . $_GET['driver']);
 $PAGE->setActiveID('driver');
@@ -56,7 +56,7 @@ $printers = $res->toArray('id');
 // printer ID in such a case.
 foreach($printers as $pr) {
   if (strlen($pr['make']) == 0) {
-    $matches = array();
+    $matches = [];
     if (preg_match("/^([^\-]+)\-(.*)$/", $pr['id'], $matches) != 0) {
       $printers[$pr['id']]['make'] =
 	preg_replace("/_+/", " ", $matches[1]);
@@ -96,7 +96,7 @@ if (strlen($mask) <= 0) {
     $mask = "{$_GET['driver']};openprinting-{$_GET['driver']};" .
 	"openprinting-ppds-{$_GET['driver']}";
 }
-$out = array();
+$out = [];
 exec("cd foomatic; ./packageinfo " . escapeshellarg($mask), $out, $ret_value);
 if (sizeof($out) > 0)
     $packagedownloads = $out[0];
@@ -244,7 +244,7 @@ if ($driver['shortdescription'] or $driver['supplier'] or
     $infobox .= "</font></td>" .
 	"<td width=\"2%\"></td></tr>";
 }
-if (is_array($contacts) and count($contacts) > 0) {
+if (is_[$contacts] and count($contacts) > 0) {
     $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
 	"<td width=\"16%\"><font size=\"-2\">" .
 	"User support:" .
@@ -289,8 +289,8 @@ if (strlen($driver['text']) > 0 or strlen($driver['lineart']) > 0 or
     strlen($driver['graphics']) > 0 or strlen($driver['photo']) > 0 or
     strlen($driver['load_time']) > 0 or strlen($driver['speed']) > 0) {
     $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>";
-    foreach(array('text', 'graphics', 'load_time',
-		  'lineart', 'photo', 'speed') as $par) {
+    foreach(['text', 'graphics', 'load_time',
+		  'lineart', 'photo', 'speed'] as $par) {
 	$infobox .= "<td width=\"16%\"><font size=\"-2\">" .
 	    "{$driverparameters[$par]}:</font></td>" .
 	    "<td width=\"16%\"><font size=\"-2\">";
@@ -332,7 +332,7 @@ if ($packagedownloads != "") {
 	"</font></td>" .
 	"<td width=\"2%\"></td></tr>";
 }
-if (is_array($dependencies) and count($dependencies) > 0) {
+if (is_[$dependencies] and count($dependencies) > 0) {
     $infobox .= "<tr valign=\"top\"><td width=\"2%\"></td>" .
 	"<td width=\"16%\"><font size=\"-2\">" .
 	"<b>Dependencies:</b>" .

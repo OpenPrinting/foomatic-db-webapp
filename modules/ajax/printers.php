@@ -5,7 +5,7 @@ $CONF = new SiteConfig();
 $DB = DB::getInstance();
 
 
-$array = array();
+$array = [];
 if ($_GET['_name'] == 'manufacturer') {
 	
 	$resModel = $DB->query("
@@ -18,11 +18,11 @@ if ($_GET['_name'] == 'manufacturer') {
 
 		 if ( $_GET['_value'] == $rModel['make'] )
 		 {
-			$array[] = array($rModel['id'] => $rModel['model']);
+			$array[] = [$rModel['id'] => $rModel['model']];
 	
 		  } else
 		  {
-			$array[] = array('0' => 'No model found');
+			$array[] = ['0' => 'No model found'];
 		  }		
 	}
 
@@ -33,17 +33,17 @@ if ($_GET['_name'] == 'manufacturer') {
 /*elseif ($_GET['_name'] == 'model') {
 	 if ( $_GET['_value'] == 2 )//some parent val
 	 {
-		$array[] = array('1' => 'some val');
-		$array[] = array('2' => 'Another val');	
+		$array[] = ['1' => 'some val'];
+		$array[] = ['2' => 'Another val'];	
 	  } else
 	  {
-		$array[] = array('0' => 'No city');
+		$array[] = ['0' => 'No city'];
 	}
 } 
 else {
-	$array[] = array('1' => 'Data 1');
-	$array[] = array('2' => 'Data 2');	
-	$array[] = array('3' => 'Data 3');	
+	$array[] = ['1' => 'Data 1'];
+	$array[] = ['2' => 'Data 2'];	
+	$array[] = ['3' => 'Data 3'];	
 }*/
 
 echo json_encode( $array );

@@ -9,16 +9,16 @@ class OptionChoice
   private $loaded;
 
   // Supported option types
-  public static $types = array('enum', 'bool', 'int', 'float', 'string', 'password');
+  public static $types = ['enum', 'bool', 'int', 'float', 'string', 'password'];
 
   // Support execution models
-  public static $execution_types = array('substitution', 'postscript', 'pjl', 'composite', 'forced_composite');
+  public static $execution_types = ['substitution', 'postscript', 'pjl', 'composite', 'forced_composite'];
 
   // This contains the XML data
-  public $data = array();
+  public $data = [];
 
   // Contains of list of objects of respective data
-  public $constraint = array();
+  public $constraint = [];
 
   public function __construct($id, $data) {
     if ($id == null || $data == null) {
@@ -50,7 +50,7 @@ class OptionChoice
 
       // Prepare the translation data
       if ($this->data['longname']) {
-	$this->translation["longname"] = new Translation($data->ev_longname, "option_choice", array("id" => $this->data['id'], "option_id" => $this->data['option_id']), "longname");
+	$this->translation["longname"] = new Translation($data->ev_longname, "option_choice", ["id" => $this->data['id'], "option_id" => $this->data['option_id']], "longname");
       }
 
       // The choice's constraints
@@ -133,7 +133,7 @@ class OptionChoice
     // Clear any previous data present
     unset($this->constraint);
 
-    $id = mysql_real_escape_string($id);
+    $id = $db->mysqli_real_escape_string($id);
 
     // Prepare the query string for extracting main option choice details
     $query = "select * from option_choice where option_id=\"$option_id\" and id=\"$id\"";
@@ -142,24 +142,24 @@ class OptionChoice
     if ($result == null) {
       return false;
     }
-    $row = mysql_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);
     $this->__construct($id, $row);
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
     // Query string for extracting details about the choice's constraints
     $query = "select * from option_constraint where option_id=\"$option_id\" and choice_id=\"$id\" and is_choice_constraint=1";
     $result = $db->query($query);
 
     if ($result) {
-      while($row = mysql_fetch_assoc($result)) {
+      while($row = mysqli_fetch_assoc($result)) {
 	  $this->constraint[sizeof($this->constraint)] = new OptionConstraint($option_id, $row, $id);
       }
     }
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
-    // Load the translations                                                  
-    $this->translation["longname"] = new Translation(null, "option_choice", array("id" => $this->data['id'], "option_id" => $this->data['option_id']), "longname");
-    $this->translation["longname"]->loadDB("option_choice", array("id" => $this->data['id'], "option_id" => $this->data['option_id']), "longname", $db);
+    // Load the translations
+    $this->translation["longname"] = new Translation(null, "option_choice", ["id" => $this->data['id'], "option_id" => $this->data['option_id']], "longname");
+    $this->translation["longname"]->loadDB("option_choice", ["id" => $this->data['id'], "option_id" => $this->data['option_id']], "longname", $db);
 
     return true;
   }
@@ -174,15 +174,15 @@ class OptionChoice
       return false;
     }
 
-    $this->data['option_id'] = mysql_real_escape_string($this->data['option_id']);
-    $this->data['id'] = mysql_real_escape_string($this->data['id']);
+    $this->data['option_id'] = $db->mysqli_real_escape_string($this->data['option_id']);
+    $this->data['id'] = $db->mysqli_real_escape_string($this->data['id']);
     // Find out if there is already an entry present
     $query = "select * from option_choice where option_id=\"{$this->data['option_id']}\" and id=\"{$this->data['id']}\"";
     $result = $db->query($query);
     $count = 0;
     if ($result) {
-      $count = mysql_num_rows($result);
-      mysql_free_result($result);
+      $count = mysqli_num_rows($result);
+      mysqli_free_result($result);
     } else {
       echo "[ERROR] Option Choice :: ".$db->getError()."\n";
       return false;
@@ -192,7 +192,7 @@ class OptionChoice
     if ($count) {
       $query = "update option_choice set ";
       foreach ($this->data as $key=>$value) {
-	$query .= "$key=\"".mysql_real_escape_string($value)."\",";
+	$query .= "$key=\"".$db->mysqli_real_escape_string($value)."\",";
       }
       $query[strlen($query) - 1] = " ";
       $query .= " where option_id=\"{$this->data['option_id']}\" and id=\"{$this->data['id']}\"";
@@ -201,7 +201,7 @@ class OptionChoice
       $fields = $values = "";
       foreach($this->data as $key=>$value) {
 	$fields .= "$key,";
-	$values .= "\"".mysql_real_escape_string($value)."\",";
+	$values .= "\"".$db->mysqli_real_escape_string($value)."\",";
       }
       $fields[strlen($fields) - 1] = ')';
       $values[strlen($values) - 1] = ')';

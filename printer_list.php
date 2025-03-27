@@ -22,7 +22,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 				    SELECT DISTINCT make
 				    FROM printer
 				    ORDER BY make");
-				$makes = array();
+				$makes = [];
 				while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
 				
 				$SMARTY->assign('makes',$makes);
@@ -41,7 +41,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 				    SELECT DISTINCT make
 				    FROM printer
 				    ORDER BY make");
-				$makes = array();
+				$makes = [];
 				while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
 				
 				$SMARTY->assign('makes',$makes);
@@ -59,7 +59,7 @@ $PAGE->addBreadCrumb('Printers',$CONF->baseURL.'printers/');
 				    SELECT DISTINCT make
 				    FROM printer
 				    ORDER BY make");
-		$makes = array();
+		$makes = [];
 		while($r = $res->getRow()) $makes[$r['make']] = $r['make'];
 		$SMARTY->assign('makes',$makes);
 		

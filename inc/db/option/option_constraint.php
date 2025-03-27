@@ -7,13 +7,13 @@ class OptionConstraint
   private $loaded;
 
   // Supported option types
-  public static $types = array('enum', 'bool', 'int', 'float', 'string', 'password');
+  public static $types = ['enum', 'bool', 'int', 'float', 'string', 'password'];
 
   // Support execution models
-  public static $execution_types = array('substitution', 'postscript', 'pjl', 'composite', 'forced_composite');
+  public static $execution_types = ['substitution', 'postscript', 'pjl', 'composite', 'forced_composite'];
 
   // This contains the XML data
-  public $data = array();
+  public $data = [];
 
   public function __construct($id, $data, $choice_id = null) {
     if ($id == null || $data == null) {
@@ -26,7 +26,7 @@ class OptionConstraint
       $this->data['is_choice_constraint'] = true;
     }
     if ($data != null) {
-      switch((string)gettype($data)) {			
+      switch((string)gettype($data)) {
 	case 'object':
 	  if (get_class($data) == "SimpleXMLElement") {
 	    $this->data['sense'] = (string)$data['sense'];
@@ -120,7 +120,7 @@ class OptionConstraint
       $db = OPDB::getInstance();
     }
 
-    $id = mysql_real_escape_string($id);
+    $id = $db->mysqli_real_escape_string($id);
 
     // Prepare the query string for extracting main driver details
     $query = "select * from option_constraint where option_id=\"$id\"";
@@ -129,9 +129,9 @@ class OptionConstraint
     if ($result == null) {
       return false;
     }
-    $row = mysql_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);
     $this->__construct($row);
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
     return true;
   }
@@ -143,24 +143,24 @@ class OptionConstraint
 
     if (!$this->loaded) return false;
 
-    $this->data['option_id'] = mysql_real_escape_string($this->data['option_id']);
-    $this->data['sense'] = mysql_real_escape_string($this->data['sense']);
+    $this->data['option_id'] = $db->mysqli_real_escape_string($this->data['option_id']);
+    $this->data['sense'] = $db->mysqli_real_escape_string($this->data['sense']);
     // Find out if there is already an entry present
     $query = "select * from option_constraint where option_id=\"{$this->data['option_id']}\"";
     if (array_key_exists('choice_id', $this->data)) {
-      $this->data['choice_id'] = mysql_real_escape_string($this->data['choice_id']);
+      $this->data['choice_id'] = $db->mysqli_real_escape_string($this->data['choice_id']);
       $query .= " and choice_id=\"{$this->data['choice_id']}\"";
     } else {
       $query .= " and (choice_id=\"\" or choice_id is null)";
     }
     if (array_key_exists('printer', $this->data)) {
-      $this->data['printer'] = mysql_real_escape_string($this->data['printer']);
+      $this->data['printer'] = $db->mysqli_real_escape_string($this->data['printer']);
       $query .= " and printer=\"{$this->data['printer']}\"";
     } else {
       $query .= " and (printer=\"\" or printer is null)";
     }
     if (array_key_exists('driver', $this->data)) {
-      $this->data['driver'] = mysql_real_escape_string($this->data['driver']);
+      $this->data['driver'] = $db->mysqli_real_escape_string($this->data['driver']);
       $query .= " and driver=\"{$this->data['driver']}\"";
     } else {
       $query .= " and (driver=\"\" or driver is null)";
@@ -168,15 +168,15 @@ class OptionConstraint
     $result = $db->query($query);
     $count = 0;
     if ($result) {
-      $count = mysql_num_rows($result);
-      mysql_free_result($result);
+      $count = mysqli_num_rows($result);
+      mysqli_free_result($result);
     }
 
     // Prepare the query string. Update if data exists or insert a new record
     if ($count) {
       $query = "update option_constraint set ";
       foreach ($this->data as $key=>$value) {
-	$query .= "$key=\"".mysql_real_escape_string($value)."\",";
+	$query .= "$key=\"".$db->mysqli_real_escape_string($value)."\",";
       }
       $query[strlen($query) - 1] = " ";
       $query .= " where option_id=\"{$this->data['option_id']}\" and sense=\"{$this->data['sense']}\"";
@@ -194,7 +194,7 @@ class OptionConstraint
       $fields = $values = "";
       foreach($this->data as $key=>$value) {
 	$fields .= "$key,";
-	$values .= "\"".mysql_real_escape_string($value)."\",";
+	$values .= "\"".$db->mysqli_real_escape_string($value)."\",";
       }
       $fields[strlen($fields) - 1] = ')';
       $values[strlen($values) - 1] = ')';

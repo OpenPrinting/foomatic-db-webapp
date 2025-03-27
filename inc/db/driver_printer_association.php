@@ -14,7 +14,7 @@ class DriverPrinterAssociation
     if (!$id && !$data) {
       return false;
     }
-	
+
     if ($is_printer) {
       $this->data['printer_id'] = $id;
       $this->data['driver_id'] = '';
@@ -22,7 +22,7 @@ class DriverPrinterAssociation
       $this->data['driver_id'] = $id;
       $this->data['printer_id'] = '';
     }
-	
+
     switch((string)gettype($data)) {
     case 'object':
       if (get_class($data) == "SimpleXMLElement") {
@@ -111,9 +111,9 @@ class DriverPrinterAssociation
       // Prepare the translation data
       if ($data->comments) {
 	if ($is_printer) {
-	  $this->translation["pcomments"] = new Translation($data->comments, "driver_printer_assoc", array("driver_id" => $this->data['driver_id'], "printer_id" => $this->data['printer_id']), "pcomments");
+	  $this->translation["pcomments"] = new Translation($data->comments, "driver_printer_assoc", ["driver_id" => $this->data['driver_id'], "printer_id" => $this->data['printer_id']], "pcomments");
 	} else {
-	  $this->translation["comments"] = new Translation($data->comments, "driver_printer_assoc", array("driver_id" => $this->data['driver_id'], "printer_id" => $this->data['printer_id']), "comments");
+	  $this->translation["comments"] = new Translation($data->comments, "driver_printer_assoc", ["driver_id" => $this->data['driver_id'], "printer_id" => $this->data['printer_id']], "comments");
 	}
       }
       break;
@@ -160,7 +160,7 @@ class DriverPrinterAssociation
 	$xmlstr .= "$is  </comments>\n";
       }
       if (strlen($this->data['ppd']))
-	$xmlstr .= "$is  <ppd>" . htmlspecialchars($this->data['ppd']) . 
+	$xmlstr .= "$is  <ppd>" . htmlspecialchars($this->data['ppd']) .
 	  "</ppd>\n";
       $xmlstr .= "$is</driver>\n";
     } elseif ($is_printer == false and $this->data['fromdriver'] == true) {
@@ -230,31 +230,31 @@ class DriverPrinterAssociation
     // Clear any previous data present
     unset($this->translation);
     unset($this->data);
-    
-    $driver_id = mysql_real_escape_string($driver_id);
-    $printer_id = mysql_real_escape_string($printer_id);
+
+    $driver_id = $db->mysqli_real_escape_string($driver_id);
+    $printer_id = $db->mysqli_real_escape_string($printer_id);
 
     // Load the translations
-    foreach(array('comments', 'pcomments') as $field) {
-	$this->translation[$field] = new Translation(null, "driver_printer_assoc", array("driver_id" => $driver_id, "printer_id" => $printer_id), $field);
-	$this->translation[$field]->loadDB("driver_printer_assoc", array("driver_id" => $driver_id, "printer_id" => $printer_id), $field, $db);
+    foreach(['comments', 'pcomments'] as $field) {
+	$this->translation[$field] = new Translation(null, "driver_printer_assoc", ["driver_id" => $driver_id, "printer_id" => $printer_id], $field);
+	$this->translation[$field]->loadDB("driver_printer_assoc", ["driver_id" => $driver_id, "printer_id" => $printer_id], $field, $db);
     }
 
     // Prepare the query string for extracting main driver/printer combo
     // details
-    $qstr = sprintf("SELECT * FROM driver_printer_assoc WHERE driver_id = '%s' and printer_id = '%s' ", mysql_real_escape_string($driver_id), mysql_real_escape_string($printer_id));
+    $qstr = sprintf("SELECT * FROM driver_printer_assoc WHERE driver_id = '%s' and printer_id = '%s' ", $db->mysqli_real_escape_string($driver_id), $db->mysqli_real_escape_string($printer_id));
     $result = $db->query($qstr);
-	
+
     if ($result == null) {
       return false;
     }
-    $row = mysql_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);
     if ($for_printer) {
       $this->__construct($printer_id, $row, true);
     } else {
       $this->__construct($driver_id, $row);
     }
-    mysql_free_result($result);
+    mysqli_free_result($result);
 
   }
 
@@ -262,19 +262,19 @@ class DriverPrinterAssociation
     if ($db == null) {
       $db = OPDB::getInstance();
     }
-	
+
     if ($this->loaded === false) return false;
-	
+
     // Find out if an entry of this printer exists. If yes, then just update that entry
-    $qstr = sprintf("SELECT * FROM driver_printer_assoc WHERE driver_id = '%s' and printer_id = '%s' ", mysql_real_escape_string($this->data['driver_id']), mysql_real_escape_string($this->data['printer_id']));
+    $qstr = sprintf("SELECT * FROM driver_printer_assoc WHERE driver_id = '%s' and printer_id = '%s' ", $db->mysqli_real_escape_string($this->data['driver_id']), $db->mysqli_real_escape_string($this->data['printer_id']));
     $result = $db->query($qstr);
 
     if ($result == null) {
       echo __FILE__."[ERROR]".$db->getError()."\n";
       return false;
     }
-    $count = mysql_num_rows($result);
-    mysql_free_result($result);
+    $count = mysqli_num_rows($result);
+    mysqli_free_result($result);
     if ($count) {
       $query = "update driver_printer_assoc set ";
       foreach ($this->data as $key=>$value) {
@@ -282,7 +282,7 @@ class DriverPrinterAssociation
 	    ((int)$value == -1)) {
 	  $v = "NULL";
 	} else {
-	  $v = "\"".mysql_real_escape_string($value)."\"";
+	  $v = "\"".$db->mysqli_real_escape_string($value)."\"";
 	}
 	$query .= "$key=$v,";
       }
@@ -297,7 +297,7 @@ class DriverPrinterAssociation
 	    ((int)$value == -1)) {
 	  $values .= "NULL,";
 	} else {
-	  $values .= "\"".mysql_real_escape_string($value)."\",";
+	  $values .= "\"".$db->mysqli_real_escape_string($value)."\",";
 	}
       }
       $fields[strlen($fields) - 1] = ')';
@@ -320,7 +320,7 @@ class DriverPrinterAssociation
 	}
       }
     }
-			
+
     return true;
   }
 }
